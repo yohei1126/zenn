@@ -3,7 +3,7 @@ title: "Axion Podcastでコロナ禍のシンガポールでの転職につい�
 emoji: "✨"
 type: "idea" # tech: 技術記事 / idea: アイデア
 topics: [Singapore,転職,海外就職,シンガポール]
-published: false
+published: true
 ---
 
 ![Axion Podcat](https://storage.googleapis.com/zenn-user-upload/yclc1get7lbxtzgtehuvtvu9yrbk)
