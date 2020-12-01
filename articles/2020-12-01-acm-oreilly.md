@@ -32,8 +32,8 @@ https://www.oreilly.com/
 以下は実際にACMに加入して、O'reilly Learning Platform にアクセスするまでの手順です。
 
 1. ACMの加入ページを開く https://www.acm.org/membership/join
-2. "ACM Professional Membership" を選び、オプションでは "Professional Membership -- Yearly Rate: $ 99 (USD)" を選びます。もしACM自身のディジタルライブラリを利用したい場合は、"ACM Professional Membership PLUS ACM Digital Library -- Yearly Rate: $ 198 (USD)" を選んでください。
-3. 決済が完了したら、ACMのLearning Centerのページを開き、右上の"O'reilly"をクリックすると、O'reilly Learning Platformにアクセスできます。
+2. `ACM Professional Membership` を選び、オプションでは `Professional Membership -- Yearly Rate: $ 99 (USD)` を選びます。もしACM自身のディジタルライブラリを利用したい場合は、`ACM Professional Membership PLUS ACM Digital Library -- Yearly Rate: $ 198 (USD)` を選んでください。
+3. 決済が完了したら、ACMのLearning Centerのページを開き、右上の `O'reilly` をクリックすると、O'reilly Learning Platformにアクセスできます。
 4. ログインでは、ユーザ名としてACMアカウントのメールアドレス、パスワードはACMアカウントのパスワードを入力します。
 
 以上で利用できます。
