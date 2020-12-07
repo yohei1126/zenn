@@ -1,11 +1,12 @@
 ---
-title: "Amazon Deequを活用したデータ品質の継続"
+title: "Amazon Deequを活用したデータ品質の計測"
 emoji: "✨"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: [deequ,data,quality,measurement,ci/cd]
+topics: [deequ,data,quality,measurement,cicd]
 published: false
 ---
-# Amazon Deequを用いたデータ品質の計測について
+
+# 記事の背景
 
 筆者は、普段、データエンジニアとしてデータパイプラインの構築やデータ管理を担当しています。最近は、チームからデータ品質の問題（データ不整合など）が発生していると相談を受け、データガバナンス・データ管理の活動の1つとして、データ品質の計測と改善について、ここ1ヶ月ほど調査をしてきました。
 
