@@ -6,6 +6,10 @@ topics: [IT,DX,政府,電子政府,シンガポール]
 published: true
 ---
 
+![Digital Government Blueprint](https://storage.googleapis.com/zenn-user-upload/oo2s7wssewkpp7bfu0ozqao22s4w)
+
+([Gov Tech Singapore](https://www.tech.gov.sg/digital-government-blueprint/)Webサイトより引用)
+
 # 本記事の概要
 
 * 本記事では、筆者が住んでいるシンガポールにおける電子政府の現状と日本の現状を比較し、シンガポールの方が優れている仕組みなどをいくつか紹介します。
