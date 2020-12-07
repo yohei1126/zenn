@@ -1,5 +1,5 @@
 ---
-title: "シンガポールのエンジニア組織 Gov Tech が推進する高度なDX"
+title: "シンガポール政府のエンジニア組織 Gov Tech が推進する高度な DX"
 emoji: "✨"
 type: "idea"
 topics: [IT,DX,政府,電子政府,シンガポール]
