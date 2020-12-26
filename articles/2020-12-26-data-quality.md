@@ -3,7 +3,7 @@ title: "Amazon Deequを活用したデータ品質の計測"
 emoji: "✨"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [deequ,data,quality,measurement,cicd]
-published: false
+published: true
 ---
 
 # 本記事の背景
@@ -57,7 +57,7 @@ https://aws.amazon.com/jp/blogs/news/test-data-quality-at-scale-with-deequ/
 * これら入力を元に品質特性の検証(Constraints Verification; 図の中央左上)を行ったり、メトリクスを計測（Metrics Computation; 図の中央下）します。
 * 出力はデータの品質計測結果のレポート（Data Quality Report; 図の右）とメトリクス(Metrics; 図の右)です。
 
-![Deequ Architecture](./images/deequ-components-overview.png)
+![Deequコンポーネントの概要](https://storage.googleapis.com/zenn-user-upload/5fx3n2cmshxd19hrnqs0ldxp10ma)
 
 [Deequコンポーネントの概要](https://aws.amazon.com/jp/blogs/news/test-data-quality-at-scale-with-deequ/) - AWS blogより引用
 
@@ -184,9 +184,9 @@ cd ./src
 ./deploy.sh -p <aws_profile> -r <aws_region>
 ```
 
-デプロイされてできる環境の構成か以下の通りです。
+デプロイされてできる環境の構成は以下の通りです。
 
-![Deequコンポーネントの構成](https://storage.googleapis.com/zenn-user-upload/jq1a2a4mrls29uhot7088ipatgzw)
+![Deequコンポーネントの構成](https://storage.googleapis.com/zenn-user-upload/z58okv3vl8xa384urfy63430ba70)
 
 [Deequコンポーネントの構成](https://github.com/aws-samples/amazon-deequ-glue) - AWSのGithunレポジトリより引用
 
@@ -196,8 +196,7 @@ cd ./src
 * テストの入力ができたところで、Verification Job（図の③.b）が実行されます。これにより実際のデータが期待に沿っているのか検証が行われます。検証結果（NULLを許容しないカラムにNULL値があったなど）はS3バケットにpaquet形式で出力されます。
 * 次にProfiler job（図の③）でメトリクスの計測が行われます。この結果も先ほどと同じくpaquet形式でS3バケットに出力されます。
 * 計測・検証結果がS3に出力されたところで、Step Functionsの次のステップとしてLambda関数がGlue Crawlerを起動します（図の④）。Glue Crawlerは図③の出力結果をGlue Data Catalogに取り込みます。これでAthenaでクエリ可能になるので、同時にお使いのBIツールで分析することが可能になります。
-
-なお、Deequジョブが計測・検証する対象データは、事前にGlueテーブルとして登録しておく必要がある点に注意してください。
+* なお、Deequジョブが計測・検証する対象データは、事前にGlueテーブルとして登録しておく必要がある点に注意してください。
 
 上記が、Deequのサンプルのデプロイや使い方の概要です。ささっとデプロイして始められる点はお分かりいただけたと思います。
 
@@ -233,7 +232,7 @@ OSS のデータ品質改善ツールやその機能が分かったところで�
   * データ関係があまり成熟していない組織であるため、私がこの役割も兼務しています。
 * データオーナ
   * 生データをデータレイクに提供しているシステムの担当者や、該当データが生成される背景となる業務に詳しい人です。
-  * 対象データによって変わるので、
+  * 対象データによって変わりす。
 
 ## データ品質計測サイクル
 
