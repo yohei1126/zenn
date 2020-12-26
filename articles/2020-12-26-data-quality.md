@@ -159,7 +159,7 @@ DeequはSpark上に構築されており、大規模データにも対応でき�
 
 https://docs.greatexpectations.io/en/latest/guides/how_to_guides/configuring_datasources/how_to_configure_a_self_managed_spark_datasource.html
 
-## (4) Airflowなどワークフローツールと連携です。
+## (4) Airflowなどワークフローツールと連携できる
 
 データ品質の計測や検証を自動化したい場合、Airflowのようなワークフローツールでバッチジョブを作成し、バッチジョブからデータ品質計測のジョブを実行する必要があります。両ツールともワークフローから利用しやすくなっていると言えます。
 
