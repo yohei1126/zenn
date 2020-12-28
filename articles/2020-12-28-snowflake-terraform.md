@@ -255,7 +255,7 @@ resource "snowflake_stage" "your_stage" {
   storage_integration = snowflake_storage_integration.your_integration.name
 ```
 
-#　そのほかリソースの作成
+# その他のリソース作成
 
 データベース、スキーマ、テーブル、ロールなど主要な Snowflake のリソースは、Terraform を使って作成できます。各リソースの定義方法は以下を参照ください。
 
