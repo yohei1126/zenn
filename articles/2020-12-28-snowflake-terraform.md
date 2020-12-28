@@ -3,7 +3,7 @@ title: "Terraform を使った Snowflake の構成管理"
 emoji: "❄️"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [snowflake,terraform,infra,code,ioc]
-published: false
+published: true
 ---
 
 ![Snowflake](https://storage.googleapis.com/zenn-user-upload/uo9gtabf5bsfbcs5cievdqfjw0lh)
