@@ -8,6 +8,8 @@ published: true
 
 ![Snowflake](https://storage.googleapis.com/zenn-user-upload/uo9gtabf5bsfbcs5cievdqfjw0lh)
 
+(画像は [Snowflake 公式 Web サイト](https://www.snowflake.com/)のものを流用)
+
 # 本記事の背景
 
 筆者の会社では、先日、データウェアハウスとして [Snowflake](https://www.snowflake.com/) を導入することになりました。現在、パフォーマンス向上などを理由に、RDS や BI ツールなどで実現されている既存のアナリティクスワークロードを Snowflake に移行しています。
@@ -42,6 +44,8 @@ published: true
 * 複数人による作業競合を防ぐ状態ロックの仕組み
 * 同じコードを流用した複数環境へのデプロイ
 * 実際に変更をデプロイする前の差分確認
+
+なお、調査した範囲では、サードパーティのツールで構成管理に利用できるものは他になく、筆者は以前の職場で AWS・GCP などパブリッククラウドの構成管理に Terraform を用いていたので、Terraform を導入することを決意しました。
 
 # Terraform および Snowflake プラグインの導入
 
@@ -78,7 +82,7 @@ curl https://raw.githubusercontent.com/chanzuckerberg/terraform-provider-snowfla
 
 ここからはTerraformでリソースを作成するユーザを作成します。認証方式としてはキーペアを利用します。
 
-人が Web ブラウザでログインする場合、SSO や MFA を利用する方式が便利ですが、CI と組み合わせて利用する場合、自動化と相性が良い方式にする必要があります。自動化できる方式の中では、パスワード認証よりもキーペア認証方式の方がセキュアです。認証方式全般は以下を参照ください。
+人が Web ブラウザでログインして Snowflake を利用する場合、SSO やパスワードおよび MFA を利用する方式が便利ですが、CI と組み合わせて利用する場合、自動化と相性が良い方式にする必要があります。自動化できる方式の中では、パスワード認証よりもキーペア認証方式の方がセキュアです。認証方式全般は以下を参照ください。
 
 https://docs.snowflake.com/en/user-guide/admin-security.html
 
@@ -186,7 +190,7 @@ provider "snowflake" {
 
 https://registry.terraform.io/providers/chanzuckerberg/snowflake/latest/docs
 
-# workspace を使った環境ごとに可変の値を管理
+# workspace を使った環境ごとの可変値の管理
 
 Terraform では、コードを変更せずに複数環境へデプロイするための機能として、workspace という機能が用意されています。
 
@@ -214,7 +218,7 @@ provider "snowflake" {
 }
 ```
 
-また、より高度な使い方としては以下のように環境によって異なる値を1箇所に集約させることが可能です。
+また、より高度な使い方としては以下のように環境によって異なる値を一箇所に集約させることが可能です。
 
 例えば、環境ごとに異なるS3バケットやオブジェクトキーからファイルをロードする `stage` を作成したいとします。その場合、環境ごとに可変の設定まとめたファイルとして `locals.tf` を作っておきます。
 
@@ -242,9 +246,9 @@ locals {
 }
 ```
 
-`locals.tf` で定義した変数を参照する形で、`stage` のリソース定義を作成することで、`stage` のコードを変更することなく環境ごとに設定を変更できます。
+`locals.tf` で定義した変数を参照する形で、リソース定義を作成することで、コードを変更することなく環境ごとに設定を変更できます。
 
-`stage` の設定については以下のドキュメントを参照ください。https://registry.terraform.io/providers/chanzuckerberg/snowflake/latest/docs/resources/stage
+例えば、以下は環境ごとに異なる設定を持った `stage` の定義例です。 `stage` の設定については以下のドキュメントを参照ください。https://registry.terraform.io/providers/chanzuckerberg/snowflake/latest/docs/resources/stage
 
 ```
 resource "snowflake_stage" "your_stage" {
@@ -302,6 +306,16 @@ $ terraform apply "out.tfplan"
 一般的なワークフローとコマンドについては以下を参照ください。
 
 https://www.terraform.io/docs/cli/run/index.html
+
+# Terraform を導入する際の注意事項
+
+今回紹介した Terraform プラグインは、あくまでもサードパーティのツールが OSS として開発されている点を理解する必要があります。
+
+Snowflake 社の公式ツールではないため、Snowflake 社が公式に品質保証をしてるわけではありません。一部機能が Snowlake の機能と適応しておらず、意図しない動作をする場合があります。また、プラグインが最新機能に適用していない場合があります。そういう状況を理解した上で、自分のプロジェクトに合う場合に自己責任で利用するのが OSS の流儀です。
+
+OSS のツールですので、もし意図していない振る舞いを見つけた場合、欲しい機能に対応していない場合は、[Github リポジトリ](https://github.com/chanzuckerberg/terraform-provider-snowflake)でコミュニティに対応状況や今後の予定を質問してみたり、自分で Pull Request を送ったりしましょう。
+
+Terraform プラグインは、言語仕様がシンプルな Go 言語で実装されており、プラグイン自身も構造がシンプルなため、コードを理解するのも簡単ですし、OSS の中では比較的に貢献しやすいプロジェクトと言えます。
 
 # 終わりに
 
