@@ -1,5 +1,5 @@
 ---
-title: "シンガポールの FinTech 企業でデータウェアハウスとして Snwoflake を導入した"
+title: "シンガポールの FinTech 企業でデータウェアハウスとして Snowflake を導入した"
 emoji: "❄️"
 type: "tech"
 topics: [snowflake,tableau,airflow,datawarehouse,データウェアハウス]
