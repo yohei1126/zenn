@@ -2,7 +2,7 @@
 title: "AWS DMS と Snowpipe を活用した Snowflake 用リアルタイムデータパイプラインの構築"
 emoji: "❄️"
 type: "tech"
-topics: [aws,snowflake,rds,dms,datawarehouse,データウェアハウス]
+topics: [aws,snowflake,rds,datawarehouse,データウェアハウス]
 published: true
 ---
 
