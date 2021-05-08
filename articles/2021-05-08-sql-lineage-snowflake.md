@@ -3,7 +3,7 @@ title: "Python モジュール sqllineage を利用した Snowflake でのデー
 emoji: "❄️"
 type: "tech"
 topics: [python,sql,snowflake,visualization]
-published: falses
+published: true
 ---
 
 # 本記事の背景
