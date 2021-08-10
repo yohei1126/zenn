@@ -1,10 +1,15 @@
 ---
-title: "AWS Private Link を使って AWS と Snowflake 間のデータ転送コストを削減する"
+title: "AWS Private Link を使った場合の AWS と Snowflake 間データ転送コストについて"
 emoji: "❄️"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [aws,network,vpn,snowflake]
 published: true
 ---
+
+# 変更記録
+
+* 2021/8/8/ 公開
+* 2021/8/10 同じリージョンの AWS アカウントにデータ転送する場合はデータ転送料無料の旨を明記。
 
 # 本記事の背景 - 「AWS から Snowflake にデータを転送すると高額だと聞いたけど本当？」と言われた
 
@@ -24,18 +29,29 @@ AWS Private Link は外部の AWS アカウントと VPC 同士で接続でき�
 
 おそらく AWS からインターネットに出て行くルートでデータを転送する際の話をしているんだと理解しました。すでに Private Link を導入しており、インターネットを通さずに Snowflake へデータを転送するようになっているので、そのケースには当たらないと思いましたが、念の為、改めてコストを確認しました。
 
-そこで、本記事は、調査の結果をもとに以下を比較した結果を紹介します。
+本記事では、調査の結果をもとに以下を比較した結果を紹介します。
 
-* インターネットを経由して外部にデータを転送する場合
+* Private Link を使わず同じリージョンの外部 Snowflake アカウントにデータを転送する場合
+* （参考）別リージョンの Snowflake アカウントにデータを転送する場合
 * Private Link を通じて外部 AWS アカウントの VPC にデータを転送する場合 ← 筆者のケース
 
 また Private Link を利用できるようにする場合、Snowflake の Business Critical エディションを利用する必要がある点について紹介します。
 
-# 外部インターネットとデータ転送した場合のコスト
+# Private Link を使わず同じリージョンの Snowflake アカウントにデータを転送する場合
 
-まずは自社の AWS アカウントから外部インターネットへデータを転送する場合のコストについて紹介します。
+最初に Private Link を使わなかった場合の AWS S3 からデータ転送をした場合のデータ転送コストを紹介します。
 
-Snowflake を利用する場合、通常、自社の S3 バケット上にデータを上げ、そこから Snowflake へバルクロードする、もしくは Snowpipe でロードするので、S3 のデータ転送コストについて紹介します。
+Snowflake を利用する場合、通常、自社の S3 バケット上にデータを上げ、そこから Snowflake へバルクロードする、もしくは Snowpipe でロードするので、S3 のデータ転送コストを考えれば良くなります。
+
+以下の AWS S3 料金モデルのドキュメントによると、S3 バケットから同じリージョンの AWS アカウントへデータを転送するとデータ転送料金は課金されないとあります。私の所属の場合、AWS および Snowflake 共に同じリージョンにあり、Snowflake のプロバイダは AWS を使っているので、この料金モデルが適用され、データ転送料金は課金されません。
+
+https://aws.amazon.com/s3/pricing/
+
+![データ転送コスト](https://storage.googleapis.com/zenn-user-upload/996a2c3ba417656c3d277c8e.png)
+
+# （参考) 別リージョンの Snowflake アカウントへデータ転送した場合のコスト
+
+しかし、上記のデータ転送料無料が適用されるのは、同じリージョンの AWS アカウントに転送する場合のため、もし Snowflake が別リージョンにある場合は、通常のデータ転送料金が課金されます。
 
 以下はシンガポールリージョンの S3 のデータ転送コストです。https://aws.amazon.com/s3/pricing/
 
@@ -65,13 +81,16 @@ Private Link を利用する場合、自分の VPC に VPC エンドポイント
 
 ![Private Link](https://storage.googleapis.com/zenn-user-upload/25ff1a28546914da649bc903.png)
 
-# 比較結果
+# 確認結果
 
-以上、比較した結果、　Private Link を使った方がデータ転送コストを 1/10 - 1/20 に抑えることがわかりました。
+以上、確認した結果、　
+
+* Private Link を使ってない場合、Snowflake が同じリージョンにあれば、データ転送コストは無料。
+* Private Link を使っている場合、追加料金が発生するが、インターネットに転送する場合のを 1/10 - 1/20 に収まることがわかりました。
 
 # Private Link を使うための Snowflake 側の追加コスト
 
-以上まで比較したのは、Private Link を使う場合と使わない場合の AWS 側のデータ転送コストでしたが、Private Link を使う場合は、Snowflake 側のインフラコストが変わりますので、注意が必要です。
+Private Link を使う場合は、Snowflake 側のインフラコストが変わりますので、注意が必要です。
 
 https://www.snowflake.com/pricing/pricing-guide/
 
@@ -83,11 +102,8 @@ https://www.snowflake.com/pricing/pricing-guide/
 
 # 結論
 
-今回は、社内からの質問をもとに AWS と Snowflake の間のデータ転送コストについて、インターネット越しの場合、Private Link を使う場合の 2 つについて比較した結果をまとめました。
+今回は、社内からの質問をもとに AWS と Snowflake の間のデータ転送コストについて、Private Link を使わない場合と使うと場合の 2 つについて比較した結果をまとめました。
 
 また、Private Link を使う場合、Snowflake を Business Critical エディションにする必要があり、1 個下のエディションから Virtual Warehouse のコストが上がる旨も紹介しました。
-
-実際に Snowflake を利用する際は、まずインターネット越しに使うべきか考えましょう。インターネット越しに DWH を使う場合、外部からの攻撃を受けるリスクが高まります。通常は、それを防ぐ目的で DB や DWH をプライベートネットワーク内で使うべきだと判断します。
-Private Link を使った際のデータ転送コストの割引は副次的なメリットだと考えた方が良いと思います。
 
 以上、本記事が皆様の検討の参考になれば幸いです。
