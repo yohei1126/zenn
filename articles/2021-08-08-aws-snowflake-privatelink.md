@@ -33,6 +33,7 @@ AWS Private Link は外部の AWS アカウントと VPC 同士で接続でき�
 
 * Private Link を使わず同じリージョンの外部 Snowflake アカウントにデータを転送する場合
 * （参考）別リージョンの Snowflake アカウントにデータを転送する場合
+* （参考) GCP や Azure 上の Snowflake アカウントへデータ転送する場合のコスト
 * Private Link を通じて外部 AWS アカウントの VPC にデータを転送する場合 ← 筆者のケース
 
 また Private Link を利用できるようにする場合、Snowflake の Business Critical エディションを利用する必要がある点について紹介します。
@@ -49,11 +50,18 @@ https://aws.amazon.com/s3/pricing/
 
 ![データ転送コスト](https://storage.googleapis.com/zenn-user-upload/996a2c3ba417656c3d277c8e.png)
 
-# （参考) 別リージョンの Snowflake アカウントへデータ転送した場合のコスト
+# （参考) 別リージョンの Snowflake アカウントへデータ転送する場合のコスト
 
-しかし、上記のデータ転送料無料が適用されるのは、同じリージョンの AWS アカウントに転送する場合のため、もし Snowflake が別リージョンにある場合は、通常のデータ転送料金が課金されます。
+上記のデータ転送料無料が適用されるのは、同じリージョンの AWS アカウントに転送する場合のため、もし Snowflake が別リージョンにある場合は、別のデータ転送料金が課金されます。
 
-以下はシンガポールリージョンの S3 のデータ転送コストです。https://aws.amazon.com/s3/pricing/
+以下はシンガポールリージョンの S3 から別リージョンにデータを転送した場合のコストです。東京リージョンの場合は、$0.09 / GB = $90 / TB です。
+https://aws.amazon.com/s3/pricing/
+
+![別リージョンのデータ転送コスト](https://storage.googleapis.com/zenn-user-upload/35e3045e3b348dbb1f88616d.png)
+
+# （参考) GCP や Azure 上の Snowflake アカウントへデータ転送する場合のコスト
+
+なお、AWS から GCP や Azure 上のSnowflake にデータ転送する場合は、インターネット越しにデータが転送されるので、割高になります。
 
 * インターネットから S3 に入る場合は無料
 * S3からインターネットに出て行く場合
@@ -85,7 +93,7 @@ Private Link を利用する場合、自分の VPC に VPC エンドポイント
 
 以上、確認した結果、　
 
-* Private Link を使ってない場合、Snowflake が同じリージョンにあれば、データ転送コストは無料。
+* Private Link を使ってない場合、Snowflake が同じリージョンにあれば、データ転送コストは無料。別リージョンにある場合、AWS 以外のクラウドプロバイダにデータ転送する場合は追加料金が発生。
 * Private Link を使っている場合、追加料金が発生するが、インターネットに転送する場合のを 1/10 - 1/20 に収まることがわかりました。
 
 # Private Link を使うための Snowflake 側の追加コスト
