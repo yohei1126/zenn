@@ -32,7 +32,7 @@ AWS Private Link は外部の AWS アカウントと VPC 同士で接続でき�
 
 本記事では、調査の結果をもとに以下を比較した結果を紹介します。
 
-* Private Link を使わず同じリージョンの外部 Snowflake アカウントにデータを転送する場合
+* Private Link を使わず同じリージョンの Snowflake アカウントにデータを転送する場合
 * （参考）別リージョンの Snowflake アカウントにデータを転送する場合
 * （参考) GCP や Azure 上の Snowflake アカウントへデータ転送する場合のコスト
 * Private Link を通じて外部 AWS アカウントの VPC にデータを転送する場合 ← 筆者のケース
