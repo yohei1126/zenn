@@ -3,7 +3,7 @@ title: "コンテナを使った Snowpark アプリケーションのデプロ�
 emoji: "❄️"
 type: "tech"
 topics: [snowflake,snowpark,docker,devops,cicd]
-published: false
+published: true
 ---
 
 本記事では、Snowflake 版 Data Frame API である Snowpark のアプリケーションをコンテナ技術を使ってデプロイする方法について紹介します。
