@@ -6,6 +6,9 @@ topics: [snowflake,snowpark,docker,devops,cicd]
 published: true
 ---
 
+本記事は、[Snowflake Advent Calendar 2021](https://adventar.org/calendars/6220) の2日目です。
+1日目は、Snowvillage 村長による「[Snowflake 2021年 よかったこと5選](https://qiita.com/foursue/items/5790af335ff7f9393cac)」でした。
+
 本記事では、Snowflake 版 Data Frame API である Snowpark のアプリケーションをコンテナ技術を使ってデプロイする方法について紹介します。
 
 Snowpark をご存知ない方はこちらを参照ください。

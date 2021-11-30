@@ -2,3 +2,4 @@
 [0m2021.11.27 15:48:13 INFO  time: initialize in 2.62s[0m
 [0m2021.11.27 15:48:13 WARN  Build server is not auto-connectable.[0m
 [0m2021.11.27 15:48:13 WARN  no build tool detected in workspace '/Users/yohei/zenn'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
+[0m2021.11.29 17:23:47 INFO  shutting down Metals[0m
