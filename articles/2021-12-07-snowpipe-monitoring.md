@@ -3,7 +3,7 @@ title: "Airflow と Snowpipe REST API を使った Snowpipe ステータスモ�
 emoji: "❄️"
 type: "tech"
 topics: [snowflake,devops]
-published: false
+published: true
 ---
 
 # 本記事の背景
@@ -49,15 +49,45 @@ https://docs.snowflake.com/en/sql-reference/sql/show-pipes.html
 ただし、状態監視に使うユーザのロールが見える Snowpipe に限られてしまうので、監視用のユーザ・ロールを用意する際には全ての Snowpipe を閲覧できる設定にしておく必要があります。具体的には、少なくとも以下のページで `Pausing or Resuming Pipes` ができるロールをデフォルトロールにしておくと良いです。
 https://docs.snowflake.com/en/user-guide/data-load-snowpipe-intro.html#pipe-security
 
-# Snowpipe 自体の状態、個別ロードの結果を確認する
+# Snowpipe 自体の状態を確認する
 
-先ほど紹介したトラブルシューティングのドキュメントでは、SQL で以下を調査することを推奨しています。
-  * `SYSTEM$PIPE_STATUS` で Snowpipe 自体の状態
-  * `COPY_HISTORY` で個別コピーの結果
+先ほど紹介したトラブルシューティングのドキュメントに記載のとおり、SQL で　`SYSTEM$PIPE_STATUS` を使うことで、 Snowpipe 自体の状態を確認できます。
+
 https://docs.snowflake.com/en/user-guide/data-load-snowpipe-ts.html
 
-これとほぼ同様のことが Snowpipe REST API でも可能です。最初からJSONで結果をもらえるので、REST APIの方が便利かもしれません。
-https://docs.snowflake.com/en/user-guide/data-load-snowpipe-rest-apis.html#load-history-reports
+`SYSTEM$PIPE_STATUS` の結果例は以下の通り。
+
+```
+select system$pipe_status('mydb.myschema.mypipe');
+
++---------------------------------------------------+
+| SYSTEM$PIPE_STATUS('MYDB.MYSCHEMA.MYPIPE')        |
+|---------------------------------------------------|
+| {"executionState":"RUNNING","pendingFileCount":0} |
++---------------------------------------------------+
+```
+
+以下のドキュメントを見る限り、`executionState` で異常と見られそうなのは、以下だと思われます。
+
+* STOPPED_FEATURE_DISABLED
+* STOPPED_STAGE_DROPPED
+* STOPPED_FILE_FORMAT_DROPPED
+* STOPPED_NOTIFICATION_INTEGRATION_DROPPED
+* STOPPED_MISSING_PIPE
+* STOPPED_MISSING_TABLE (the target table defined in the pipe definition was dropped)
+* STALLED_COMPILATION_ERROR
+* STALLED_INITIALIZATION_ERROR
+* STALLED_EXECUTION_ERROR
+* STALLED_INTERNAL_ERROR
+
+https://docs.snowflake.com/en/sql-reference/functions/system_pipe_status.html
+
+# 個別のファイルロード結果を確認する
+
+次に個別ファイルのロード結果の確認は、以下のどちらでも可能のようです。ただし、最初からJSONで結果をもらえるので、REST APIの方が便利かもしれません。
+
+* SQL では [COPY_HISTORY](https://docs.snowflake.com/en/sql-reference/functions/copy_history.html) 
+* Snowpipe REST API　https://docs.snowflake.com/en/user-guide/data-load-snowpipe-rest-apis.html#load-history-reports
 
 今回、状態監視に使いたいのは Load History Reports の方ですが、2つのエンドポイントがあり、それぞれ特性が異なるので、目的に合っているか確認しましょう。
 
@@ -77,4 +107,48 @@ https://docs.snowflake.com/en/user-guide/data-load-snowpipe-rest-apis.html#load-
 
 今回は、1時間おきに状態を確認できれば良いので、保持機関の短い `insertFiles` よりも `insertReport` が良いと判断しました。
 
-`loadHistoryScan` の
+`loadHistoryScan` を利用するにあたって、自分でREST APIを叩く実装を書くと大変なので、以下の Python ラッパーAPIを使うと便利そうです。
+
+https://github.com/snowflakedb/snowflake-ingest-python
+
+サンプルコード中では、履歴の取得に以下の 2 つのメソッドが利用されています。内部実装を見る限り、それぞれ REST API のエンドポイントに対応しているようです。
+  * `get_history` - `insertReport` に対応 
+  * `get_history_range` - `loadHistoryScan` に対応
+
+```
+# Needs to wait for a while to get result in history
+while True:
+    history_resp = ingest_manager.get_history()
+
+    if len(history_resp['files']) > 0:
+        print('Ingest Report:\n')
+        print(history_resp)
+        break
+    else:
+        # wait for 20 seconds
+        time.sleep(20)
+
+    hour = timedelta(hours=1)
+    date = datetime.datetime.utcnow() - hour
+    history_range_resp = ingest_manager.get_history_range(date.isoformat() + 'Z')
+
+    print('\nHistory scan report: \n')
+    print(history_range_resp)
+```
+
+# 最終的な実現案
+
+これまでの調査の結果、以下の方式で実現することになりました。
+
+* 1時間おきの Airflow DAG で以下を行う。
+  * `SHOW PIPES` で全 Snowpipe を取得する。
+  * 各 Snowpip に対して
+    * `SYSTEM$PIPE_STATUS` で Snowpipe 自体の状態を確認する。
+    * `snowflake-ingest-python` の `get_history_range` メソッドで個別ファイルのロード結果を確認する。
+  * Snowpipe もしくはテーブルでステータス異常がある場合、エラーを通知する。
+
+# 終わりに
+
+今回は自動で S3 ファイルをロードしてくれる Snowpipe の状態監視について調査結果をまとめました。
+Snowflake には Snowpipe のようにバックグランドで実行される機能として、タスクなどがあります。
+他の機能を実戦で使う機会があれば、監視系の手法について調査し、記事に書きたいと思います。
