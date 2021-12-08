@@ -6,7 +6,7 @@ topics: [snowflake,devops]
 published: true
 ---
 
-本記事は、"Snowflake Advent Calendar 2021[https://adventar.org/calendars/6220]" の7日目です。
+本記事は、[Snowflake Advent Calendar 2021](https://adventar.org/calendars/6220) の7日目です。
 
 # 本記事の背景
 
