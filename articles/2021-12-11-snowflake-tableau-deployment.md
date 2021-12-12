@@ -3,7 +3,7 @@ title: "Snowflake と Tableau を使った BI によるデータ分析基盤の�
 emoji: "❄️"
 type: "tech"
 topics: [snowflake,devops,tableau]
-published: false
+published: true
 ---
 
 本記事は、[Snowflake Advent Calendar 2021](https://adventar.org/calendars/6220) の12日目です。
