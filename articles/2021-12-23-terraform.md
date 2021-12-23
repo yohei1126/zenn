@@ -3,7 +3,7 @@ title: "Terraform で Snowflake の何を管理するべきか"
 emoji: "❄️"
 type: "tech"
 topics: [snowflake,devops,terraform]
-published: false
+published: true
 ---
 
 # この記事の背景
