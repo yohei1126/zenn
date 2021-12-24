@@ -6,6 +6,8 @@ topics: [snowflake,devops,terraform]
 published: true
 ---
 
+本記事は、[Snowflake Advent Calendar 2021](https://adventar.org/calendars/6220) の 25 日目です。
+
 # この記事の背景
 
 以前、Terraform（インフラの構成管理ツール）を使って Snowflake のリソースを管理し始めたことを書きました。
