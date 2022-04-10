@@ -1,5 +1,5 @@
 ---
-title: "AWS Glue から Snowflake 用の VPC Endpoint に接続する設定について"
+title: "AWS Glue から Private Link 経由で Snowflake に接続する設定について"
 emoji: "❄️"
 type: "tech"
 topics: [snowflake,aws,glue,network,jdbc]
