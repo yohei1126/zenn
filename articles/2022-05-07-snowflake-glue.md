@@ -1,5 +1,5 @@
 ---
-title: "Connecting AWS Glue job to Snowflake Private Endpoint using AWS Private Link"
+title: "Connecting Glue job to Snowflake Private Endpoint using Private Link"
 emoji: "❄️"
 type: "tech"
 topics: [snowflake,aws,glue,network,jdbc]
