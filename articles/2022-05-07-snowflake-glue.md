@@ -8,133 +8,130 @@ published: false
 
 # Backgroud
 
-When you want to transform data in Snowflake for your data analytics use case, you would usually implement data transfoamtion logic in SQL and create a view or table. On the other hand, if the logic is too complicated to implement in SQL, [Snowpark](https://docs.snowflake.com/en/developer-guide/snowpark/index.html), which is Snowflake version of Data Frame API, would comes in handy. Your data transformation logic in Data Frame will be transformoed into SQL then your data will be processed within Snowflake.
+When you want to transform data in Snowflake for your data analytics use case, you would usually implement data transfoamtion logic in SQL and create a view or table. On the other hand, if the logic is too complicated to implement in SQL, [Snowpark](https://docs.snowflake.com/en/developer-guide/snowpark/index.html), which is Snowflake version of Data Frame API, would comes in handy. Your data transformation logic in Data Frame will be transformoed into SQL then your data will be processed in Snowflake.
 
-BI や アドホック分析用に Snowflake 上のデータを加工したい場合、大抵の場合は、SQL でデータ加工ロジックを作り、ビューやテーブルを作成することが多いと思います。一方で、SQL で実現が困難な処理を実装する場合、Snowflake 版 Spark Data Frame API である [Snowpark](https://docs.snowflake.com/en/developer-guide/snowpark/index.html) は有力なオプションの１つです。
+However, only Snowpark Scala API is in generally available as of May 2022, [Snowpark Python API](https://www.snowflake.com/blog/https-www-snowflake-com-blog-snowday-python-comes-to-snowpark/) is still in Private Preview, which is not available in production system. As alternative solution of Snowpark Python API, [AWS Glue](https://aws.amazon.com/glue/), which is serverless Spark service in AWS, would be very useful.
 
-ただ、2022年4月10日現在、Snowpark は Scala API のみ GA になっており、[Python API](https://www.snowflake.com/blog/https-www-snowflake-com-blog-snowday-python-comes-to-snowpark/)のステータスは Private Preview であり、まだ本番環境では利用できない状態です。筆者のチームでは、AWS において Snowpark Python API の代替になりうる筆頭候補はサーバレス Spark 環境である [AWS Glue](https://aws.amazon.com/glue/) であると考えて、Glue から Snowflake に接続して、データ処理を行う環境の検証を実施していました。
+In this article, I will explain how to connect Glue job with Snowflake, especially via VPC enddpoint using [AWS Private Link](https://aws.amazon.com/privatelink/). AWS Private Link is widely used in large enterprises to connect VPCs in their own AWS accounts with 3rd party services in AWS. 
 
-ここで筆者の企業では、セキュリティの観点で Snowflake への接続はプライベート接続のみに限定しており、VPC Endpoint から AWS Priavte Link を経由して Snowflake に接続する必要があります。よって Private Link 経由での接続方法について調査と検証を行いました。本記事では、その設定方法について紹介します。
+# Network configuration
 
-# 前提となるネットワーク構成
+Assume that you have network configuration as follows.
 
-本記事の前提となるネットワーク構成は以下の通り。
+![network](https://storage.googleapis.com/zenn-user-upload/21bad28e2fdc-20220508.png)
 
-![network](https://storage.googleapis.com/zenn-user-upload/eba391000143-20220410.png)
-
-* 自社のクラウドサービスとして AWS を利用しており、Snowflake の クラウドサービスは AWS を選択している。
-* 両 AWS アカウント内の VPC 間は、Private Link で接続されている。Private Link の設定方法については以下を参照のこと。
+* Your Snowflake acount must be deployed in AWS.
+* VPCs in both AWS account are already connected by AWS Private Link. Please follow the below instruction for how to set up Private Link.
   * https://docs.aws.amazon.com/vpc/latest/privatelink/endpoint-services-overview.html
   * https://docs.snowflake.com/en/user-guide/admin-security-privatelink.html
-* Glue ジョブは自社 AWS アカウントの VPC Endpoint から Private Link を経由して、Snowflake に接続する。
-  * 筆者の環境のように接続先の JDBC データストア (今回は Snowflake) が VPC 内にある場合、その VPC の設定をした Glue Connection を利用する必要がある。https://docs.aws.amazon.com/glue/latest/dg/connection-JDBC-VPC.html
-* 筆者が検証した範囲では、Glue connection は Snowflake の JDBC URL を直接サポートしていない。Glue Connection がサポートしていない JDBC URL をサポートする目的で、Glue connector という機能が提供されているため、Connector から Connection を作成する。
-  * https://docs.aws.amazon.com/glue/latest/ug/connectors-chapter.html 
+* Your Glue job will be deployed in your AWS VPC then connect to your Snowflake account via VPC enddpoint using Private Link.
+  * Note that you need a Glue connection in a VPC when your target JDBC database is also in the VPC. https://docs.aws.amazon.com/glue/latest/dg/connection-JDBC-VPC.html
+* As far as I know, Glue connection does not support Snowflake JDBC URL directly. In this case, you need to create Glue connector first then create a Glue connection for Snwoflake JDBC URL from the connction. https://docs.aws.amazon.com/glue/latest/ug/connectors-chapter.html 
 
-# Glue の環境設定
+# Glue job Set up
 
-ここからは実際に Private Link 経由で Snowflake に接続する Glue ジョブを作成していきます。
+In this section, I will explain how to set up Glue job that connects to Snowflake private endpoint using Private Link.
 
-## 前提 - Private Link 設定が完了している
+## Private Link must be set up in advance
 
-本記事では、前提として以下の設定が完了しているものとします。
+Assume that you have already completed the following configurations.
 
-* 自社の AWS アカウントと Snowlake の VPC が既に Private Link で接続されている。
-* VPC 内部から Snowflake のプライベートエンドポイントに接続できる。
+* Private Link between your own AWS VPC and Snowlake's VPC.
+* You can connect to Snowflake via Private Enddpoint.
 
-環境していない場合は、以下のドキュメントを参照の上、設定を完了してください。
+If not, please follow the instructions below.
 
 * https://docs.aws.amazon.com/vpc/latest/privatelink/endpoint-services-overview.html
 * https://docs.snowflake.com/en/user-guide/admin-security-privatelink.html
 
-## Glue connector の作成
+## Create a Glue connector
 
-前述の通り、Snowflake の JDBC URL に対応するには Glue Connector を作成する必要があります。Glue Connector を作成するには、以下の通り、Glue Studio から Connector を作成してください。
+As mentioned previously, you need to create a Glue connector before you create a Glue connection for Snowflake JDBC. To create a Glue connector, please follow the following instruction.
+
 https://docs.aws.amazon.com/glue/latest/ug/connectors-chapter.html?icmpid=docs_glue_studio_helppanel#creating-connectors
 
 ![connector](https://storage.googleapis.com/zenn-user-upload/9d8adf2c397a-20220410.png)
 
-* Connector S3 URL:　コネクタのカスタムコードを配置するS3 URL
-* Name: コネクタの名前
+* Connector S3 URL:　S3 URL you upload custom code
+* Name: Connector name
 * Connector type: JDBC 
 * Class name: `net.snowflake.client.jdbc.SnowflakeDriver`
 * JDBC URL base: `https://$account-id.$region-name.privatelink.snowflakecomputing.com:443/`
-  * `$account-id` 及び `$region-name` は、自社の環境に合わせて変更してください。
+  * `$account-id` and `$region-name` must be replaced with approprivate values.
 * URL parameter delimiter: `&`
-* Description: 任意
 
-## Glue connection の作成
+## Create a Glue connection
 
-作成した Connector の詳細画面から Glue Connection が作成できます。以下の通り、Connection を作成してください。
+You can create a Glue connection in the details page of the Glue connector you previously created. Please follow this instruction to create a Glue connection.
 https://docs.aws.amazon.com/glue/latest/ug/connectors-chapter.html?icmpid=docs_glue_studio_helppanel#creating-connections
 
-* Name: connection の名前
-* Description: 任意
+* Name: Connection Name
+* Description: (Optional)
 * Connection access
   * Connection credential type: default
-  * Additional URL parameters: 任意
-    * JDBC URL にパラメタを追加できます。URL　については以下のドキュメントを参照。
+  * Additional URL parameters: (Optional)
+    * You can add parameters to your JDBC URL. Please refer this URL for more details.
     * https://docs.snowflake.com/en/user-guide/jdbc-configure.html#jdbc-driver-connection-string
 * Network options
-  * VPC: Private Link を設定した VPC を選択
-  * Subnet: Private Link を設定した VPC のサブネットを選択
-  * Security groups: Glue ジョブ用のセキュリティグループを選択。
-    * セキュリティグループには以下のURLにあるとおり、インバウンド設定とアウトバウンド設定を実施してください。
+  * VPC: Choose the VPC you set up Private Link
+  * Subnet: Choose a subnet from the VPC
+  * Security groups: Choose a security group for a Glue job
+    * The security group must have inbound and outbound configurations mentioned in this URL.
     * https://docs.aws.amazon.com/glue/latest/dg/setup-vpc-for-glue-access.html
 
-## Snowflake ドライバ の取得
+## Download Snowflake JDBC/Spark Driver
 
-今回は JDBC で接続し、データを Spark Data Frame にロードするため、以下のドライバが必要です。以下　URL　からダウンロードしてさい。
+The following drivers (jar files) are required to connect to Snwofalke using JDBC and load data into Data Frame.
 
 * JDBC https://docs.snowflake.com/en/user-guide/jdbc-download.html
 * Spark https://docs.snowflake.com/en/user-guide/spark-connector-install.html
-  * Glue version 3.0 で対応している Scala バージョンは 2.12 のため、`spark-snowflake_2.12` を選択してください。
+  * Choose `spark-snowflake_2.12` since Glue version 3.0 only support Scala version 2.12.
 
-取得したドライバの jar ファイルは S3 バケットにアップロードしてください。Glue ジョブから参照する必要があります。
+Then upload the jar files to your S3 bucket.
 
-## Glue job の作成
+## Create a Glue job
 
-作成した Glue connection の詳細画面から新規のジョブを作成できます。以下の通り、設定してください。
+You can create a new Glue job from the Glue connection details page.
 
 https://docs.aws.amazon.com/glue/latest/dg/add-job.html
 
 ![job](https://storage.googleapis.com/zenn-user-upload/1daf95ec3f04-20220410.png)
 
 * Basic properties
-  * Name: Glue job の名前
-  * Description: 任意
-  * IAM Role: Glue job 用のIAM roleを指定
-    * IAM Role には少なくとも `AWSGlueServiceRole` をつける必要があります。またドライバを配置したS3バケットへの参照権限をつけてください。
-    * それ以外のサービスにアクセスする場合は、必要に応じてIAM policy を設定してください。詳細は以下を参照。
+  * Name: Glue job name
+  * Description: (Optional)
+  * IAM Role: Choose an IAM role for the Glue job
+    * Minimum requirement of the IAM rols is `AWSGlueServiceRole` and read access to the driver jar files on the s3 bucket.
+    * If you need to access more AWS resources, please attach more IAM policy.
     * https://docs.aws.amazon.com/glue/latest/dg/using-identity-based-policies.html#access-policy-examples-aws-managed
   * Type: Spark
   * Glue version: 3.0
-    * バージョンごとの違いは以下を参照。
+    * Please refer this URL for more details about each Glue version.
     * https://docs.aws.amazon.com/glue/latest/dg/release-notes.html?icmpid=docs_glue_studio_helppanel
   * Language: Python 3
-  * その他はデフォルトのまま。必要に応じて変更してください。
 * Advanced properties
-  * Script filename: 通常はジョブ名と同じ
-  * Script path: スクリプトを配置する S3 の URL
-  * Spark UI logs path: ログを配置する S3 の URL
-  * Temporary path: 作業ディレクトリの S3 URL
-* Connections: 先ほど作成した connection を選択
+  * Script filename: (default name is the same as job name)
+  * Script path: S3 URL for Glue job script
+  * Spark UI logs path: S3 URL for Spark UI logs
+  * Temporary path: S3 URL for working directory
+* Connections: Choose the Glue connection you created
 * Libraries
-  * Dependent JARs path:　JDBC と Spark のドライバの S3 URL。URLをつなぐ際は、コロン `,` をつけてください。
-  * （例）`s3://mybucket/snowflake-jdbc-xxx.jar,s3://mybucket/snowflake-spark-xxx.jar`
+  * Dependent JARs path:　S3 URLs for JDBC and dSpark drivers. You need to use `,` to specify more than 1 URL.s
+  * e.g.`s3://mybucket/snowflake-jdbc-xxx.jar,s3://mybucket/snowflake-spark-xxx.jar`
 * Job parameters
-  * 再利用性を高めるため、接続設定はパラメタとして与えます。今回はパスワードを直接記述しますが、本番環境で使う場合は、Secret Manager から取得するようにしてください。
+  * It wouldd be better to provide Snowflake connection parameters for better reusability. I will providde password as a parater this time but the password should be provide as a secret in Secret Manager.
   * URL: `https://$account-id.$region-name.privatelink.snowflakecomputing.com:443/`
-    * `$account-id` 及び `$region-name` は、ご自身の環境に合わせて変更してください。 
-  * ACCOUNT: Snowlake アカウント名
-  * WAREHOUSE: ウェアハウス名
-  * DB: データベース名
-  * SCHEMA: スキーマ名
-  * USERNAME: ユーザ名
-  * PASSWORD: パスワード
+    * `$account-id` and `$region-name` must be replaced with appropriate values. 
+  * ACCOUNT: Snowlake account name
+  * WAREHOUSE: Warehouse name
+  * DB: Dabase name
+  * SCHEMA: Schema name
+  * USERNAME: User name
+  * PASSWORD: Passwordd
 * Script
-  * ロックを外し、以下のサンプルコードをコピーしてください。本サンプルでは、テーブルのデータをロードし、別のテーブルに書き込みます。
-  * `"table_name"`、`"new_table_name"` は、ご自身の環境に合わせて変更してください。
+  * Unlock the script editor and paste the following sample code.
+  * `"table_name"` is a source table and `"new_table_name"` is a target table for the Glue job.
+  * This sample code assume that the Snowflake user has READ access for the source table and write access to the target table.
   * https://community.snowflake.com/s/article/How-To-Use-AWS-Glue-With-Snowflake
 
 ```
@@ -176,14 +173,13 @@ df = spark.read.format(SNOWFLAKE_SOURCE_NAME).options(**sfOptions).option("dbtab
 df.write.format(SNOWFLAKE_SOURCE_NAME).options(**sfOptions).option("dbtable", "new_table_name").mode("overwrite").save() job.commit()
 ```
 
-# Glue job の実行
+# Execute the Glue job
 
-Save ボタンを押してジョブを保存した後、Run ボタンを押すとジョブが実行されます。設定に問題なければ、ステータスが `Succeeded` でジョブが終了します。新しいテーブルが作成されているか確認してください。
+After you sabe the Glue job, you can run the job by pushing the Run button. If no issues with your configuration, the job will complete successfully with `Succeeded` status. Please check if the target table is created in the schema.
 
-# まとめ
+# Conclusion
 
-本記事では、SQL で実現できないデータ処理ロジックを実装する手段として Glue を紹介しました。
-* Glue で Private Link 経由で Snowflake プライベートエンドポイントに接続するには、VPC 設定をした Glue connection を作成する必要があります。
-* Snowflake JDBC URL は Glue connection で直接サポートしていないため、Glue connector から Connection を作成する方法を紹介しました。
+This article introducedd AWS Glue job for complex data processing solution.
 
-本記事が筆者と同じく Private Link ありで Snowflake を利用されている方の参考になれば幸いです。
+* If you connect from Glue job to Snowflake private endpoint using Private Link, you need to create a Glue connection with VPC configuration.
+* Glue connection does not directly support Snowflake JDBC URL so you need to create custom Glue connection from Glue connector.
