@@ -3,7 +3,7 @@ title: "Connecting Glue job to Snowflake Private Endpoint using Private Link"
 emoji: "❄️"
 type: "tech"
 topics: [snowflake,aws,glue,network,jdbc]
-published: false
+published: true
 ---
 
 # Backgroud
