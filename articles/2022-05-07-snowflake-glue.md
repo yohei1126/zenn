@@ -10,9 +10,9 @@ published: false
 
 When you want to transform data in Snowflake for your data analytics use case, you would usually implement data transfoamtion logic in SQL and create a view or table. On the other hand, if the logic is too complicated to implement in SQL, [Snowpark](https://docs.snowflake.com/en/developer-guide/snowpark/index.html), which is Snowflake version of Data Frame API, would comes in handy. Your data transformation logic in Data Frame will be transformoed into SQL then your data will be processed in Snowflake.
 
-However, only Snowpark Scala API is in generally available as of May 2022, [Snowpark Python API](https://www.snowflake.com/blog/https-www-snowflake-com-blog-snowday-python-comes-to-snowpark/) is still in Private Preview, which is not available in production system. As alternative solution of Snowpark Python API, [AWS Glue](https://aws.amazon.com/glue/), which is serverless Spark service in AWS, would be very useful.
+However, only Snowpark Scala API is in generally available as of May 2022, [Snowpark Python API](https://www.snowflake.com/blog/https-www-snowflake-com-blog-snowday-python-comes-to-snowpark/) is still in Private Preview, which is not available in production system. As an alternative solution of Snowpark Python API, [AWS Glue](https://aws.amazon.com/glue/), which is serverless Spark service in AWS, would be very useful.
 
-In this article, I will explain how to connect Glue job with Snowflake, especially via VPC enddpoint using [AWS Private Link](https://aws.amazon.com/privatelink/). AWS Private Link is widely used in large enterprises to connect VPCs in their own AWS accounts with 3rd party services in AWS. 
+In this article, I will explain how to connect Glue job with Snowflake, especially via VPC endpoint using [AWS Private Link](https://aws.amazon.com/privatelink/). AWS Private Link is widely used in large enterprises to connect VPCs in their own AWS accounts with 3rd party services in AWS. If you are using Private Link for your Snowflake account, your Glue job requires custom Glue connection with VPC configuration to connect with Snowflake private enddpoint.
 
 # Network configuration
 
@@ -21,16 +21,15 @@ Assume that you have network configuration as follows.
 ![network](https://storage.googleapis.com/zenn-user-upload/21bad28e2fdc-20220508.png)
 
 * Your Snowflake acount must be deployed in AWS.
-* VPCs in both AWS account are already connected by AWS Private Link. Please follow the below instruction for how to set up Private Link.
+* VPCs in both AWS accounts are already connected by AWS Private Link. Please follow the below instruction for how to set up Private Link.
   * https://docs.aws.amazon.com/vpc/latest/privatelink/endpoint-services-overview.html
   * https://docs.snowflake.com/en/user-guide/admin-security-privatelink.html
-* Your Glue job will be deployed in your AWS VPC then connect to your Snowflake account via VPC enddpoint using Private Link.
-  * Note that you need a Glue connection in a VPC when your target JDBC database is also in the VPC. https://docs.aws.amazon.com/glue/latest/dg/connection-JDBC-VPC.html
-* As far as I know, Glue connection does not support Snowflake JDBC URL directly. In this case, you need to create Glue connector first then create a Glue connection for Snwoflake JDBC URL from the connction. https://docs.aws.amazon.com/glue/latest/ug/connectors-chapter.html 
+* Your Glue job will be deployed in your AWS VPC then connect to your Snowflake account via VPC enddpoint using Private Link. Note that you need a Glue connection in a VPC when your target JDBC database is also in the VPC. https://docs.aws.amazon.com/glue/latest/dg/connection-JDBC-VPC.html
+* As far as I know, Glue connection does not support Snowflake JDBC URL directly. In this case, you need to create a Glue connector first then create a Glue connection for Snwoflake JDBC URL from the connction. https://docs.aws.amazon.com/glue/latest/ug/connectors-chapter.html 
 
 # Glue job Set up
 
-In this section, I will explain how to set up Glue job that connects to Snowflake private endpoint using Private Link.
+In this section, I will explain how to set up Glue job that can connect to Snowflake private endpoint using Private Link.
 
 ## Private Link must be set up in advance
 
@@ -173,7 +172,7 @@ df = spark.read.format(SNOWFLAKE_SOURCE_NAME).options(**sfOptions).option("dbtab
 df.write.format(SNOWFLAKE_SOURCE_NAME).options(**sfOptions).option("dbtable", "new_table_name").mode("overwrite").save() job.commit()
 ```
 
-# Execute the Glue job
+# Run the Glue job
 
 After you sabe the Glue job, you can run the job by pushing the Run button. If no issues with your configuration, the job will complete successfully with `Succeeded` status. Please check if the target table is created in the schema.
 
@@ -183,3 +182,5 @@ This article introducedd AWS Glue job for complex data processing solution.
 
 * If you connect from Glue job to Snowflake private endpoint using Private Link, you need to create a Glue connection with VPC configuration.
 * Glue connection does not directly support Snowflake JDBC URL so you need to create custom Glue connection from Glue connector.
+
+Hope this article for you to set up a Glue job for Snowflake private endpoint.
