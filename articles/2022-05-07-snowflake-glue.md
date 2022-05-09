@@ -20,12 +20,12 @@ Assume that you have network configuration as follows.
 
 ![network](https://storage.googleapis.com/zenn-user-upload/21bad28e2fdc-20220508.png)
 
-* Your Snowflake accsount must be deployed in AWS.
+* Your Snowflake account must be deployed in AWS.
 * VPCs in both AWS accounts are already connected by AWS Private Link. Please follow the below instruction for how to set up Private Link.
   * https://docs.aws.amazon.com/vpc/latest/privatelink/endpoint-services-overview.html
   * https://docs.snowflake.com/en/user-guide/admin-security-privatelink.html
 * Your Glue job will be deployed in your AWS VPC then connect to your Snowflake account via VPC endpoint using Private Link. Note that you need a Glue connection in a VPC when your target JDBC database is also in the VPC. https://docs.aws.amazon.com/glue/latest/dg/connection-JDBC-VPC.html
-* As far as I know, Glue connection does not support Snowflake JDBC URL directly. In this case, you need to create a Glue connector first then create a Glue connection for Snwoflake JDBC URL from the connction. https://docs.aws.amazon.com/glue/latest/ug/connectors-chapter.html 
+* As far as I know, Glue connection does not support Snowflake JDBC URL directly. In this case, you need to create a Glue connector first then create a Glue connection for Snowflake JDBC URL from the connection. https://docs.aws.amazon.com/glue/latest/ug/connectors-chapter.html 
 
 # Glue job Set up
 
@@ -56,7 +56,7 @@ https://docs.aws.amazon.com/glue/latest/ug/connectors-chapter.html?icmpid=docs_g
 * Connector type: JDBC 
 * Class name: `net.snowflake.client.jdbc.SnowflakeDriver`
 * JDBC URL base: `https://$account-id.$region-name.privatelink.snowflakecomputing.com:443/`
-  * `$account-id` and `$region-name` must be replaced with approprivate values.
+  * `$account-id` and `$region-name` must be replaced with appropriate values.
 * URL parameter delimiter: `&`
 
 ## Create a Glue connection
@@ -80,7 +80,7 @@ https://docs.aws.amazon.com/glue/latest/ug/connectors-chapter.html?icmpid=docs_g
 
 ## Download Snowflake JDBC/Spark Driver
 
-The following drivers (jar files) are required to connect to Snwofalke using JDBC and load data into Data Frame.
+The following drivers (jar files) are required to connect to Snowflake using JDBC and load data into Data Frame.
 
 * JDBC https://docs.snowflake.com/en/user-guide/jdbc-download.html
 * Spark https://docs.snowflake.com/en/user-guide/spark-connector-install.html
@@ -100,7 +100,7 @@ https://docs.aws.amazon.com/glue/latest/dg/add-job.html
   * Name: Glue job name
   * Description: (Optional)
   * IAM Role: Choose an IAM role for the Glue job
-    * Minimum requirement of the IAM rols is `AWSGlueServiceRole` and read access to the driver jar files on the s3 bucket.
+    * Minimum requirement of the IAM role is `AWSGlueServiceRole` and read access to the driver jar files on the s3 bucket.
     * If you need to access more AWS resources, please attach more IAM policy.
     * https://docs.aws.amazon.com/glue/latest/dg/using-identity-based-policies.html#access-policy-examples-aws-managed
   * Type: Spark
@@ -118,15 +118,15 @@ https://docs.aws.amazon.com/glue/latest/dg/add-job.html
   * Dependent JARs path:　S3 URLs for JDBC and dSpark drivers. You need to use `,` to specify more than 1 URL.s
   * e.g.`s3://mybucket/snowflake-jdbc-xxx.jar,s3://mybucket/snowflake-spark-xxx.jar`
 * Job parameters
-  * It wouldd be better to provide Snowflake connection parameters for better reusability. I will providde password as a parater this time but the password should be provide as a secret in Secret Manager.
+  * It would be better to provide Snowflake connection parameters for better reusability. I will provide password as a parameter this time but the password should be provide as a secret in Secret Manager.
   * URL: `https://$account-id.$region-name.privatelink.snowflakecomputing.com:443/`
     * `$account-id` and `$region-name` must be replaced with appropriate values. 
-  * ACCOUNT: Snowlake account name
+  * ACCOUNT: Snowflake account name
   * WAREHOUSE: Warehouse name
-  * DB: Dabase name
+  * DB: Database name
   * SCHEMA: Schema name
   * USERNAME: User name
-  * PASSWORD: Passwordd
+  * PASSWORD: Password
 * Script
   * Unlock the script editor and paste the following sample code.
   * `"table_name"` is a source table and `"new_table_name"` is a target table for the Glue job.
@@ -174,11 +174,11 @@ df.write.format(SNOWFLAKE_SOURCE_NAME).options(**sfOptions).option("dbtable", "n
 
 # Run the Glue job
 
-After you sabe the Glue job, you can run the job by pushing the Run button. If no issues with your configuration, the job will complete successfully with `Succeeded` status. Please check if the target table is created in the schema.
+After you save the Glue job, you can run the job by pushing the Run button. If no issues with your configuration, the job will complete successfully with `Succeeded` status. Please check if the target table is created in the schema.
 
 # Conclusion
 
-This article introducedd AWS Glue job for complex data processing solution.
+This article introduced AWS Glue job for complex data processing solution.
 
 * If you connect from Glue job to Snowflake private endpoint using Private Link, you need to create a Glue connection with VPC configuration.
 * Glue connection does not directly support Snowflake JDBC URL so you need to create custom Glue connection from Glue connector.
