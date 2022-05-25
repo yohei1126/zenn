@@ -8,7 +8,7 @@ published: true
 
 # 背景
 
-@Snowflake 社公式の Terraform プラグイン](https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs)は [Go Snowflake Driver](https://docs.snowflake.com/en/user-guide/go-driver.html) で実装されており、Terraform コマンドの認証にはドライバでサポートしている認証方式は全てサポートしています。
+[Snowflake 社公式の Terraform プラグイン](https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs)は [Go Snowflake Driver](https://docs.snowflake.com/en/user-guide/go-driver.html) で実装されており、Terraform コマンドの認証にはドライバでサポートしている認証方式は全てサポートしています。
 
 https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs#authentication
 
