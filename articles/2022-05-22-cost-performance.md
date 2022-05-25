@@ -50,9 +50,7 @@ $ openssl genrsa 2048 | openssl pkcs8 -topk8 -inform PEM -out rsa_key.p8
 
 しかし、このコマンドで生成した秘密鍵を利用すると Terraform コマンドを実行する際に以下のようなエラーが出てしまいます。
 
-```
-could not build dsn for snowflake connection: Private Key could not be parsed: Could not parse encrypted private key with passphrase, only ciphers aes-128-cbc, aes-128-gcm, aes-192-cbc, aes-192-gcm, aes-256-cbc, aes-256-gcm, and des-ede3-cbc are supported: pkcs8: only PBES2 supported
-```
+> could not build dsn for snowflake connection: Private Key could not be parsed: Could not parse encrypted private key with passphrase, only ciphers aes-128-cbc, aes-128-gcm, aes-192-cbc, aes-192-gcm, aes-256-cbc, aes-256-gcm, and des-ede3-cbc are supported: pkcs8: only PBES2 supported
 
 サポート対象の暗号を使って秘密鍵を生成するように推奨しています。
 
