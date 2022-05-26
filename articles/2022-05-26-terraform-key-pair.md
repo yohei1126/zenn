@@ -1,5 +1,5 @@
 ---
-title: "Encrypt private key in Key Pair authentication for Terraform provider for Snowflake"
+title: "How to use encrypted private key for Terraform plugin for Snowflake"
 emoji: "❄️"
 type: "tech"
 topics: [snowflake]
