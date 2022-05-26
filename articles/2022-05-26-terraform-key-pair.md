@@ -1,5 +1,5 @@
 ---
-title: "How to use encrypted private key in Terraform plugin for Snowflake"
+title: "How to use an encrypted private key in Terraform plugin for Snowflake"
 emoji: "❄️"
 type: "tech"
 topics: [snowflake]
