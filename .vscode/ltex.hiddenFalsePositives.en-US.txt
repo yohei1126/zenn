@@ -1,0 +1,1 @@
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QTerraform プラグインのドキュメントにある通り、Provider 設定の箇所に認証方式を指定する必要があります。\\E$"}
