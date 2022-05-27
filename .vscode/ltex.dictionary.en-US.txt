@@ -4,3 +4,4 @@ LibreSSL
 darwin
 Gitlab
 CICD
+SnowSQL

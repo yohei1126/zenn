@@ -89,31 +89,23 @@ ALTER USER terraform SET RSA_PUBLIC_KEY = """xxxxxx"""
 
 # Set the encrypted private key in Terraform provider configuration
 
-As mentioned in the document below, you need to set authentication method in Terraform provider configuration
+As mentioned in the document below, you need to set private key file path in Terraform provider configuration
 
 https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs#example-provider-configuration
 
-You can not provide passphrase for the private key as an environment variable. You only can set passphrase in Terraform provider configuration file. But if you hard code passphrase in configuration file, there is a risk you would expose the credential in Git repo. So you should define a variable for passphrase as follows.
-
 ```
-variable "PRIVATE_KEY_PASSPHRASE" {
-  type        = string
-  description = "Private key passphrase"
-}
-
 provider "snowflake" {
   username = "terraform"
   account  = "xxx"
   private_key_path       = "./rsa_key.p8"
-  private_key_passphrase = var.PRIVATE_KEY_PASSPHRASE
   role                   = "xxxx"
 }
 ```
 
-You can provide value for the variable in CLI. Most of all major CICD service such as GitHub Actions, Gitlab CI/CD, AWS Code Build support secure way to store credential. You can use it to store passphrase securely in CICD pipeline.
+You can provide passphrase as an environment variable as below. Most of all major CICD service such as GitHub Actions, Gitlab CI/CD, AWS Code Build support secure way to store credential. You can use it to store passphrase securely in CICD pipeline.
 
 ```
-TF_VAR_PRIVATE_KEY_PASSPHRASE=xxxx terraform plan --out out.tfplan
+SNOWFLAKE_PRIVATE_KEY_PASSPHRASE=xxxx terraform plan --out out.tfplan
 ```
 
 # Summary
@@ -121,7 +113,7 @@ TF_VAR_PRIVATE_KEY_PASSPHRASE=xxxx terraform plan --out out.tfplan
 I explained how to use encrypted private key in key pair authentication for Terraform driver for Snowflake in this article.
 
 * Security requirement for private key is becoming more strict. You should use security configuration recommended in Cloud Service or tool you are using.
-* You can not provide passphrase for private key to Terraform driver as an environment variable 
-* You can provide passphrase as a Terraform Variable instead.
+* You need to provide passphrase to decrypt your encrypted private key
+* You can provide passphrase as environment Variable.
 
 I hope this article would help DevOps engineers who use Snowflake :)

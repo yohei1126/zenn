@@ -90,39 +90,37 @@ ALTER USER terraform SET RSA_PUBLIC_KEY = """xxxxxx"""
 
 # Terraform ファイルの provider 設定に秘密鍵を設定する
 
-Terraform プラグインのドキュメントにある通り、Provider 設定の箇所に認証方式を指定する必要があります。
+Terraform プラグインのドキュメントにある通り、Provider 設定の箇所に秘密鍵のパスを指定する必要があります。
 
 https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs#example-provider-configuration
 
-ドキュメントによるとパスフレーズは環境変数として与えることができず、文字列として設定ファイル中に指定する必要があります。パスフレーズを設定ファイルにハードコードすると認証情報が Git リポジトリを通じて流出してしまう可能性があるので、以下のようにパスフレーズ用の variable を定義し、その variable を provider で指定します。
-
 ```
-variable "PRIVATE_KEY_PASSPHRASE" {
-  type        = string
-  description = "Private key passphrase"
-}
-
 provider "snowflake" {
   username = "terraform"
   account  = "xxx"
   private_key_path       = "./rsa_key.p8"
-  private_key_passphrase = var.PRIVATE_KEY_PASSPHRASE
   role                   = "xxxx"
 }
 ```
 
-variable はコマンドラインで以下のように指定できます。コマンドラインで指定するパスフレーズは CI/CD パイプラインに保存する必要がありますが、多くのサービス (Github Actions, Gitlab CI/CD, AWS Codde Buildなど) が秘密情報をセキュアに保管する方法を提供しているため、それを使うと良いでしょう。
+本記事では秘密鍵はパスフレーズを使って暗号化されているため、認証の際にはパスフレーズを指定する必要があります。以下のようにドキュメントに記載の通り、パスフレーズは環境変数で指定できます。これは SnowSQL やその他の Snowflake クライアントと同じです。
+
+> If your private key requires a passphrase, then this can be supplied via the environment variable SNOWFLAKE_PRIVATE_KEY_PASSPHRASE.
+
+Terraform コマンドを実行する際は、以下のように環境変数としてパスフレーズを指定してください。
 
 ```
-TF_VAR_PRIVATE_KEY_PASSPHRASE=xxxx terraform plan --out out.tfplan
+SNOWFLAKE_PRIVATE_KEY_PASSPHRASE=xxxx terraform plan --out out.tfplan
 ```
+
+なお、パスフレーズは秘密情報ですので、CICD サービスでデプロイを自動化する際は秘密情報を安全に保管できるサービスを利用しましょう。
 
 # まとめ
 
 本記事では、Snowflake の Terraform プラグインを利用する際に暗号化済みキーペア認証を利用する手順について紹介しましt。
 
 * 秘密鍵の暗号化の要件が厳しくなっています。ドキュメントで解説されている通り、ツールで推奨されている暗号を使いましょう。
-* Terraform を実行する際にパスフレーズを環境変数で渡すことができません。
-* パスフレーズは Terraform の Variable として実行時に渡し、provider 設定には Variable のパスフレーズを利用するように記述しましょう。
+* 秘密鍵を暗号化した場合は、Terraform を実行する際にパスフレーズを渡す必要があります。
+* パスフレーズは Terraform の環境変数 として実行時に渡すことができます。
 
 本件が Snowflake を利用されている DevOps エンジニアの方の参考になれば幸いです。
