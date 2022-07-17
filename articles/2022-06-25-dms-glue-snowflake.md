@@ -1,7 +1,7 @@
 ---
 title: "AWS DMS と Glue を利用したコスト最適なオンプレから Snowflake への DB マイグレーション"
 emoji: "❄️"
-type: "tech
+type: "tech"
 topics: [snowflake,aws,dms,glue,db]
 published: false
 ---
