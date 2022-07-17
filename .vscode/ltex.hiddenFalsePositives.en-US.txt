@@ -1,1 +1,3 @@
 {"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QTerraform プラグインのドキュメントにある通り、Provider 設定の箇所に認証方式を指定する必要があります。\\E$"}
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\Q以前、AWS RDS のデータベース上の変更をニアリアルタイムで Snowflake に反映させたいという社内からの依頼を受け、AWS DMS と Snowpipe を使ってデータパイプラインを構築しました。\\E$"}
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\Q以前、AWS RDS のデータベース上の変更をニアリアルタイムで Snowflake に反映させたいという社内からの依頼を受け、AWS DMS と Snowpipe を使ってデータパイプラインを構築しました。DMS は CDC (Change Data Capture) に対応し、データのマイグレーション先としてS3を指定できるため、データベース上の変更を一定時間以内に S3 バケット上に抽出することができました。\\E$"}
