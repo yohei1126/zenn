@@ -6,6 +6,10 @@ topics: [snowflake,aws,dms,glue,db]
 published: true
 ---
 
+![Snowflake](https://storage.googleapis.com/zenn-user-upload/uo9gtabf5bsfbcs5cievdqfjw0lh)
+
+(画像は [Snowflake 公式 Web サイト](https://www.snowflake.com/)のものを流用)
+
 # 本記事の概要
 
 本記事では、以下の2つのアプローチを組み合わせ、AWS 上で OLTP 系 DB （PostgreSQL や MySQL）から Snowflake へデータを移行する際のコストを最適化した事例について紹介します。
