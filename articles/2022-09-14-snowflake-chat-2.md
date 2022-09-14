@@ -16,8 +16,6 @@ published: true
 
 ## Native App Framework
 
-https://www.youtube.com/watch?v=f_z0M6a30UA
-
 * 先日、Snowvillage でも Native App Framework を紹介してくださった truestar の方が Native App Framework を紹介してくれました。
 * これは App Store 経由でアプリケーションを配布することで、利用者がデータを第3社に出さずに自社のデータを操作するアプリを利用できると言うものだそうです。
 * 私の所属の金融業界だと、業界特有のデータ分析処理をソフトウェアベンダーが配布する、私のような事業会社は開発コストをかけずにアプリを利用できる、ような形態を想定できました。
