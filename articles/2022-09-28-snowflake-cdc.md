@@ -1,5 +1,5 @@
 ---
-title: "ETL ツールで高頻度で Snowflake Table に書き込むときは Warehouose コストに気をつけよう"
+title: "ETL ツールで高頻度で Snowflake Table に書き込むときは Warehouse コストに気をつけよう"
 emoji: "❄️"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [snowflake]
