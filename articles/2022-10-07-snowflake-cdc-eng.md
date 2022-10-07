@@ -1,5 +1,5 @@
 ---
-title: "Why Snowpipe is so cheap but user managed warehouse is exxpensive for high frequent data loading to Snowflake table?"
+title: "Why high frequent data loading to Snowflake table is expensive?"
 emoji: "❄️"
 type: "tech"
 topics: [snowflake]
