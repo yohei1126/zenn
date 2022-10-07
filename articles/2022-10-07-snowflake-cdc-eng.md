@@ -6,18 +6,15 @@ topics: [snowflake]
 published: false
 ---
 
-# 記事の背景
-
-以前、RDBのデータベースを Snowflake にレプリケーションする際に AWS DMS と Snowpipe を使うアプローチを紹介しました。
-https://zenn.dev/yohei/articles/2021-04-24-snowflake-dms-rds
+# Background
 
 ![DMS snowpipe](https://storage.googleapis.com/zenn-user-upload/3ab8b4ca834d-20220928.png)
 
-このアプローチは以下の理由により、AWS を使っている場合はよく思いつくアプローチです。
+AWS DMS and Snowpipe would be very popular tool when you replicate data from on-premise or AWS RDS database to Snowflake table for the following reasons.
 
-* DMS は AWS 公式のデータベースマイグレーションサービス。
-* DMS は公式に Snowflake をサポートしていないが、転送先として S3 を選択できる。
-* S3 に入ったファイルは Snowpipe で吸い上げできる。
+* AWS DMS (Data Migration Service) is AWS's official database migration service.
+* AWS DMS does not support Snowflake but can export data to S3 bucket.
+* Once new file is upload in S3 bucket, Snowpipe can load the file to target Snowflake table immediately.
 
 ただし、このアプローチをとった場合、Snowpipe でロードした先のテーブルにはデータソース側のテーブルの全履歴が残ります。
 データ分析をやる上では、全履歴ではなく主キーごとに最新のレコードが知りたいので、Snowflake 側で Stream と Task などを用いて、履歴からデータソース側のテーブルの最新状態を再現する必要があります（以下の図の上側のパイプライン）。
