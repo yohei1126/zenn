@@ -59,4 +59,4 @@ In that case, you can change the following configurations if you prefer minimum 
 
 # Summary
 
-In this article, I have explained Snowflake warehouse pricing model, especially for the case where you use external ETL tool such as AWS DMS or Fivetran. Depending on your use case and budge for infra cost, you need to understand the pricing model and change configurations of your warehouose to optimize your warehouse workload and computing cost.
+In this article, I have explained Snowflake warehouse pricing model, especially for the case where you use external ETL tool such as AWS DMS or Fivetran. Depending on your use case and budge for infra cost, you need to understand the pricing model and change configurations of your warehouse to optimize your warehouse workload and computing cost.
