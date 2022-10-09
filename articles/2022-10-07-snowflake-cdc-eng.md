@@ -48,15 +48,15 @@ https://docs.snowflake.com/en/user-guide/warehouses-considerations.html
 
 # How can we do to reduce warehouse cost?
 
-Snowflake のウェアハウスコストは、データ量ではなく、ウェアハウスのサイズ * 起動してる総時間で決まる点は、先ほど説明しました。
+As already explained, Snowflake warehouse cost is calculated based on warehouse size * a number of warehouses * duration of warehouse running.
 
-この価格モデルだと少量のデータを処理するのは非常に効率が悪いので、本当にリアルタイムである必要があるのかよくよく考えて、更新頻度は下げた方が良いと思います（日次、毎時など）。その上で一気にデータを書き込み、終わったらウェアハウスを停止するのが良いでしょう。
+In this pricing model, high frequent small data loading is not cost-efficient. So it would be better to think if you really need it and the cost is acceptable. If not, you should decrease frequency of data loading such as hourly, daily, etc. and load larger amount of data at a time and stop the warehouse.
 
-その際、以下は設定を変えられるので、コスト優先の場合は変えてもいいでしょう。ただし、あまりクラスタを起動させず、かつすぐにクラスタを停止させる設定にすると、性能は落ちるのでジョブのレイテンシは上がると思います。その点も検討に入れておくと良いでしょう。
+In that case, you can change the following configurations if you prefer minimum cost approach. Note that warehouse cache is cleared once when a warehouse is restarted. There is some latency to restart a warehouse, so there are some risk that latency of your queries would increase. 
 
-* スケールポリシーをエコノミーにする・・・なるべく新しいクラスタを立ち上げないようにする
-* 自動停止待ち時間を短くする
+* Set economy to scaling policy: Snowflake will try not to start new warehouse
+* Make auto suspend time shorter than the default value (10 minutes)
 
-# おわりに
+# Summary
 
-今回は、ETL ツールを使った場合のウェアハウスコストについて注意点を紹介しました。コスト最適化は日常的にやってるので、また気付いた知見あれば紹介します。
+In this article, I have explained Snowflake warehouse pricing model, especially for the case where you use external ETL tool such as AWS DMS or Fivetran. 
