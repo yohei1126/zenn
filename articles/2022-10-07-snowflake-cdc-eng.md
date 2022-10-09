@@ -29,28 +29,24 @@ This issue would also happen when you use ETL service like Fivetran. It is not a
 # Why warehouse cost for high frequent data loading was expensive?
 
 * (1) DMS and Snowpipe
-* (2) Dorect table sync by DB migration tool
+* (2) Direct table sync by DB migration tool
 
-If you compare how warehouse is used in these 2 approaches, you would notice that (1) Snowpie approach uses Snowflake managed warehouse, which automatically optimize computing resources used in your workload and computing cost. This can reduce warehouse cost. See below URL for more abuot Snowpipe cost.
+If you compare how warehouse is used in these 2 approaches, you would notice that (1) Snowpipe approach uses Snowflake managed warehouse, which automatically optimize computing resources used in your workload and computing cost. This can reduce warehouse cost. See below URL for more about Snowpipe cost.
 
 https://docs.snowflake.com/en/user-guide/data-load-snowpipe-billing.html
 
-一方で、(2) の方は、ユーザ管理のウェアハウスをマイグレツールのユーザに割り当てることになるため、ツールがテーブルに書き込む際にユーザ管理のウェアハウスを起動することになります。
+On the other hand, (2) direct table sync by DB migration tool uses a user managed warehouse. In our project, default configurations for the warehouse was like follows. If the tool loads data frequently such as every minute, it would keep the warehouse running. Snowflake also start new warehouse when new data comes in before the auto suspend time has passed.
 
-このツールのウェアハウスは以下の設定になっていたため、高頻度（例えば、毎分）で書き込みを行うと、ウェアハウスが起動しっぱなしになっていました。また、自動停止待ち時間が過ぎるまでに次の書き込みが来ると、スケールポリシーにより、新しいクラスタが起動されていることもありました。
+* Multi cluster warehouse 
+* Default scaling policy: Snowflake tries to keep latency minimum by starting a new warehouse
+* Default auto suspend time: 10 minutes
 
-* マルチクラスターウェアハウス・・・クラスタの数が複数
-* スケールポリシーはデフォルト・・・キューの待ち時間を最小にするため、なるべく新しいクラスタを立ち上げようとする
-* 自動停止待ち時間が15分
-
-Snowflake のウェアハウスコストは、データ量ではなく、ウェアハウスのサイズ * 起動してる総時間で決まります。よってデータ量が少量であっても、より多くのウェアハウスがより長く走ってしまうと、ウェアハウスコストがかさんでしまいます。
-
-ウェアハウスのコスト計算の仕組みは以下が参考になるので、参照ください。
+Snowflake warehouse cost is calculated based on warehouse size * a number of warehouses * duration of warehouse running instead of data volume. Even if data volume is small, warehouse cost would increase if more warehouses runs in longer time. See the below URLs for more about warehouse cost.
 
 https://docs.snowflake.com/en/user-guide/credits.html
 https://docs.snowflake.com/en/user-guide/warehouses-considerations.html
 
-# では ETL のウェアハウスコストを下げるにはどうしたら？
+# How can we do to reduce warehouse cost?
 
 Snowflake のウェアハウスコストは、データ量ではなく、ウェアハウスのサイズ * 起動してる総時間で決まる点は、先ほど説明しました。
 
