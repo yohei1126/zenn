@@ -1,5 +1,5 @@
 ---
-title: "Why high frequent data loading to Snowflake table is expensive?"
+title: "Why high frequent data loading is expensive in Snowflake?"
 emoji: "❄️"
 type: "tech"
 topics: [snowflake]
@@ -10,29 +10,28 @@ published: false
 
 ![DMS snowpipe](https://storage.googleapis.com/zenn-user-upload/3ab8b4ca834d-20220928.png)
 
-AWS DMS and Snowpipe would be very popular tool when you replicate data from on-premise or AWS RDS database to Snowflake table for the following reasons.
+AWS DMS and Snowpipe would be one of the most popular tools when you replicate data from on-premise database or AWS RDS database to Snowflake table in near real time because of the following reasons.
 
 * AWS DMS (Data Migration Service) is AWS's official database migration service.
 * AWS DMS does not support Snowflake but can export data to S3 bucket.
 * Once new file is upload in S3 bucket, Snowpipe can load the file to target Snowflake table immediately.
 
-ただし、このアプローチをとった場合、Snowpipe でロードした先のテーブルにはデータソース側のテーブルの全履歴が残ります。
-データ分析をやる上では、全履歴ではなく主キーごとに最新のレコードが知りたいので、Snowflake 側で Stream と Task などを用いて、履歴からデータソース側のテーブルの最新状態を再現する必要があります（以下の図の上側のパイプライン）。
+If you choose this approach, you will load entire transaction history of the source table to target table. You would also want to know the latest records for each primary key or unique key instead of entire history. Then you need to maintain the latest records in another table using Stream and task just like the upper pipeline in the following diagram.
 
 ![CDC](https://storage.googleapis.com/zenn-user-upload/4493c01e43a7-20221007.png)
 
-Snowipe は比較的安価なのでコスト効率が高いアプローチですが、単に同期したいだけなのに履歴を移行して、さらに元のテーブルを再現する必要がある点は開発効率が悪いとも思えます。
+This is cost-efficient approach as compute cost for Snowpipe is quite cheap, but you might feel you do not want to implement Stream and task just to replicate data.
 
-データソース側の DB に付属したマイグレーションツールがたまたま Snowflake をサポートしていることに気付いたので、上の図の下側のパイプラインのように、直接、Snowflake に同期した方が良いと考え、PoCをやってみたところ、実はウェアハウスコストが予想より格段に高くなることに気付いたので、調査して今回の記事にしました。
+Some RDBMS also provides database migration tool that can directly sync source table to target table in Snowflake just like the lower pipeline in the above diagram. This can reduce development cost compared with DMS and Snowpipe approach, so I tried this in my project, but it turns out that warehouse cost for this type of high frequent data loading is quite expensive.
 
-なお、下側のアプローチは、Fivetran など ETL の SaaS を使った場合でも起こりうる問題なので、特定の DB やツールの問題ではありません。
+This issue would also happen when you use ETL service like Fivetran. It is not an issue on specific tool. I will explain why high frequent data loading is expensive in this article.
 
-# なぜ高頻度で書き込むとウェアハウス代が高くなったか？
+# Why warehouse cost for high frequent data loading was expensive?
 
-* (1) DMS と Snowpipe
-* (2) DB のマイグレツールで直接同期
+* (1) DMS and Snowpipe
+* (2) Dorect table sync by DB migration tool
 
-のウェアハウスの使われ方の違いを比較すると、(1) の方は Snowpipe を使っており、Snowflake 内部で管理されているウェアハウスが利用され、勝手にコスト最適になるように調整されていたため、非常にインフラコストが安くなっていました。Snowpipe のコスト面は以下のドキュメントを参照ください。
+If you compare how warehouse is used in these 2 approaches, you would notice that (1) Snowpie approach uses Snowflake managed warehouse, which automatically optimize computing resources used in your workload and computing cost. This can reduce warehouse cost. See below URL for more abuot Snowpipe cost.
 
 https://docs.snowflake.com/en/user-guide/data-load-snowpipe-billing.html
 
