@@ -8,19 +8,17 @@ published: true
 
 # 背景
 
-AWS にはオープンソースの Python ベースなワークフローオーケストレーションツールである Airflow マネージサービス Amazon Managed Workflows for Apache Airflow (MWAA) が提供されています。
+AWS には Python ベースのオープンソースワークフローオーケストレーションツールである Apache Airflow のマネージサービス Amazon Managed Workflows for Apache Airflow (以下、MWAA) が提供されています。
 
 https://docs.aws.amazon.com/mwaa/latest/userguide/what-is-mwaa.html
 
-MWAA では、Airflow　のクラスタ（AWS では環境と呼ばれている）を作成する際に、クラスタのサイズとして以下を選択するように求められます。
+MWAA では、環境（Airflow　のクラスタのこと）を作成する際に、環境のサイズを決めるため、以下のパラメタ値を設定するように求められます。
 
-* 環境クラス
-* スケジューラの数
-* ワーカの数
+* 環境クラス - `mw1.small`、`mw1.medium`、`mw1.large`
+* ワーカ数（最大数、最小数）
+* スケジューラ数
 
-これらのパラメタはユーザが利用したい Airflow クラスタのパフォーマンスやコストを最適化したい場合に、最初に調整を検討するパラメタであり、非常に重要です。
-
-しかし、適切なパラメタ値を選択するためには、MWAA 環境どのような仕組みがで動いているかを理解する必要があります。本記事では、MWAA の内部アーキテクチャの仕組み、各パラメタの意味や調整する際の観点などを説明します。
+これらのパラメタはユーザが利用したい Airflow クラスタのパフォーマンスやコストを最適化する上で非常に重要です。しかし、適切なパラメタ値を選択するためには、MWAA 環境がどのような仕組みがで動いているかを理解する必要があります。本記事では、MWAA の内部アーキテクチャの仕組み、各パラメタの意味や調整する際の観点などを説明します。
 
 https://docs.aws.amazon.com/mwaa/latest/userguide/create-environment.html
 
@@ -62,9 +60,9 @@ Customer VPC 側には、Airflow Schedulers と Airflow Workers が AWS ECS Task
 
 こちらにはメタデータベース （RDS） と Web サーバが配置されます。メタデータベースは Airflow を実行する上で必要なメタデータが格納され、 Web サーバは利用者が Airflow を管理・利用する際の UI を提供します。
 
-# 環境クラスとは
+# 環境クラス
 
-MWAA の内部アーキテクチャは以上の通りです。ここでクラスタサイズを決める上でのパラメタである環境クラスに話を戻します。
+MWAA の内部アーキテクチャは以上の通りです。ここでクラスタサイズを決める上でのパラメタの 1 つ目である環境クラスに話を戻します。
 
 https://docs.aws.amazon.com/mwaa/latest/userguide/environment-class.html
 
@@ -74,12 +72,91 @@ MWAA ドキュメントでは、環境クラスについて以下の通り説明
 
 *（訳）あなたが選択した Amazon MWAA 環境の環境クラスが Celery Executor が実行される AWS マネージド AWS Fargate コンテナ、 Apache Airflow スケジューラがタスクインスタンスを作成する AWS マネージド Amazon Aurora PostgreSQL メタデータベースのサイズを決定します。*
 
-また MWAA のドキュメントによると MWAA のコンソールで環境を変更する際の以下のような画面が登場します。つまり、環境クラスとは MWAA 上のワークロード負荷度合いに応じた適切なキャパシティのことを指します。環境クラスを変更すると、スケジューラ・ワーカ・ Web サーバの ECS Task に割り当てされる vCPU も変更され、その分、処理できる DAG の量も変わります。 
+また MWAA のドキュメントによると MWAA のコンソールで環境を変更する際の以下のような画面が登場します。
 
-なお、画面中に **under typical usage* と注釈されているように MWAA 環境にどの程度負荷がかかるかは、DAG の処理内容やスケジュールの仕方によって大きく変わります。よってここにある DAG の数はあくまで目安としてお考えください。例えば、以下の 2 つでは負荷のかかり方が全く違います。
+![MWAA 環境クラス](https://storage.googleapis.com/zenn-user-upload/ad0c315c56fd-20221023.png)
+
+つまり、環境クラスとは MWAA 上のワークロード負荷度合いに応じた適切なキャパシティのことを指します。環境クラスを 1 つ 上げる度に、スケジューラ・ワーカ・ Web サーバの ECS Task に割り当てされる vCPU や RAM のサイズが 2 倍になり、その分、処理できる並列タスク の量も 2 倍になります。
+
+* `mw1.small`
+  * 対応 DAG 数は 50 まで
+  * デフォルトで 5 個の並列タスク 
+  * 1 vCPUs
+  * 2 GB RAM
+* `mw1.medium`
+  * 対応 DAG 数は 250 まで
+  * デフォルトで 10 個の並列タスク 
+  * 2 vCPUs
+  * 4 GB RAM
+* `mw1.large`
+  * 対応 DAG 数は 1000 まで
+  * デフォルトで 20 個の並列タスク
+  * 4 vCPUs
+  * 8 GB RAM
+
+なお、画面中に **under typical usage* と注釈されているように MWAA 環境にどの程度負荷がかかるかは、 DAG の処理内容やスケジュールの仕方によって大きく変わります。よってここにある DAG の数はあくまで目安としてお考えください。例えば、以下の 2 つでは負荷のかかり方が全く違います。
 
 * 100 DAG が 1 日 1 回一斉に起動して、30分後に止まる。
 * 5 DAG が 1 時間に 1 回一斉に起動し、30分後に止まる。
 
-![MWAA 環境クラス](https://storage.googleapis.com/zenn-user-upload/ad0c315c56fd-20221023.png)
+# ワーカ数（最大数、最小数）
 
+次にクラスタサイズを決める上でのパラメタの 2 つ目であるワーカ数に話を戻します。
+
+上記ですでに説明しているように、 MWAA で使われている Celery Executor では、ジョブキューに溜まっているタスクの数に応じて、ワーカの数を増減させることで、パフォーマンスとコストを最適化します。
+
+MWAA のコンソールでは、ワーカの最小数と最大数を設定できます。最初の状態では、実際のワーカ数は設定したワーカの最小数と同じですが、タスクが増えていくにつれ、負荷状況に応じてスケジューラがワーカの最大値までワーカを増やしていきます。
+
+この時、必要となるワーカ数は以下のドキュメントで示されている通り、(必要なワーカ数) = (実行中のタスク数 + 待機中のタスク数) / (ワーカあたりのタスク数) で決まります。ここで **ワーカあたりのタスク数** は、先ほど説明した通り、環境クラスによって数値が異なります。
+
+> Amazon MWAA uses RunningTasks and QueuedTasks metrics, where (tasks running + tasks queued) / (tasks per worker) = (required workers). If the required number of workers is greater than the current number of workers, Amazon MWAA will add Fargate worker containers to that value, up to the maximum value specified by max-workers.
+https://docs.aws.amazon.com/mwaa/latest/userguide/mwaa-autoscaling.html#mwaa-autoscaling-how
+
+なお、実際のワーカ数は MWAA コンソールで設定したワーカ最大数を超えることはできません。CloudWatch メトリクスで (実行中のタスク数 + 待機中のタスク数) を監視しながら、コストやパフォーマンスを考慮しつつ、適切な値に調整しておくと良いでしょう。
+
+# スケジューラ数
+
+最後にクラスタサイズを決める上でのパラメタの 3 つ目であるスケジューラ数に話を戻します。
+
+このスケジューラのパフォーマンスは様々なファクターによって影響を受けるため、パフォーマンスの要因の分析が非常に難しい分野です。
+
+Apache Airflow のドキュメントによると、以下がスケジューラのパフォーマンスに影響を当てる要因です。
+
+https://airflow.apache.org/docs/apache-airflow/2.2.2/concepts/scheduler.html#fine-tuning-your-scheduler-performance
+
+* デプロイの種類
+ * DAG を共有するためのファイルシステムの種類（これは DAG ソースコードの読み取りに影響を与える）
+ * ファイルシステムの処理速度（クラウドファイルシステムの多くのケースにおいて余計に費用を払うと高速化できる）
+ * CPU の処理能力
+ * ネットワークスループット
+* DAG 構造のロジックと定義
+ * DAG ファイル数
+ * DAG の数
+ * DAG ファイルの大きさ（DAG パーサは n 秒に1回 DAG ファイルを解析する必要がある点に注意）
+ * DAG ファイルの複雑さ (DAG ファイルの解析速度、タスクの数や依存関係)
+ * DAG ファイルがライブラリを多数ロードしてるか、[トップレベル](https://airflow.apache.org/docs/apache-airflow/2.2.2/best-practices.html#top-level-python-code)で重い処理をしてないか
+* スケジューラの設定
+ * スケジューラの数
+ * スケジューラ上で走る DAG パース処理の数
+ * 同じ DAG ファイルを再読み込みする際の待ち時間
+ * 1 回のループでスケジューラは何個のタスクを処理するか
+ * 1 回のループで何個の DAG を作成し、スケジュールする
+ * どの程度の頻度でスケジューラがタスクのクリーニング処理を行うか
+
+スケジューラは、ループの中で繰り返し、DAG ファイルを読み込む、DAG 構造を解釈する、タスクをスケジューリングする、タスクの実行状況を監視するという処理を継続的に行なっています。
+ 
+スケジューラ単体の能力は、上記で設定した環境クラスごとに決められた ECS タスクのサイズによって決まります。またスケジューラの数は MWAA コンソールで設定した数で決まります。スケジューラは、ワーカと異なり、オートスケールは対応しておらず、最小値、最大値は設定できません。
+
+Cloud Watch のメトリクスを見ながら、DAG ソースコードの読み取り (TotalParseTime) に時間がかかっている場合は、使っていない DAG ファイルは削除する、DAG や タスクの依存関係をシンプルにする、DAG ソースコードを簡潔にする、などの改善をしましょう。
+
+https://docs.aws.amazon.com/mwaa/latest/userguide/access-metrics-cw-202.html
+
+モニタリングの結果、スケジューラのパフォーマンスが過剰あるいは不足しているが、環境クラスを変更するほどではないと判断した場合は、スケジューラの数を調整しましょう。
+
+# 最後に
+
+本記事では、MWAA での Airflow クラスタを利用する際に利用状況に応じて適切なクラスタサイズに調整する際の観点などを紹介しました。これらの観点を理解する上では、MWAA の内部アーキテクチャを理解する必要があります。
+
+ただし、MWAA のクラスタは AWS によって管理されており、直接は中を覗き見ることができません。もし、Airflow のクラスタについてもう少し詳しく知りたいと思った方は、 OSS 版のコンテナを Docker Compose で動かしてみましょう。MWAA と同一の構成ではありませんが、Redis コンテナを使った Celery Executor の仕組みをローカルで体験できますので、より内部の仕組みを深く理解できると思います。
+
+https://airflow.apache.org/docs/apache-airflow/2.2.0/start/docker.html
