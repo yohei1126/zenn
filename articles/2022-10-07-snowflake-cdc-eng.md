@@ -3,7 +3,7 @@ title: "Why high frequent data loading becomes expensive in Snowflake?"
 emoji: ":airflow:"
 type: "tech"
 topics: [snowflake]
-published: flase
+published: true
 ---
 
 # Background
