@@ -6,6 +6,8 @@ topics: [snowflake,sql]
 published: false
 ---
 
+本記事は、[Snowflake Advent Calendar 2022](https://qiita.com/advent-calendar/2022/snowflake) の1日目です。
+
 # 記事の背景
 
 Snowflake のドキュメントには、クライアント種類ごとに Recommended Version （推奨バージョン）と Minimum Version （最小バージョン）の両方が掲載されています。この Minimum Version とはサポート対象のうち、最も古いバージョンです。これより古いとサポート対象外になるため、セキュリティや接続性の問題が発生する可能性があるため、速やかに推奨バージョンにアップグレードする必要があります。
