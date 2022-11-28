@@ -19,6 +19,6 @@
   "homepage": "https://github.com/yohei1126/zenn#readme",
   "dependencies": {
     "agentkeepalive": "^4.1.4",
-    "zenn-cli": "^0.1.131"
+    "zenn-cli": "^0.1.132"
   }
 }
