@@ -3,10 +3,10 @@ title: "Snowflake でサポート対象外のバージョンでアクセスし�
 emoji: "❄️"
 type: "tech"
 topics: [snowflake,sql]
-published: false
+published: true
 ---
 
-本記事は、[Snowflake Advent Calendar 2022](https://qiita.com/advent-calendar/2022/snowflake) の1日目です。
+本記事は、[Snowflake Advent Calendar 2022](https://qiita.com/advent-calendar/2022/snowflake) の 1 日目です。
 
 # 記事の背景
 
@@ -22,20 +22,24 @@ https://docs.snowflake.com/en/release-notes/requirements.html
 
 問題になるのは、ETL ジョブなど各種アプリケーションが Snowflake にアクセスするケースです。この場合、各ジョブの実行環境に Snowflake クライアントがインストールされ、ジョブを実行することになりますが、一度インストールしたクライアントをそのまま使い続ける場合が多いと思います。最初は最新を使っていたものの数年経った時には、クライアントバージョンが最小バージョンよりも古くなってしまいます。
 
-Snowflake クライアントのセキュリティや接続性の問題を防止するため、Snowflake 管理者はクライアントがどのバージョンを使っているのか監視する必要があります。
-古すぎるクライアントバージョンを使っているユーザを見つけたら、クライアントバージョンをアップグレードするように促すことができます。
+Snowflake クライアントのセキュリティや接続性の問題を防止するため、Snowflake 管理者はクライアントがどのバージョンを使っているのか監視する必要があります。古すぎるクライアントバージョンを使っているユーザを見つけたら、クライアントバージョンをアップグレードするように促すことができます。
 
 なお、ドキュメントによると、最小バージョンより古いバージョンを使っているとすぐに接続を拒否されるわけではないようです。接続する拒否する場合は、事前に警告があるようです。
 
 > Client versions that are below the minimum supported version may be blocked from connecting to Snowflake. Note that Snowflake will provide advanced notification before blocking access for a particular client version.
 
-# 最小バージョンより古いクライアントを使っているユーザを見つける
+# 要件
+
+* まず接続したユーザのクライアントバージョンを知る必要があります。これは login_history view で分かります。 https://docs.snowflake.com/en/sql-reference/account-usage/login_history.html
+* 次にクライアントの種類ごとに推奨バージョン・最小バージョンを確認する必要があります。これはSQLで取得する方法がないようなので、サポートペーを見て目視確認が必要です。
+* login_history view の `reported_client_version` カラムがクライアントのバージョンですので、これでバージョンの比較に利用できます。
+
+# クエリ実装
 
 ここから本題です。このクライアントバージョンの監視を以下のクエリで実現しました。
 
-* まず接続したユーザのクライアントバージョンは、login_history view で分かります。 https://docs.snowflake.com/en/sql-reference/account-usage/login_history.html
-* Web ページでクライアントの種類ごとに推奨バージョン・最小バージョンを確認して自分で入力する必要があります。 `reported_client_version` がクライアントのバージョンですので、Web ページで確認したバージョンと比較しています。
-* ただ、単純にバージョン番号の文字列をそのまま比較すると期待する結果にはならないため、バージョン番号を数値に変換する関数を利用しています。この関数はメジャーバージョンを100の位、マイナーバージョンを10の位、バグフィックスバージョンを 1 の位に対応づけています。
+* 単純にバージョン番号の文字列をそのまま比較すると期待する結果にはなりません。例えば、`SELECT '1.2.23' < '1.2.9';` だとバージョン番号としては、`1.2.23` の方が大きい（最新）だと判定したいところですが、文字列比較アルゴリズムにより `1.2.9` の方が大きい（最新）と判断してしまいます。
+* そこでバージョン番号を数値に変換する関数を利用しています。この関数はメジャーバージョンを100の位、マイナーバージョンを10の位、バグフィックスバージョンを 1 の位に対応づけています。
 * `event_timestamp` はユーザがログインした時刻です。ログイン履歴を確認したい時刻に変更してください。
 
 ```
