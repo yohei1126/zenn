@@ -40,6 +40,7 @@ https://zenn.dev/yohei/articles/2020-12-28-snowflake-terraform
 # CICD パイプラインのアーキテクチャ
 
 実際に構築した CICD パイプラインのアーキテクチャは以下の通りです。
+
 （注）筆者の企業では、Gitlab や ECR といった様々なプロジェクトで利用されるツール・サービス群は、 CCOE (Cloud Center of Excellence) チームが管理しており、Data Engineering Team で管理する Airflow や ECS クラスタとは別の AWS アカウントで管理されています。
 
 1. dbt モデルのソースコードは Gitlab で管理している。新規の変更は Gitlab リポジトリにマージするs。
