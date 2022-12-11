@@ -5,3 +5,4 @@ darwin
 Gitlab
 CICD
 SnowSQL
+dbt
