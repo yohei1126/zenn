@@ -1,5 +1,5 @@
 ---
-title: "Scheduled dbt model deloyment for Snowflake using AWS ECS and Airflow"
+title: "Scheduled dbt model deployment for Snowflake using AWS ECS and Airflow"
 emoji: "🚀"
 type: "tech"
 topics: [dbt,snowflake,dbt,airflow,aws]
