@@ -43,7 +43,7 @@ https://zenn.dev/yohei/articles/2020-12-28-snowflake-terraform
 
 （注）筆者の企業では、Gitlab や ECR といった様々なプロジェクトで利用されるツール・サービス群は、 CCOE (Cloud Center of Excellence) チームが管理しており、Data Engineering Team で管理する Airflow や ECS クラスタとは別の AWS アカウントで管理されています。
 
-1. dbt モデルのソースコードは Gitlab で管理している。新規の変更は Gitlab リポジトリにマージするs。
+1. dbt モデルのソースコードは Gitlab で管理している。新規の変更は Gitlab リポジトリにマージする。
 2. 1 回きりのデプロイで良いモデルについては、マージした瞬間に起動する CICD パイプラインで dbt コマンドを実行し、デプロイする。
 3. 同時に dbt モデルのソースコードを追加したコンテナイメージをビルドし、ECR に push しておく。
 4. Airflow DAG を起動させて、dbt モデルを実行する AWS ECS Fargate コンテナを起動する。なお、事前に ECS クラスタおよびタスク定義を作成しておく必要あり。
