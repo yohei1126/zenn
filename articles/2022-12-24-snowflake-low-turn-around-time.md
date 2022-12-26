@@ -1,5 +1,5 @@
 ---
-title: "応答時間要求が厳しいユースケースで Snowflake を使ってはいけない（今のところは）"
+title: "応答時間要求が厳しいユースケースで Snowflake を直接使ってはいけない（今のところは）"
 emoji: "❄️"
 type: "tech"
 topics: [snowflake]
