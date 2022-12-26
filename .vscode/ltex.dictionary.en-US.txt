@@ -6,3 +6,4 @@ Gitlab
 CICD
 SnowSQL
 dbt
+OLAP
