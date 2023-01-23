@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: [snowflake,snowpark,docker,devops,cicd]
 published: true
+publication_name: "dataheroes"
 ---
 
 本記事は、[Snowflake Advent Calendar 2021](https://adventar.org/calendars/6220) の2日目です。

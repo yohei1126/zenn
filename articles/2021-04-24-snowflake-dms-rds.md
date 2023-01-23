@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: [aws,snowflake,rds,datawarehouse,データウェアハウス]
 published: true
+publication_name: "dataheroes"
 ---
 
 ![Snowflake](https://storage.googleapis.com/zenn-user-upload/uo9gtabf5bsfbcs5cievdqfjw0lh)

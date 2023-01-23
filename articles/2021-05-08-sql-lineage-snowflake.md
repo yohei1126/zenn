@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: [python,sql,snowflake,visualization]
 published: true
+publication_name: "dataheroes"
 ---
 
 # 本記事の背景

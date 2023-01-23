@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: [snowflake,aws,privatelink,network,security]
 published: true
+publication_name: "dataheroes"
 ---
 
 # 記事の背景

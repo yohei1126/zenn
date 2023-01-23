@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: [snowflake,aws,glue,network,jdbc]
 published: true
+publication_name: "dataheroes"
 ---
 
 # Background

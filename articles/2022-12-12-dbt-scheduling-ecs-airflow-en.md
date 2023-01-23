@@ -4,6 +4,7 @@ emoji: "🚀"
 type: "tech"
 topics: [dbt,snowflake,dbt,airflow,aws]
 published: true
+publication_name: "dataheroes"
 ---
 
 In my project, I introduced Terraform for Snowflake configuration management and deployment 2 years ago. I initially tried to deploy almost everything, but I have decided to use popular data transformation tool called dbt core (OSS version of dbt) for data object deployment such as table and view due to the following reasons.

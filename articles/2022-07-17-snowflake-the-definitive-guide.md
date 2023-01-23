@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: [snowflake,book]
 published: true
+publication_name: "dataheroes"
 ---
 
 本記事は、2022 年 9 月に O'Reilly Media 社より出版予定の "Snowflake: The Definitive Guide: Architecting, Designing, and Deploying on the Snowflake Data Cloud" の読書メモです。各章を読み次第、メモを追記していきます。

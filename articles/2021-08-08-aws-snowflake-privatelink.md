@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [aws,network,vpn,snowflake]
 published: true
+publication_name: "dataheroes"
 ---
 
 # 変更記録

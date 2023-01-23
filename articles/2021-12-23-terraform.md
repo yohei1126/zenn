@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: [snowflake,devops,terraform]
 published: true
+publication_name: "dataheroes"
 ---
 
 本記事は、[Snowflake Advent Calendar 2021](https://adventar.org/calendars/6220) の 25 日目です。

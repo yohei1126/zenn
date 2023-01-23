@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: [snowflake]
 published: true
+publication_name: "dataheroes"
 ---
 
 本日、2022年9月14日、Twitter Space 上で Snowflake ユーザ向けの雑談会第2回をやりました。

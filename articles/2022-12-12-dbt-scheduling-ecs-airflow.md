@@ -4,6 +4,7 @@ emoji: "🚀"
 type: "tech"
 topics: [dbt,snowflake,dbt,airflow,aws]
 published: true
+publication_name: "dataheroes"
 ---
 
 本記事は、[Snowflake Advent Calendar 2022 その 2](https://qiita.com/advent-calendar/2022/snowflake) の 3日目の記事です。

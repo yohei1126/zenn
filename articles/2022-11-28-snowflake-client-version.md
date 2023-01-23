@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: [snowflake,sql]
 published: true
+publication_name: "dataheroes"
 ---
 
 本記事は、[Snowflake Advent Calendar 2022](https://qiita.com/advent-calendar/2022/snowflake) の 1 日目です。
