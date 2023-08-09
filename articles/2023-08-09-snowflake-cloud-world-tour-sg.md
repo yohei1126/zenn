@@ -68,14 +68,14 @@ https://docs.snowflake.com/en/developer-guide/snowpark-ml/index
 
 * OSS LLM
 * 商用 LLM
-* Snowflake　特有な LLM
+* Snowflake 独自の LLM
 
 ここで、商用 LLM は、外部のベンダーが Native App Framework を用いて構築した LLM であり、ユーザは Marketplace で購入し、自社のアカウントにデプロイできます。プロダクトマネジャーによると、制限された環境内でアプリを動かせるため、
 * 自社のデータへのアクセスを制限できるため、機密データに不正アクセスされるリスクがない。
 * LLM ベンダー側も知的財産への不正アクセスを防止できるので、知的財産の流出を防ぐことができる。
 といったメリットがあります。
 
-Snowflake　特有な LLM については、Snowflake 社で構築された LLM が Snowflake 上にデプロイされており、 Document AI といった形で、ユーザはモデルを構築せず、 ML Powered Functions　として即座に利用できます。
+Snowflake 独自の LLM については、Snowflake 社で構築された LLM が Snowflake 上にデプロイされており、 Document AI といった形で、ユーザはモデルを構築せず、 ML Powered Functions　として即座に利用できます。
 
 https://www.snowflake.com/blog/generative-ai-llms-summit-2023/
 
