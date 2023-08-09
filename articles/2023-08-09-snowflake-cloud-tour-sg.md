@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: [snowflake]
 published: true
+publication_name: "dataheroes"
 ---
 
 2023 年 8 月 3 日にシンガポールで開催された Snowflake Cloud World Tour Singapore に参加しましたので、その際に見聞きしたことについて特に自分が気になった点について紹介します。
