@@ -1,5 +1,5 @@
 ---
-title: "Snowflake Cloud World Tour Singapore に参加した"
+title: "Snowflake Data Cloud World Tour Singapore に参加した"
 emoji: "❄️"
 type: "tech"
 topics: [snowflake]
@@ -7,16 +7,16 @@ published: true
 publication_name: "dataheroes"
 ---
 
-2023 年 8 月 3 日にシンガポールで開催された Snowflake Cloud World Tour Singapore に参加しましたので、その際に見聞きしたことについて特に自分が気になった点について紹介します。
+2023 年 8 月 3 日にシンガポールで開催された Snowflake Data Cloud World Tour Singapore に参加しましたので、その際に見聞きしたことについて特に自分が気になった点について紹介します。
 
-# Snowflake Cloud World Tour イベント概要について 
+# Snowflake Data Cloud World Tour イベント概要について 
 
-Snowflake Cloud World Tour は、年に 1 回開催される Snowflake Summit の後に世界各地で開催されるローカルイベントであり、 US 本社の Product Manager がサミットで発表された内容を紹介したり、ローカルのユーザの取り組みを紹介したり、 Data Hero アワードの表彰を行ったりする目的で開催されるイベントです。
+Snowflake Data Cloud World Tour は、年に 1 回開催される Snowflake Summit の後に世界各地で開催されるローカルイベントであり、 US 本社の Product Manager がサミットで発表された内容を紹介したり、ローカルのユーザの取り組みを紹介したり、 Data Hero アワードの表彰を行ったりする目的で開催されるイベントです。
 
 https://www.snowflake.com/events/data-cloud-world-tour-singapore/
 https://www.snowflake.com/summit/save-the-date/
 
-Snowflake Cloud World Tour はコロナ期間中は開催されていなかったようです。昨年は自分の記憶が正しければ開催されておらず、 Data Hero Award の授賞式も比較的小規模に開催されましたが、今年は Snowflake Cloud World Tour が大々的に開催され、アワード授賞式もキーノート後に盛大に開催され、イベントも正常化されて良かったなと思います。
+Snowflake Data Cloud World Tour はコロナ期間中は開催されていなかったようです。昨年は自分の記憶が正しければ開催されておらず、 Data Hero Award の授賞式も比較的小規模に開催されました。今年は Snowflake Data Cloud World Tour が大々的に開催され、アワード授賞式もキーノート後に盛大に開催され、イベントも正常化されて良かったなと思います。
 
 また、以前から開催されている Data for Breakfast イベントに比べて、広いコンベンションセンターを利用しており、以前のイベントより多くのパートナーがブースを設置しており、各種ソリューションの説明を受けることができました。
 
