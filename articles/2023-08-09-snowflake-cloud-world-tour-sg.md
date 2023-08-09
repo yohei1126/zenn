@@ -1,5 +1,5 @@
 ---
-title: "Snowflake Cloud World Tour Singapore　に参加した"
+title: "Snowflake Cloud World Tour Singapore に参加した"
 emoji: "❄️"
 type: "tech"
 topics: [snowflake]
