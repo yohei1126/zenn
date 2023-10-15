@@ -1,5 +1,5 @@
 ---
-title: "Snowflake における、これまでの DevOps の取り組みと現状の課題についてまとめてみた"
+title: "Snowflake 向けの DevOps の取り組みと現状の課題についてまとめてみた"
 emoji: "❄️"
 type: "tech"
 topics: [snowflake,devops]
