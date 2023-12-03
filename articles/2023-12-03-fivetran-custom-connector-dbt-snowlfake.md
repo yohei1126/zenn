@@ -5,7 +5,7 @@ type: "tech"
 topics: [aws,gcp,snowflake,dbt,bigquersy]
 published: true
 publication_name: "dataheroes"
-----
+---
 
 # 記事の背景
 
