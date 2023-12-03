@@ -14,3 +14,4 @@ https://juhache.substack.com/p/a-paradigm-shift-to-more-affordable
 https://juhache.substack.com/p/the-hidden-side-of-iceberg
 https://juhache.substack.com/p/multi-engine-data-stack-v0
 https://juhache.substack.com/p/vs
+https://github.com/hachej/multi-engine-data-stack
