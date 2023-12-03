@@ -1,5 +1,5 @@
 ---
-title: "FaaS を使った Fivetran カスタムコネクタの開発"
+title: "Function as a Service を使った Fivetran カスタムコネクタの開発"
 emoji: "❄️"
 type: "tech"
 topics: [aws,gcp,snowflake,dbt,bigquersy]
@@ -27,7 +27,7 @@ https://fivetran.com/docs/transformations/dbt
 
 https://fivetran.com/docs/functions
 
-Fivetran のカスタムコネクタは、正式名称は Functions と呼ばれており、その名の通り、AWS Lambda/Azure Functions/Google Cloud Functions といった各クラウドプロバイダーの Function as a Service を使って未対応のデータソースに接続できます。
+Fivetran のカスタムコネクタは、正式名称は Functions と呼ばれており、その名の通り、 AWS Lambda/Azure Functions/Google Cloud Functions といった各クラウドプロバイダーの Function as a Service を使って未対応のデータソースに接続できます。
 
 アーキテクチャは以下の通りで、 Fivetran が HTTPS リクエストで Function を起動し、 Function はデータソースに接続し、データを取得した後、 HTTPS レスポンスを Fivetran に返答します。 Fivetran は受け取ったデータを転送先に同期します。
 
