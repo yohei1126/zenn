@@ -7,6 +7,8 @@ published: true
 publication_name: "dataheroes"
 ---
 
+本記事は [Snowflake Advent Calendar 2023](https://qiita.com/advent-calendar/2023/snowflake) Series 1 の ２ 日目の記事です。
+
 # 記事の背景
 
 筆者の所属では、数年前に ELT サービスの [Fivetran](https://www.fivetran.com/) が導入され、本番環境ですでに長期間にわたってデータソースからデータウェアハウスにデータを投入するパイプラインが稼働しています。
