@@ -3,7 +3,7 @@ title: "Airflow を使ったFivetran Sync ジョブのスケジューリング"
 emoji: "😎"
 type: "tech"
 topics: [fivetran,airflow]
-published: false
+published: true
 ---
 
 # 背景
