@@ -3,7 +3,7 @@ title: "Data Contractの概要"
 emoji: "📌"
 type: "tech"
 topics: [data,observability]
-published: false
+published: true
 ---
 
 業務で Data Contract に類似する概念の必要性を感じたため、調査した際のメモを本記事で公開します。
