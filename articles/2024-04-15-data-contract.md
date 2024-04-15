@@ -6,7 +6,7 @@ topics: [data,contract]
 published: true
 ---
 
-業務で Data Contract に類似する概念の必要性を感じたため、調査した際のメモを本記事で公開します。
+某コミュニティにて Data Contract に関して議論する際に書き下したメモを本記事で公開します。本業でも特にデータプロダクトをビジネスに共有する際に Data Contract に類似する概念の必然性を感じています。
 
 # 概要
 
