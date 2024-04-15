@@ -6,6 +6,8 @@ topics: [data,observability]
 published: true
 ---
 
+本記事は、某コミュニティで Data Observability について議論するために書き下したメモです。もし Data Observability について議論されたい方は気軽にコメントください。
+
 # 概要
 
 Data Observability を直訳するとデータの可観測性。あくまでデータを観測できるようにする技術分野であって、　Data Observability すなわち、データ品質ではない。
