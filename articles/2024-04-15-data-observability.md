@@ -1,111 +1,128 @@
 ---
-title: "Data Contractの概要"
-emoji: "📌"
+title: "Data Observability の概要"
+emoji: "🙆"
 type: "tech"
 topics: [data,observability]
 published: true
 ---
 
-業務で Data Contract に類似する概念の必要性を感じたため、調査した際のメモを本記事で公開します。
-
 # 概要
 
-Data Contract (データコントラクト)は、オーナーシップがはっきりしたデータ送付側とデータ受領側の2つの間でデータをやり取りする際に交わされる契約。 データ送付側が、データを送付する際に満たすべき要件を記述したもの。記述にはデータスキーマ、品質要件、などが含まれる。Data Contractを満たさないデータは送付できなくする。
+Data Observability を直訳するとデータの可観測性。あくまでデータを観測できるようにする技術分野であって、　Data Observability すなわち、データ品質ではない。
 
-以下は、Pay PalのData Contractの例をオープンソース化したもの。実際のData Contractがどういうものか参考になる。あくまでData Contractの内容をスキーマとして表現したものであり、データ品質検証を行うバックエンド部分はOSS化されていない。
+本来の意味合いは、外部から観測可能な出力を使って、複雑なシステムの内部状態や振る舞いを観測可能にすること。それにより、対象システム（あるいはデータ）をより理解できるようにする。よく理解できるようにした結果、データの品質やパフォーマンスの最適化などの取り組みを楽にできる場合がある。ただし、ツールやサービスを入れると自動的に実現できるわけではない。
 
-https://github.com/bitol-io/open-data-contract-standard
+# 語源は制御工学分野の Observability
 
-https://github.com/bitol-io/open-data-contract-standard/blob/main/docs/README.md
+https://en.wikipedia.org/wiki/Observability
 
-PayPal のOSSがLinux Foundationに寄贈され、それをベースにしたOpen Data Contract Standardという標準化が行われている。プロジェクト名はBitol。オープン標準を訴えるブログ記事が出たのが2023年末、ODCSを紹介する記事が出たのが2024年1月。2025年あたり標準に準拠したプロダクトが出始める可能性あり。
+元々は制御工学分野の用語。外部から観測可能な出力からシステムの内部状態を観測可能にすること。制御工学は機械、ロボットなど複雑なシステムを制御するための工学分野、理論。
 
-https://bitol.io/
+# ソフトウェア業界の Observability
 
-Open Data Contract Standard　Getting started with ODCS 
+https://www.elastic.co/what-is/observability
 
-https://medium.com/abeadata/why-the-need-for-standardizing-data-contracts-133bc3491148
+ソフトウェア業界での Observability は、主に Microservices など分散システムに対する手法を指す。目的としては語源と同じく、外部から観測可能な出力からシステムの内部状態を観測可能にすること。
 
-# 類似の概念
+分散システムの場合、外部から観測可能な出力の種類は、ログ・メトリクス・トレースの3つ。これらの3つのデータを利用して、分析を行うことで、分散システムの複雑な振る舞いが理解できるようになり、結果的に、システム障害の調査やパフォーマンス最適化などに利用できる。
 
-Data Contractと類似の概念として、ビジネスの現場でよく見るものとして以下がある。
+![](https://storage.googleapis.com/zenn-user-upload/465de4fc7836-20240415.png)
 
-* 請負開発の契約書・・・何を持って受け入れとするか、品質要件など細かく決めるはず。
-* SLA・・・サービスの提供元と提供先の間で交わされるサービスの品質に関する合意事項。可用性を99.99%にするなど。
+(画像引用元 https://devopscube.com/what-is-observability/)
 
-また、すでに技術の世界で実績があるものとして以下がある。
+例えば、ログ・トレース・メトリクスを組み合わせて、ユーザがリクエストを送ってきた時に各サービスがどう連携しあってリスクエストを処理したのか、各処理でどれくらいの時間がかかったか、どういうエラーや警告が出てたか可視化できる。
 
-* KafkaのSchema Registry・・・ ProducerがKafkaにメッセージを投げ込む際のスキーマを事前に登録しておく。Producerはメッセージを投げる際にSchema Registryでスキーマを確認して、スキーマ違反だと送信できない。バージョン管理機能がある。品質要件はない。
+![](https://storage.googleapis.com/zenn-user-upload/beb540a2c875-20240415.png)
 
-https://docs.confluent.io/platform/current/schema-registry/index.html
+(画像引用元 https://devopscube.com/what-is-observability/)
 
-# （先に結論）Data Contractに取り組む際の留意事項
+なお、ソフトウェア業界で、最初にObservabilityの概念を導入した元祖は2013年に発表されたTwitterの記事。
 
-詳細は後述するが、Data Contractそのものより、順番としては、データ品質の問題意識、データのオーナーシップ (= データプロダクト）、それを担保する組織体制を関係者で合意する方が重要。
+https://blog.x.com/engineering/en_us/a/2013/observability-at-twitter
 
-もしビジネス上重要なドメインで、データ品質上の課題がある場合は、その文脈に沿った形で、課題意識と組織体制を議論することを優先した方が議論がスムーズになる。Data Contractという概念が世間に存在するという話は、体制が固まった後に、手段の話をする際に参考になる概念の1つとして紹介するくらいがちょうど良い。
+Google を中心に SRE（ソフトウェアエンジニアリングで運用を効率化する手法）が発達し、業界に浸透する中で、Observability も普及していった。
 
-Data Contractまたはそれに類似する概念を簡易的に実装する際は、最初の一歩としては、Data Contractのスキーマ定義をチームで決めたり、dbtのパッケージやGreat Expectationsのような既存のデータ品質チェックフレームワークで実装するのがちょうど良い。
+https://sre.google/sre-book/table-of-contents/
 
-以下はdbtの機能としてData Contractの類似の概念を実装したもの。model contractと呼ばれている。dbtの世界で実践する場合は、既存の機能を使うと良い。
+# Data Observability
 
-https://docs.getdbt.com/docs/collaborate/govern/model-contracts
+分散システムの Observability をデータパイプラインに適用したのが Data Observability 。考案者は、 Data Observability 業界で有名な SaaS の Monte Carlo の CEO 。
 
-https://atlan.com/dbt-data-contracts/?ref=/data-contracts/
+https://www.montecarlodata.com/blog-what-is-data-observability/
 
-https://towardsdatascience.com/how-to-scale-your-data-pipelines-and-data-products-with-dbt-and-contract-testing-10c92ea9a443
+Data Observability は、データの品質もしくはパイプラインの問題によって、正常なデータが得られないことで経済的損失を被っている時間 = Data Downtime に対処する方法論として誕生した。
 
-一方で、Data Contractを一定の規模で実践するには、
+Data Observability において、外部から観測できるデータとして Monte Carlo の場合は、以下を利用する。
 
-* データ提供元に契約を強制する仕組み
-* データプロダクトの契約準拠状況をSLAのような形で利用者に提示すること
+* データの鮮度・・・テーブルが正しい時間で更新されているか
+* データの量・・・レコード数が多すぎたり、少なすぎたりしないか
+* データの分散・・・値は正常な範囲か？
+* スキーマ・・・データスキーマは変わっていないか？
+* リネージ・・・アップストリームとダウンストリームにおいて、データ資産がどのようにつながっているのか？
 
-が重要になる。Data Contractの考え方が浸透した暁には、このような仕組みを検討しても良いかもしれない。 
+![](https://storage.googleapis.com/zenn-user-upload/92caee3688f7-20240415.png)
 
-# Data Contractが登場してきた背景
+(画像引用元 https://www.montecarlodata.com/blog-what-is-data-observability/)
 
-Data Contractという概念を提唱したのは、欧州の決済系サービス[GoCardless](https://gocardless.com/)のPrincipal EngineerであるAndrew Jones氏。[考案者のブログ](https://andrew-jones.com/blog/data-contracts/)では、データプラットフォームでのCDC（Change Data Capture）を例に重要性が紹介されている。CDCでは、OLTP DB上の変更をOLAP DBに転送し、データ変換し、モデリングし、分析用途で利用する。一方で、データそのものは、分析用途とは無関係に設計されたものであり、スキーマ変更やマイグレーションなど、ダウンストリームの用途から見ると破壊的変更が行われることがある。この破壊的変更がダウンストリームのパイプライン、レポート、ダッシュボードなどを破壊する可能性がある。
+主なユースケースはデータ品質（正確性、完全性、一貫性、一意性、整合性、適時性、有効性）の監視。継続的にデータ品質メトリクスを取得し、普段のデータの特徴を機械学習アルゴリズムで学習する。これによりハズレ値を見つけることで、異常を検知する。
 
-基本的な考えとしては、データの提供元と受領先で契約を明確に結んでおき、それをバージョン管理しておき、両者で合意しておく。データを提供する前に契約への準拠を確認することで、データ提供先への破壊的変更を防ぐ。
+https://www.montecarlodata.com/use-cases/data-quality-monitoring-testing/
 
-CDCを例に挙げたのは、バッチの場合、冪等性が担保されていれば、データ品質を直して再実行して問題を解消できる可能性があるためと考えられる。CDCなど連続的にデータが流れてくる場合、冪等性の担保や再実行が非常に困難であり、粗悪な品質のデータを堰き止める仕組みが重要となるため。
+# 主な Data Observability ツールのメリット
 
-# Data Contractの前提
+既存のパイプラインにシームレスに結合し、変更コストが小さい。
 
-Data Contractを導入する際には一定の前提が存在すると考えられる。
+機械学習などのアルゴリズムを使って自動的に問題を見つける。
 
-データ品質に対する課題意識が組織内で共有されており、データやその品質のオーナーシップを取る方法が合意形成がされており、組織体制に反映されていることが重要。Data Contractそのものを実際にどう実装するかは、チーム内で既存のツールを使って適度な落とし所を決めることができる。
+データテストとの違い
+* データテストは主にデータの取り込みから、データ変換のあたりまで対応する。Data Observabilityはend to endで監視できる。
+* データテストは導入に時間がかかる。また、カバレッジを上げるのは困難。また予測できる問題にしか使えない。Data Observabilityは、導入が簡単で、広範囲に適用し、予想できない問題を見つけるのに使う。
 
-データ提供元とデータ提供先でオーナーシップがあり、受け入れの要件を合意できる。また、データが実際に受け入れ要件を満たしているか継続的に監視できる体制が存在する。
+予測できない問題の例
+* ダッシュボードやレポートが長期間更新されていなかったが、誰も気づかなかった。利用者から指摘されて、調査したところ問題に気づいた。
+* ちょっとしたスキーマやコードの変更で、データの取り込みが止まってしまった、本来は5万件なのに50万件登録された、など。
+* データテストは大昔作られたが、ビジネスロジックの変更が反映されていなかった。
 
-ELTパイプラインの場合、データ取り込み箇所向けにData Contractを実装する組織が存在する。サードパーティのデータで、データ提供元と直接、契約を結ぶのが難しい場合は、DDDの腐敗防止レイヤーのように生データとデータ活用のレイヤーの間にレイヤーを設け、一定のデータ品質を確保したデータだけ利用できるようにする。
+モニタリングとの違い
+* 多くのデータチームがデータパイプラインをモニタリングしており、パイプラインが異常な状態になった時にアラートを設定するようにしている。
+* パイプラインが正常に動作していても、データ品質が異常になるケースはある。
 
-データメッシュアーキテクチャの場合、ビジネスドメインごとにオーなシップがはっきりしており、サービスやデータプロダクトの境界のところで、Data Contractを実装する組織が存在する。
+# Data Observability　ツールやサービスの例
 
-データプロダクトがData Contractに準拠しているかどうかは、データプロダクトのSLAの一部であり、データのオーナシップおよび品質の責任所在がはっきりしないと、このアプローチはそもそも成立しない。これができない場合、ダウンストリームで問題になった箇所を必ずしもビジネスドメインやデータの知識がないデータエンジニアが対症療法的にData Contractのようなものをベストエフォートで実装する構造になるが、機能しないものとなる可能性が高い。
+## Monte Carlo
 
-Data ContractのスキーマをOSS化したPay Palは、Data Meshのアーキテクチャを採用しており、 各ビジネスドメインごとにデータプロダクトにオーナシップを持ったチームが存在する。データをプロダクトとして使いやすく、信頼性のあるものとして整備する責務を負う。
+https://www.montecarlodata.com/
 
-https://medium.com/paypal-tech/the-next-generation-of-data-platforms-is-the-data-mesh-b7df4b825522
+* SaaSのみ
+* 利用企業
+  * メルカリ　https://www.montecarlodata.com/blog-mercari-data-reliability-engineering/
 
-# 一般的な企業のデータ品質の対応状況
+## Elementary 
 
-Data Contractを導入しているケースはあまり公開されていない。
+* OSSおよびSaaS
+  * OSSの場合、自社のSnowflakeアカウントに閉じた形で利用できるため、導入しやすい。
+  * 何らかの理由でSaaSに移行したい場合も移行しやすい仕組みになっている。
+* 利用企業
+  * CARTA Holdings (peiさん) - https://speakerdeck.com/pei0804/centralized-to-dataops-transformation?slide=46
+  * 10x (小売チェーン向けECプラットフォーム「Stailer」の運営) https://speakerdeck.com/10xinc/elementarywoyong-itadetapin-zhi-noke-shi-hua-todetaji-pan-noyun-yong-gai-shan
 
-一般的な企業で多い状況としては、何がしかのトランザクション系システム、もしくはサードパーティのシステムがオペレーションを行った結果をそのままELTパイプラインでDWHに取り込んでいき、取り込んだ後でデータ利用者がデータ品質の検証やデータのクレンジングを行う。
+# Elementary の概要
 
-データの提供元は、データ品質に責任を負っていない、利用状況に関心がない、利用されていることをよく知らないケースも多い。
+## 仕組み
+dbtに設定を入れると、dbt コマンドを実行するたびにメタデータをSnowflake内のデータベースに溜め込んでくれる。
+OSSの場合は、自社のSnowflakeアカウントで完結する。SaaSの場合は、elementaryのデータベースへの参照権をelementary cloudに渡す。
+自社データは晒さない仕組みなので、まずはOSSで始めて、しばらく運用してみて、SaaSとの比較で良さそうならSaaSに移行もあり。
 
-データの利用者は、ビジネスの重要な要件に実際にデータを活用する必要があるため、様々な方法でデータの品質に対処する。
+## 機能
 
-データ品質の可視化・・・事前に問題が予見できるものに対するテストとしてdbt testなど。事前に予見できない問題の検出としてData Observarbility。
-
-下流での要件に使いやすい形でデータを整形し、品質を担保した形でエンタープライズデータモデルを整備する。
-
-データの提供と活用までの流れが都市鉱山（スマホなど廃棄された家電）からレアメタルなど価値のあるものを抽出して利益を上げるビジネスのような状況。
-
-データを活用する側にデータエンジニアリングの能力がないため、中央集権的なデータエンジニアリングチームにデータ品質問題に対処するように依頼することが多い。一方で、中央のチームはデータ提供元ドメインの状況を知らないので、品質問題が発生する原因やメカニズムを知ることができない。あくまで対症療法的に処理するだけで、根本的な問題解決は時間がかかるし、難しい。
-
-# 最後に
-
-今回は Data Contact の概要や登場の背景について紹介しました。次回、機会あれば実際に利用する上で必要な事項について記事にしたいと思います。
+* 10x 吉田さん資料を参照。 [Elementaryを用いたデータ品質の可視化とデータ基盤の運用改善 ](https://speakerdeck.com/10xinc/elementarywoyong-itadetapin-zhi-noke-shi-hua-todetaji-pan-noyun-yong-gai-shan)
+  * dbt test をデータ品質メトリクスにマッピングして、データ品質を可視化
+  * データ品質の集計結果はダッシュボードで確認できる [Data Observability Dashboard - Elementary ](https://docs.elementary-data.com/features/data-observability-dashboard)
+* Anomaly Detection https://docs.elementary-data.com/data-tests/introduction#anomaly-detection-tests
+  * データ量・鮮度・次元・コラムの異常などを時系列データ分析アルゴリズムで検出
+  * https://docs.elementary-data.com/data-tests/how-anomaly-detection-works 
+* スキーマのテスト https://docs.elementary-data.com/data-tests/schema-tests/schema-changes
+  * スキーマ変更を検出できる
+* Data Observability Dashboard https://docs.elementary-data.com/features/data-observability-dashboard
+* End to end data lineage https://docs.elementary-data.com/features/lineage
+* OSS vs Cloud Elementary: Community vs Cloud - Elementary https://docs.elementary-data.com/overview/cloud-vs-oss
