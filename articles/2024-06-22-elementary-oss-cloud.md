@@ -54,6 +54,14 @@ https://docs.elementary-data.com/overview/cloud-vs-oss
 * Multiple environments and data warehouses - 複数 dbt プロジェクト、複数データウェハウスに対応できる
 * CI - Pull request で dbt モデルの異常を検査する。まだベータ版。
 
+# デメリット
+
+クラウドデータウェアハウス上の dbt に特化しており、また、データ品質異常の検知手段も、 dbt data test　もしくは Elementary 独自の異常検知のみ。それで対応できないような問題がある場合は、 Elementary では対処不能なケースも。
+
+Elementary はまだスタートアップのため、事業撤退によりサービス停止のリスクがある。その場合、 OSS 版の開発も止まる可能性がある。
+
+https://www.crunchbase.com/organization/elementary-data 
+
 # おわりに
 
 本記事では、 dbt 特化型 Data Observability ツール の Elementary OSS 版と Cloud 版の比較を行いました。
