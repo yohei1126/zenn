@@ -2,8 +2,8 @@
 title: "dbt 特化型 Data Observerbility ツール の Elementary OSS 版と Cloud 版の比較"
 emoji: "🦁"
 type: "tech"
-topics: [dbt,elementary,snowlfake]
-published: false
+topics: [dbt,elementary,snowlfake,bigquery]
+published: true
 publication_name: "dataheroes"
 ---
 
