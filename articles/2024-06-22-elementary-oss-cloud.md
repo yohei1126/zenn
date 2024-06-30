@@ -47,8 +47,8 @@ Elementary のドキュメントは無料で利用できる機能とクラウド
 
 https://docs.elementary-data.com/overview/cloud-vs-oss
 
-* Automated freshness, volume and schema monitors - クラウド版の場合、 Snowflake account usage や BigQuery Information Schema を自動的に検査して異常を見つけてくれる。
-* Monitored data sets – all tables (not only for dbt) - Snowflake account usage や BigQuery Information Schema を自動的に検査して異常を見つけてくれるので、 dbt models 以外も対応可能。
+* Automated freshness, volume and schema monitors - クラウド版の場合、 Snowflake account usage や BigQuery Information Schema を自動的に検査して異常を見つけてくれる。OSS 版の場合、自分で dbt 設定に追記が必要。
+* Monitored data sets – all tables (not only for dbt) - OSS 版の場合、 dbt model のみモニタリングできるが、クラウド版の場合、 Snowflake account usage や BigQuery Information Schema を自動的に検査して異常を見つけてくれる。 dbt models 以外も対応可能。
 * Column-level lineage
 * Lineage to BI tools - BI と API 連携する。どのテーブルが BI ダッシュボードで使われているかを確認して、データリネージ上に表示してくれる。ドキュメントで BI へのリネージ例を確認できる。　https://docs.elementary-data.com/features/exposures-lineage
 * Multiple environments and data warehouses - 複数 dbt プロジェクト、複数データウェハウスに対応できる
