@@ -13,7 +13,7 @@ publication_name: "dataheroes"
 
 https://zenn.dev/yohei/articles/2024-04-15-data-observability
 
-本業で部分的に Elementary OSS 版を部分的に評価中であり、その先のクラウド版との違いについても調査してみようとなりました。
+本業で部分的に Elementary OSS 版を部分的に評価中であり、その先のクラウド版との違いについても簡単に調査してみようとなりました。
 
 # Elementary の概要
 
