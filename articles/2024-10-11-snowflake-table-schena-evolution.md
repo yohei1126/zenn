@@ -3,7 +3,7 @@ title: "Table schema evolutionを使った Snowflake テーブルへのカラム
 emoji: "❄️"
 type: "tech"
 topics: [snowflake]
-published: false
+published: true
 publication_name: "dataheroes"
 ---
 
