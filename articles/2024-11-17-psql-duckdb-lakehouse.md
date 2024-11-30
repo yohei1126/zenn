@@ -8,7 +8,7 @@ published: false
 
 # 本記事の背景
 
-前回、pg_duckdb という PostgreSQL 上で DuckDB を実行できるという PostgreSQL 拡張を紹介しました。
+前回、pg_duckdb という PostgreSQL 上で DuckDB を実行できるという PostgreSQL 拡張を紹介しました。この拡張は、DuckDB の既存の拡張を利用することで、オブジェクトストレージ上に構築されたデータレイクやレイクハウス実は
 
 https://zenn.dev/yohei/articles/2024-11-09-pg-duckdb
 
