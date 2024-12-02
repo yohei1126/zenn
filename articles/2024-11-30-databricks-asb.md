@@ -6,6 +6,8 @@ topics: [databricks]
 published: true
 ---
 
+本記事は、 [Databricks Advent Calendar 2024](https://qiita.com/advent-calendar/2024/databricks) シリーズ 1 の 2 日目の記事です。
+
 # 本記事の背景
 
 筆者は、事業会社のデータプラットフォームチームのメンバーとして、 GCP 上に構築されたデータプラットフォームを使うユーザのうち、主にデータエンジニアに対して、 Airflow や dbt といった社内標準スタックを使ったデータパイプラインをセルフサービスかつ効率的に開発・デプロイできるツール群を開発・提供しています。この活動は、書籍 ”[チームトポロジー](https://amzn.to/3Zui0ra)” で議論されているプラットフォームチームに相当するものだと認識しています。
