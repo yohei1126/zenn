@@ -51,7 +51,7 @@ https://cloud.google.com/bigquery/docs/create-cloud-storage-table-biglake
 format としては DELTA_LAKE を指定します。
 uris には参照したい Delta Lake テーブルのストレージロケーションを指定します。テーブルのストレージロケーションは、Databricks の UI で確認できます。
 
-```
+```sql
 CREATE EXTERNAL TABLE IF NOT EXISTS
   lakehouse_poc.diamonds OPTIONS (
     format = "DELTA_LAKE",
@@ -63,7 +63,7 @@ https://docs.databricks.com/gcp/en/integrations/dbt-core-tutorial
 
 BigQuery 側で以下のクエリを実行し、実際にデータが参照できていることが確認できました。
 
-```
+```sql
 SELECT
   SUM(carat) AS sum_carat,
   cut
@@ -77,7 +77,7 @@ GROUP BY
 
 例えば、Databricks 側でカラム追加など後方互換性のあるテーブルスキーマ変更を行なっても、BigQuery 側のテーブルに変更が適用され、また SELECT 文を再実行してもクエリは成功します。
 
-```
+```sql
 ALTER TABLE my_catalog.lakehouse_poc.diamonds
 ADD COLUMN test INT;
 ```
