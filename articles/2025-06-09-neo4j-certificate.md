@@ -3,7 +3,7 @@ title: "Neo4j Certified Professional を取得した"
 emoji: "🕸"
 type: "tech"
 topics: [neo4j]
-published: false
+published: true
 ---
 
 # 本記事の概要
