@@ -1,5 +1,5 @@
 ---
-title: "PostgreSQL 買収劇の背景、Snowflake と Databricks が描く未来に思いを馳せてみた"
+title: "新興 PostgreSQL サービス企業の買収劇の背景：Snowflake と Databricks が描く未来に思いを馳せてみた"
 emoji: "🐢"
 type: "tech"
 topics: [postgresql,snowflake,databricks]
