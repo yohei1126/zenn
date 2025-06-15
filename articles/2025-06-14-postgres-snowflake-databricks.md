@@ -21,7 +21,7 @@ https://www.databricks.com/blog/announcing-lakebase-public-preview
 
 2 つ目の理由は、**HTAP（ハイブリッドトランザクション/分析処理）および Zero ETL（Extract, Transform, Load）の現実的かつ簡易的な実現方法として PostgreSQL が見直されている** ことです。
 
-Snowflake が買収した Crunchy Data、そして Databricks が買収した Neon は、共にオブジェクトストレージ上の Iceberg テーブルとデータを同期する機構を持っています。これは、PostgreSQL 上でトランザクション処理を実行した場合でも、データが自動的に Iceberg テーブルに同期されることを意味します。これにより、ETL プロセスを介さずに Databricks や Snowflake で即座に分析が可能になり、さらにその分析結果を運用側にフィードバックすることも容易になります。
+Snowflake が提供する Snowlfake Postgres、そして Databricks が提供する Lakebase は、共にオブジェクトストレージ上のレイクハウステーブルとデータを同期する機構を持っています。これは、PostgreSQL 上でトランザクション処理を実行した場合でも、データが自動的にレイクハウスに同期されることを意味します。これにより、ETL プロセスを介さずに Databricks や Snowflake で即座に分析が可能になり、さらにその分析結果を運用側にフィードバックすることも容易になります。
 
 この仕組みは、OLTP システムと OLAP（オンライン分析処理）システムを非常に高い生産性で同時並行的に進化させることを可能にします。特に**Neon は元々「PostgreSQLのサーバレス化」を強みとしており**、最新のクラウドネイティブなアプリケーション開発において、より柔軟なデータ管理を可能にするソリューションを提供していました。
 
