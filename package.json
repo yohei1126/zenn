@@ -19,6 +19,7 @@
   "homepage": "https://github.com/yohei1126/zenn#readme",
   "dependencies": {
     "agentkeepalive": "^4.1.4",
-    "zenn-cli": "^0.1.161"
+    "yoga-wasm": "^0.0.2",
+    "zenn-cli": "^0.2.1"
   }
 }
