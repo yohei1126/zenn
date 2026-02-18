@@ -270,17 +270,17 @@ After Lance integration, simply passing an `hf://` URI to LanceDB makes that dat
 
 No format conversion or index rebuilding is needed between data providers and consumers. This **removal of friction** is the greatest impact of the Hugging Face × Lance integration.
 
-## Looking Ahead: The Future of an Enterprise "Multimodal Vector Data Hub"
+# Looking Ahead: The Future of an Enterprise "Multimodal Vector Data Hub"
 
 The Hugging Face × Lance workflow introduced so far is currently realized only on the public platform of Hugging Face Hub. However, the essence of this mechanism — **unifying multimodal data, embedding vectors, and indexes for sharing and distribution** — is a concept that can be applied to enterprise internal infrastructure as well.
 
 Imagine if a **multimodal vector data hub** — what might be called an internal "Hugging Face Hub for multimodal vectors" — were built within an enterprise. Developer workflows in manufacturing could fundamentally change as follows.
 
-### Current State: Building Individually for Each Edge Device
+## Current State: Building Individually for Each Edge Device
 
 Currently, to perform vector search on edge devices at manufacturing sites, data collection, vectorization, and index building must be done individually for each device, each line, and each factory. Even deploying a visual inspection vector DB built at one factory to another requires data migration and index rebuilding, making horizontal scaling costly.
 
-### Future: Register Metadata in the Data Hub, Fetch Vector Data On-Demand Only When Needed
+## Future: Register Metadata in the Data Hub, Fetch Vector Data On-Demand Only When Needed
 
 If an enterprise multimodal vector data hub existed, the workflow would look like the following.
 
