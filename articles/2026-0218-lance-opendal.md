@@ -1,5 +1,5 @@
 ---
-title: "Accelerating Multimodal Vector DB for Manufacturing with Hugging Face + LanceDB"
+title: "Accelerating Multimodal Vector DB with Hugging Face + LanceDB"
 emoji: "🦔"
 type: "tech" # tech: Technical Article / idea: Idea
 topics: [lancedb, lance, huggingface, multimodal, manufacturing]
