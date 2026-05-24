@@ -3,7 +3,7 @@ title: "Cap Vista Accelerator とは — Solicitation 5.0 で何を募集して�
 emoji: "🇸🇬"
 type: "idea"
 topics: ["capvista", "singapore", "accelerator", "maritime", "startup"]
-published: false
+published: true
 ---
 
 ## この記事について
