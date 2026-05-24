@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: ["snowflake", "cortex", "salesforce", "search"]
 published: true
+publication_name: "dataheroes"
 ---
 
 ## 背景・課題
