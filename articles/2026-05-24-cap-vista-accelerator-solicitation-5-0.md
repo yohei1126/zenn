@@ -1,5 +1,5 @@
 ---
-title: "Cap Vista Accelerator とは — Solicitation 5.0 で何を募集していたか"
+title: "Cap Vista Accelerator とは — シンガポール国家安全保障向けイノベーション・アクセラレータ Sol 5.0"
 emoji: "🇸🇬"
 type: "idea"
 topics: ["capvista", "singapore", "accelerator", "maritime", "startup"]
@@ -150,7 +150,7 @@ Sol 5.0 以外に、例えば **Innovative Products & Services** 公募や **AI 
 |------|---------|
 | Cap Vista は誰？ | シンガポール発。国家安全保障系課題を **Challenge Statement で公開し、資金付きトライアルで検証する** 公募プラットフォーム |
 | 何のため？ | プロトタイプをエンドユーザーの実課題に接続し、採用・スケールまで短いサイクルで進める |
-| Sol 5.0 で何を？ | 5 題（海事 analytics / 低視界 AV / 蓄電 / 発電 / 腐食管理）。C1 は **シャドウフリート・MPOL の次世代 analytics** |
+| Sol 5.0 で何を？ | 5 題（海事 analytics / 低視界自律走行 / 蓄電 / 発電 / 腐食管理）。C1 は **シャドウフリート・MPOL の次世代 analytics** |
 | 応募の勘所 | **Not Looking For 回避** · 二軸評価（革新×実装）· トライアル設計 · explainability · edge コスト · option cost · ラベルと metrics の正直な定義 |
 
 Sol 5.0 の応募期間は終了していますが、Cap Vista は今後も solicitation を出す可能性が高く、同型の **「否定リスト付き RFP + 資金付き PoC」** として参考になります。次の solicitation が出たら、まず challenge card の **Learn more → What We Are Not Looking For** から読み始めるのが、最も時間対効果の高い準備です。
