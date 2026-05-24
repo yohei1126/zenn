@@ -3,7 +3,7 @@ title: "Snowflake - Cortex Code を用いた Cortex Agent / Analyst の活用"
 emoji: "❄️"
 type: "tech"
 topics: ["snowflake", "cortex", "cli", "cortexcode"]
-published: true
+published: false
 ---
 
 ## 調査の目的
