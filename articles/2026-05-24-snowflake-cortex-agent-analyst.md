@@ -1,6 +1,6 @@
 ---
-title: "Snowflake GPA フレームワークに基づいたノーコード・ローコードなモニタリング戦略：Cortex Agent / Analyst の精度・性能・コスト管理"
-emoji: "❄️"
+title: "GPAフレームワークによる Snowflake Cortex Agent/Analyst 監視・管理戦略"
+emoji: "📊"
 type: "tech"
 topics: ["snowflake", "cortex", "monitoring", "gpa"]
 published: true
