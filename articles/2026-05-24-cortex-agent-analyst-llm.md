@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: ["snowflake", "cortex", "llm", "humanintheloop"]
 published: true
+publication_name: "dataheroes"
 ---
 
 ## 背景

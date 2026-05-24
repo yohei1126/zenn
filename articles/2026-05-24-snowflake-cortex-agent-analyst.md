@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: ["snowflake", "cortex", "monitoring", "gpa"]
 published: true
+publication_name: "dataheroes"
 ---
 
 ## 概要

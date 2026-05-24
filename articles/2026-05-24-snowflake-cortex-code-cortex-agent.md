@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: ["snowflake", "cortex", "cli", "cortexcode"]
 published: true
+publication_name: "dataheroes"
 ---
 
 ## 調査の目的

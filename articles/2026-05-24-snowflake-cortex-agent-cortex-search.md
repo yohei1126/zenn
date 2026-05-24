@@ -4,6 +4,7 @@ emoji: "❄️"
 type: "tech"
 topics: ["snowflake", "cortex", "llm", "search"]
 published: false
+publication_name: "dataheroes"
 ---
 
 ## 前提
