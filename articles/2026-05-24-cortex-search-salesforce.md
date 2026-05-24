@@ -1,6 +1,6 @@
 ---
 title: "Cortex Search と Salesforce を活用した営業支援の仕組み"
-emoji: "🔍"
+emoji: "❄️"
 type: "tech"
 topics: ["snowflake", "cortex", "salesforce", "search"]
 published: true
