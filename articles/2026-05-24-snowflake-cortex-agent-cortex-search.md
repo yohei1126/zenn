@@ -3,7 +3,7 @@ title: "Snowflake Cortex Agent と Cortex Search を活用したアップセル�
 emoji: "❄️"
 type: "tech"
 topics: ["snowflake", "cortex", "llm", "search"]
-published: true
+published: false
 ---
 
 ## 前提
