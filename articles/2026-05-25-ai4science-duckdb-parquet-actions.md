@@ -1,5 +1,5 @@
 ---
-title: "AI for Science 向け — 小規模ラボの週次パイプラインを DuckDB + Parquet + GitHub Actions で組む（GPU なし）"
+title: "AI for Science向け：小規模ラボのデータ統合を DuckDB + Parquet + Actions で組む"
 emoji: "🧪"
 type: "tech"
 topics: ["aiforscience", "duckdb", "parquet", "githubactions", "dataengineering", "oss"]
