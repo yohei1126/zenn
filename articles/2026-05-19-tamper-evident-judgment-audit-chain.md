@@ -146,7 +146,7 @@ AI ガバナンス標準の **A.4 リソース**は、HVAC を直接制御する
 | 記事 | 焦点 |
 |------|------|
 | [判断の再現性](https://zenn.dev/yohei/articles/2026-05-19-reproducible-judgment-metrics) | メトリクス artefact・CI publish |
-| [判断の説明](https://zenn.dev/yohei/articles/2026-05-19-explainable-judgment-score-llm-separation) | スコア固定 + グラフ/LLM 分離 |
+| [判断の説明](https://zenn.dev/yohei/articles/2026-05-19-judgment-score-llm-separation) | スコア固定 + グラフ/LLM 分離 |
 | **本記事** | エッジ封印 + verify |
 
 ---

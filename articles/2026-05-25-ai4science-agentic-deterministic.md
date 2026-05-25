@@ -13,7 +13,7 @@ published: false
 
 筆者は [indago](https://github.com/edgesentry/indago)（バッチ）+ [arktrace](https://github.com/edgesentry/arktrace)（読取 UI）+ ローカル LLM brief でこの分離を運用しています。Zheng et al.（2025）や *From AI for Science to Agentic Science*（arXiv, 2025）で語られる将来像は、**下流のオーケストレーション**として読むのが安全です。本記事は、その慎重な接続を AI for Science 向けに整理します。
 
-関連: [スコアと LLM の分離](2026-05-19-explainable-judgment-score-llm-separation.md) · [判断の証跡](2026-05-19-tamper-evident-judgment-audit-chain.md)
+関連: [スコアと LLM の分離](2026-05-19-judgment-score-llm-separation.md) · [判断の証跡](2026-05-19-tamper-evident-judgment-audit-chain.md)
 
 ---
 
@@ -157,5 +157,5 @@ Agentic Science を **「AI が科学を自動でやる」** と読むと、再�
 
 - [arktrace ref-llm-grounding](https://github.com/edgesentry/arktrace/blob/main/docs/ref-llm-grounding.md)  
 - [indago-interpret-metrics skill](https://github.com/edgesentry/indago/blob/main/.agents/skills/indago-interpret-metrics/SKILL.md)  
-- [判断の説明 — スコアと LLM の分離](2026-05-19-explainable-judgment-score-llm-separation.md)  
+- [判断の説明 — スコアと LLM の分離](2026-05-19-judgment-score-llm-separation.md)  
 - [AWS Japan: AI for Science の歩き方 #13 — アクションプラン](https://zenn.dev/aws_japan/articles/ai4s-13-action-2026)

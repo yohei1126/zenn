@@ -228,7 +228,7 @@ Challenge 1 の本文に "sovereign"（主権・内製）という単語が直�
 
 ## 関連記事
 
-https://zenn.dev/yohei/articles/2026-05-19-explainable-judgment-score-llm-separation
+https://zenn.dev/yohei/articles/2026-05-19-judgment-score-llm-separation
 *本チャレンジへの応答として、実際に構築したソリューション（実装・OSS構成）の解説記事です。*
 
 https://zenn.dev/yohei/articles/2026-05-24-cap-vista-accelerator-solicitation-5-0

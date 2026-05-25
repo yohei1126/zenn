@@ -13,7 +13,7 @@ published: false
 
 筆者は [indago](https://github.com/edgesentry/indago) で、**GPU なし**の GitHub Actions 上で 11 ステップ相当のパイプラインを回し、Parquet とメトリクス JSON を R2 に publish しています。分析 UI [arktrace](https://github.com/edgesentry/arktrace) は **DuckDB-WASM** で Parquet だけを読みます。本記事は、その構成を **AI for Science 向けのテンプレート** として一般化します（コードは概念レベル + 最小例）。
 
-関連: [判断の再現性](2026-05-19-reproducible-judgment-metrics.md) · [グラフとマルチソース統合](2026-05-25-ai4science-graph-multi-source-integration.md)
+関連: [判断の再現性](2026-05-19-reproducible-judgment-metrics.md) · [グラフとマルチソース統合](2026-05-25-ai4science-graph-integration.md)
 
 ---
 

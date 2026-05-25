@@ -25,7 +25,7 @@ published: false
 
 これは、シンガポール政府側がチャレンジ文書で重視する **説明可能な AI（explainable AI）** の姿に、筆者の理解では近い。いわゆる「LLM に理由を書かせれば説明可能」ではなく、**判断（スコア）と説明（根拠データ・文章）が別プロセス**であり、主権・オンプレでも回るバッチ判断を土台にする、という立場だ。同じ原則は、同チャレンジの **Challenge 2（SWaP）** で別途出している [clarus](https://github.com/edgesentry/clarus) エッジ監視にも通じる。以前の [CAP Vista Accelerator Solicitation 5.0](https://zenn.dev/yohei/articles/2026-05-24-cap-vista-accelerator-solicitation-5-0)（未採択）から、C1 向けに「異常＋説明＋主権バッチ」へ reframing した経緯もある。
 
-**本記事の目的**は、その応募ソリューションを支える **説明可能 AI の概念**（一般の XAI との違い、どこを対象にするか）と、**実装する際の勘所**（三層アーキテクチャ、アンチパターン、チェックリスト）を、調達文書を開かなくても追える形で書くことだ。チャレンジ要件の読み方（実装なし）は別稿 → [政府調達で説明可能AIが求められるとき — CAP Vista チャレンジを具体例に読む](https://zenn.dev/yohei/articles/2026-05-25-singapore-explainable-ai-cap-vista-requirements)。判断の再現性・証跡は、シリーズの前後稿で扱う。
+**本記事の目的**は、その応募ソリューションを支える **説明可能 AI の概念**（一般の XAI との違い、どこを対象にするか）と、**実装する際の勘所**（三層アーキテクチャ、アンチパターン、チェックリスト）を、調達文書を開かなくても追える形で書くことだ。チャレンジ要件の読み方（実装なし）は別稿 → [政府調達で説明可能AIが求められるとき — CAP Vista チャレンジを具体例に読む](https://zenn.dev/yohei/articles/2026-05-25-cap-vista-xai-requirements)。判断の再現性・証跡は、シリーズの前後稿で扱う。
 
 - 前: [判断の再現性](https://zenn.dev/yohei/articles/2026-05-19-reproducible-judgment-metrics)  
 - 次: [判断の証跡](https://zenn.dev/yohei/articles/2026-05-19-tamper-evident-judgment-audit-chain)
