@@ -131,7 +131,7 @@ graph TD
 * **「flagged anomalies」の解釈:**
   説明の単位はモデル全体（Global Explainability）ではなく、**個別の検出アラート（Local Explainability）**である必要があります。
 
-:::tip
+:::message
 **提案書の構成テクニック**
 `Accuracy / Scalability / Latency` と `Explainability` が同列の Metric として並んでいます。提案書では、説明可能性を「付録」にするのではなく、**評価軸と同格の独立した章**として構成するのが鉄則です。
 :::
