@@ -131,7 +131,7 @@ uv run python scripts/fetch_publish_metrics.py --days 7 --json
 
 判断の再現性は、「再現可能なスコアリング手順」と「その手順の出力を凍結したメトリクス artefact」の組み合わせで示せます。git は **コードとゲート** に使い、**観測された性能** は publish ごとの JSON と CI run に寄せる。シンプルですが、オンプレ・監査・OSS 公開を同時にやるチームでは効きます。
 
-次の記事 [判断の説明](https://zenn.dev/yohei/articles/2026-05-19-explainable-judgment-score-llm-separation) では、**説明層（グラフ・SHAP・LLM）をスコアから切り離す** 設計を扱います。シリーズ最終回は [判断の証跡](https://zenn.dev/yohei/articles/2026-05-19-tamper-evident-judgment-audit-chain) です。
+次の記事 [判断の説明](https://zenn.dev/yohei/articles/2026-05-19-judgment-score-llm-separation) では、**説明層（グラフ・SHAP・LLM）をスコアから切り離す** 設計を扱います。シリーズ最終回は [判断の証跡](https://zenn.dev/yohei/articles/2026-05-19-tamper-evident-judgment-audit-chain) です。
 
 ---
 

@@ -13,7 +13,7 @@ published: false
 
 筆者は [indago](https://github.com/edgesentry/indago) で、AIS・制裁リスト・ニュース（GDELT）などを取り込み、**グラフ上の multi-hop パスをスコアリングと説明の両方に使う** OSS パイプラインを運用しています。ドメインは海事 OSINT ですが、パターンは **「実験室が複数 DB・文献・測定ログを統合する」** 研究と同型です。本記事は、AI for Science コミュニティ向けに **グラフ・マルチソース統合** を、SaaS 統合の話ではなく **データ契約と再現性** の観点で翻訳します。
 
-関連: 判断の三層分離は [スコアと LLM の分離](2026-05-19-explainable-judgment-score-llm-separation.md)、メトリクス凍結は [判断の再現性](2026-05-19-reproducible-judgment-metrics.md)。
+関連: 判断の三層分離は [スコアと LLM の分離](2026-05-19-judgment-score-llm-separation.md)、メトリクス凍結は [判断の再現性](2026-05-19-reproducible-judgment-metrics.md)。
 
 ---
 
@@ -120,7 +120,7 @@ indago では `compute_composite_scores()` が **グラフリスク成分** を�
 | グラフ | 常時クラスタより **export Parquet** |
 | LLM | 任意・ローカル（説明のみ） |
 
-次の記事 [小規模ラボ向け DuckDB + Parquet + GitHub Actions](2026-05-25-ai4science-duckdb-parquet-github-actions-small-lab.md) で CI の具体例を書きます。
+次の記事 [小規模ラボ向け DuckDB + Parquet + GitHub Actions](2026-05-25-ai4science-duckdb-parquet-actions.md) で CI の具体例を書きます。
 
 ---
 
