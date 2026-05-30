@@ -103,6 +103,6 @@ Googleの「BigQuery/Spanner Graph」や、Neo4jがSnowflake/Databricks向けに
 
 **連載一覧：**
 
-* [第 1 部 Snowflake / Databricks / Google が挑む仮想グラフ戦略：AIエージェントを支える次世代データ基盤](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy1)
+* [第 1 部 Snowflake / Databricks / Google が挑む仮想グラフ戦略：AIエージェントを支える次世代データ基盤](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
 * [第 2 部 AI エージェントの知識表現と推論になぜグラフが使われるのか？](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2)
 * [第 3 部 スキーマレスの地獄を回避する：仮想グラフと物理グラフをサステナブルに維持管理する戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3) (本作)
