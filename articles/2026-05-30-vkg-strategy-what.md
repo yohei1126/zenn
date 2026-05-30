@@ -10,7 +10,7 @@ published: true
 この記事は、Snowflake / Databricks / Google Cloud が推進する仮想グラフによる知識グラフをテーマにした、3部構成のシリーズ記事の **第1部** です。
 
 * **第 1 部** ： Snowflake / Databricks / Google が挑む仮想グラフ戦略：AIエージェントを支える次世代データ基盤（本記事）
-* **第 2 部** ：なぜセマンティックレイヤーだけでは足りないのか？
+* **第 2 部** ：AI エージェントの知識表現と推論になぜグラフが使われるのか？
 * **第 3 部** ：スキーマレスの地獄を回避するサステナブルな運用戦略
 
 :::
@@ -294,6 +294,6 @@ graph TD
 
 **連載一覧：**
 
-* [第 1 部 Snowflake / Databricks / Google が挑む仮想グラフ戦略：AIエージェントを支える次世代データ基盤](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy1) (本作)
-* **第 2 部** ：なぜセマンティックレイヤーだけでは足りないのか？
+* [第 1 部 Snowflake / Databricks / Google が挑む仮想グラフ戦略：AIエージェントを支える次世代データ基盤](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what) (本作)
+* **第 2 部** ：AI エージェントの知識表現と推論になぜグラフが使われるのか？
 * **第 3 部** ：スキーマレスの地獄を回避するサステナブルな運用戦略
