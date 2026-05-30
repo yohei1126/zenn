@@ -1,5 +1,5 @@
 ---
-title: "なぜセマンティックレイヤーだけでは足りないのか？DWHの巨人がオントロジーと仮想グラフに賭ける理由【中編：Why】"
+title: "AI エージェントの知識表現と推論になぜグラフが使われるのか？"
 emoji: "🧠"
 type: "tech"
 topics: ["semanticlayer", "ontology", "knowledgegraph", "database", "llm"]
@@ -10,7 +10,7 @@ published: true
 この記事は、Snowflake / Databricks / Google Cloud が推進する仮想知識グラフ（VKG）戦略をテーマにした、3部構成のシリーズ記事の **第2部（中編）** です。
 
 * [第 1 部 Snowflake / Databricks / Google が挑む仮想グラフ戦略：AIエージェントを支える次世代データ基盤](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy1)
-* **第 2 部** ：なぜセマンティックレイヤーだけでは足りないのか？（本記事）
+* **第 2 部** ：AI エージェントの知識表現と推論になぜグラフが使われるのか？（本記事）
 * **第 3 部** ：スキーマレスの地獄を回避するサステナブルな運用戦略
 
 本シリーズでは、論理マッピング技術である「仮想知識グラフ（VKG）」について解説します。第1部でその定義と選定フローを示したのに続き、本編では「なぜRDBやセマンティックレイヤーだけではLLMの推論を支えられないのか」という技術的・歴史的な背景と、グラフ化の数学的メリットに迫ります。
@@ -174,5 +174,5 @@ LLM単体や、静的なVerified Queriesだけに頼るAIシステムは、環�
 **連載一覧：**
 
 * [第 1 部 Snowflake / Databricks / Google が挑む仮想グラフ戦略：AIエージェントを支える次世代データ基盤](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy1)
-* [第 2 部 なぜセマンティックレイヤーだけでは足りないのか？（中編）](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2) (本作)
+* [第 2 部 AI エージェントの知識表現と推論になぜグラフが使われるのか？](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2) (本作)
 * **第 3 部** ：スキーマレスの地獄を回避するサステナブルな運用戦略
