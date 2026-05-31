@@ -10,7 +10,7 @@ published: false
 この記事は、SnowflakeやGoogle Cloudが推進する「仮想知識グラフ（VKG）」戦略をテーマにした、3部構成のシリーズ記事の **第3部（後編：How編）** です。
 
 * **前編：What編** ：巨人が挑む仮想知識グラフ（VKG）戦略の正体
-* **中編：Why編** ：AI エージェントの知識表現と推論になぜグラフが使われるのか？
+* **中編：Why編** ：AI 時代のデータ基盤 - AI エージェントの知識表現と推論になぜグラフが使われるのか？
 * **後編：How編** ：スキーマレスの地獄を回避するサステナブルな運用戦略（本作）
 
 :::
@@ -104,5 +104,5 @@ Googleの「BigQuery/Spanner Graph」や、Neo4jがSnowflake/Databricks向けに
 **連載一覧：**
 
 * [第 1 部 Snowflake / Databricks / Google が挑む仮想グラフ戦略：AIエージェントを支える次世代データ基盤](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
-* [第 2 部 AI エージェントの知識表現と推論になぜグラフが使われるのか？](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2)
+* [第 2 部 AI 時代のデータ基盤 - AI エージェントの知識表現と推論になぜグラフが使われるのか？](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2)
 * [第 3 部 スキーマレスの地獄を回避する：仮想グラフと物理グラフをサステナブルに維持管理する戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3) (本作)
