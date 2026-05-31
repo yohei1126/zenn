@@ -147,7 +147,7 @@ graph TD
 
 ---
 
-## 4. Pydanticを活用した「グラフスキーマ＆制約強制」アーキテクチャ
+## 4. Pydanticを活用した「グラフスキーマ＆制約強制」と疎結合Agent Skill
 
 データベース単体での厳格な制約強制が難しいスキーマレスなグラフDB（またはリレーショナルDWH上の仮想グラフモデル）に対して、アプリケーションレイヤーでスキーマと制約を強制するための極めて有効な解決策が、Pythonの型・制約定義ライブラリである **`Pydantic`** の活用です。
 
@@ -157,21 +157,45 @@ Pydanticを用いてグラフのノード（Node）、エッジ（Edge）、お�
 
 ```mermaid
 graph TD
-    PydanticModel["Pydanticモデル (Pythonコード)"]
+    PydanticModel["Pydanticモデル (SSOT: 共通定義)"]
     PydanticModel -->|1. データの整合性強制| WriteValidation["更新時のバリデータ"]
     WriteValidation -->|安全な更新| GraphDB["グラフDB (Neo4j等)"]
-    PydanticModel -->|2. クエリの安全性向上| JSONSchema["JSONスキーマ / プロンプト"]
-    JSONSchema -->|メタデータとして提示| LLMAgent["LLM / AIエージェント"]
-    LLMAgent -->|正確なGQL/SQL生成| GraphDB
+    
+    PydanticModel -->|2. 動的ロード| AgentSkill["Agent Skill (MCP / OpenAPI等)"]
+    AgentSkill -->|メタデータ・プロンプト提示| LLMAgent["LLM / AIエージェント"]
+    LLMAgent -->|正確なGQL/SQL実行| GraphDB
 ```
 
 #### 役割1：グラフDB更新時の制約バリデータ（インフラ防衛）
 アプリケーションがグラフDBを更新する（ノードを追加する、エッジを結ぶ）際、必ずPydanticモデルを通してバリデーションをかけます。
-Pydanticモデルが、未定義のプロパティ、型の不一致、さらには「このノードラベル間には存在し得ない未定義のエッジラベル」を検知した時点で実行を遮断します。これにより、スキーマレスなデータベースの背後に厳格な防壁を築き、データの一貫性を100%維持します。
+Pydanticモデルが、未定義 of プロパティ、型の不一致、さらには「このノードラベル間には存在し得ない未定義のエッジラベル」を検知した時点で実行を遮断します。これにより、スキーマレスなデータベースの背後に厳格な防壁を築き、データの一貫性を100%維持します。
 
 #### 役割2：LLMに対する認知的スキーマの提示（クエリ生成の支援）
 AIエージェントがグラフ構造に対してCypherやGQLといったクエリを動的に生成する際、Pydanticモデルから自動エクスポートした「JSONスキーマ」や「オブジェクトモデル定義」を、LLMのシステムプロンプトのコンテキストにマッピングします。
 これにより、LLMはグラフDB内の正しい型情報や関係性の許容ルールを完全に理解でき、存在しないプロパティや誤った接続パスをクエリしようとするハルシネーション（エラークエリの生成）を大幅に低減できます。
+
+### ② ドメイン知識を内包する「Agent Skill」の疎結合設計
+
+エージェントにグラフを操作・分析させるにあたり、単にスキーマ情報を渡すだけでは不十分です。LLMは「どのデータを、どういう手順で、どう分析すれば目的が達成できるか」というビジネスの文脈を理解できないからです。
+
+そこで、特定のグラフ分析手続きを **「Agent Skill（エージェント・スキル）」** として定義し、以下の設計原則に沿って実装します。
+
+#### 1. メタデータへの「ドメイン知識」の記述
+Skillの説明（Description）やプロンプトテンプレートの中に、以下のような**分析のためのドメイン知識**を記述します。
+* **どのようなビジネス上の文脈**（例：サプライチェーン途絶リスクのシミュレーション）で実行すべきか
+* **どのノード**（例：`Component`, `Supplier`）および**エッジ**（例：`SUPPLIED_BY`）に着目すべきか
+* **どのようなクエリやアルゴリズム**（例：影響範囲の探索）を組み合わせるべきか
+
+この詳細なドメイン定義があることで、Skillをロードしたエージェントは「今はこの意思決定が必要だから、あのノードとエッジを利用するこのSkillを呼び出すべきだ」と適切に判断し、正確な分析を行えるようになります。
+
+#### 2. オープン標準による汎用性（ポータビリティ）
+これらのSkillは、特定の自社アプリケーション内だけで機能する閉じた仕組みにするのではなく、**Model Context Protocol (MCP)** や **OpenAPI / JSON Schema** などの「オープン標準」のツール仕様に準拠して定義します。
+オープン標準で実装しておくことで、Web UIアプリ、バックエンドの自律ワークフロー、さらにはCLI型コーディングエージェント（Antigravity等）に至るまで、様々なプラットフォームやランタイムでそのまま汎用的に再利用できるようになります。
+
+#### 3. Single Source of Truth (SSOT) の徹底
+将来的にグラフスキーマやデータの物理的制約が変更された際、すべてのSkill定義を個別に手動で修正するのは「スキーマレスの地獄」を上層アプリケーション層に再現するのと同じです。
+そのため、**「スキーマ情報や制約情報はSkill内に決してハードコードしない」**という原則を徹底します。
+型定義や制約情報は、共通のPydanticモデルという **Single Source of Truth（信頼できる唯一の情報源）** に一元化し、Skillは実行時や初期化（ロード）時にその定義から動的にJSON Schemaやプロパティのルールをロードして、LLMへの提示用プロンプトを構築します。これにより、インフラ層のデータモデル変更が、上層のエージェントSkillへと安全かつ即座に伝播します。
 
 ---
 
@@ -309,6 +333,74 @@ def generate_llm_system_prompt() -> str:
 ```
 
 このアプローチにより、アプリケーションは **「データの一貫性防衛」** と **「LLMのコンテキスト理解の最大化」** を同一のPydanticモデル定義というシングル・ソースから実現でき、サステナブルな運用を確立することが可能になります。
+
+### ④ SSOT原則に基づくAgent Skillの動的構築（MCP / OpenAPI Tool 準拠）
+
+オープン標準であるMCPやOpenAPI Tool仕様に準拠し、かつPydanticから動的にスキーマをロードしてドメイン知識をメタデータにバインドする、疎結合なAgent Skillの実装例です。
+
+```python
+# ----------------------------------------------------
+# 3. SSOT原則に基づくAgent Skill (ツール定義) の動的構築
+# ----------------------------------------------------
+
+class SupplyChainRiskAnalysisSkill:
+    """
+    サプライチェーン途絶リスク分析を行うエージェント用Skill (オープン標準準拠ツール)
+    スキーマ情報をハードコードせず、Pydanticモデルから動的にロードする (SSOT原則)
+    """
+    def __init__(self):
+        # SSOT定義から動的にJSON Schemaをロード (ハードコードの排除)
+        self.component_schema = ComponentNode.model_json_schema()
+        self.edge_schema = SuppliedByEdge.model_json_schema()
+
+    def get_tool_metadata(self) -> dict:
+        """
+        MCPやOpenAPIなどのオープン標準でエージェントに公開するツールのメタデータ。
+        エージェントが適切に分析・クエリ選択を行えるよう、詳細なドメイン知識を記述する。
+        """
+        return {
+            "name": "analyze_supply_chain_disruption_risk",
+            # エージェント向けの「ドメイン知識」「実行文脈」「着目ノード/エッジ」の明記
+            "description": (
+                "【ドメイン知識に基づくサプライチェーン途絶影響の分析ツール】\\n"
+                "文脈: 特定のサプライヤーに供給遅延や災害が発生した際の下流部品(BOM)への影響範囲を評価します。\\n"
+                "分析ロジック: 指定された Supplier ノードの ID から出発し、関係性 'SUPPLIED_BY' のエッジを逆向きに辿り、"
+                "影響を受けるすべての Component ノードと累積コスト・最大リードタイムを算出します。\\n"
+                "スキーマ参照:\\n"
+                f" - 対象ノード: Component ({list(self.component_schema['properties'].keys())})\\n"
+                f" - 対象エッジ: {self.edge_schema['properties']['edge_type']['default']} "
+                f"(リードタイム: {self.edge_schema['properties']['lead_time_days']['description']})"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "supplier_id": {
+                        "type": "string",
+                        "description": "起点となる Supplier ノードのID (例: SUP-001)"
+                    }
+                },
+                "required": ["supplier_id"]
+            }
+        }
+
+    def execute(self, supplier_id: str, db_client: GraphDatabaseClient) -> list:
+        """
+        エージェントやアプリが呼び出す決定論的実行ロジック。
+        アドホックなCypher生成に頼らず、最適化されたクエリを実行する。
+        """
+        # 決定論的なクエリによって、LLMのText-to-Cypherにおける不確実性を排除
+        query = (
+            "MATCH (s:Supplier {id: $supplier_id}) "
+            "MATCH (c:Component)-[r:SUPPLIED_BY]->(s) "
+            "RETURN c.id AS component_id, c.name AS component_name, "
+            "c.cost AS component_cost, r.lead_time_days AS lead_time"
+        )
+        # 実際のDBクライアントを実行 (validated_node/edge同様に安全にクエリを実行)
+        # return db_client.execute_read(query, {"supplier_id": supplier_id})
+        return []
+```
+
+この設計により、スキーマ変更（例：`cost` の型変更やプロパティの追加）が発生しても、`SupplyChainRiskAnalysisSkill` のソースコードに一切手を加えることなく、エージェントが参照するメタデータやツール仕様が自動的に最新の状態に保たれます。
 
 ---
 
