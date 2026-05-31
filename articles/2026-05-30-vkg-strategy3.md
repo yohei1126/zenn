@@ -9,18 +9,18 @@ published: true
 :::message
 この記事は、Snowflake / Databricks / Google Cloud が推進する仮想グラフによる知識グラフをテーマにした、3部構成のシリーズ記事の **第3部** です。
 
-* [第 1 部 Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
-* [第 2 部 AI エージェントの知識表現と推論になぜグラフが使われるのか？](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2)
-* **第 3 部** ：スキーマレスの地獄を回避するサステナブルな運用戦略（本記事）
+* [第 1 部 AIエージェントを支える次世代データ基盤 - Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
+* [第 2 部 AI エージェントを支える次世代データ基盤 - AI エージェントの知識表現と推論になぜグラフが使われるのか？](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2)
+* **第 3 部** ： [AIエージェントを支える次世代データ基盤 - スキーマレスの地獄を回避するサステナブルな運用戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3)（本記事）
 :::
 
 ## 概要
 
-本シリーズの第1部および第2部では、主要データプラットフォームが「仮想グラフ（Virtual Graph）」に注力する動向と、AIエージェントの知識表現や推論におけるグラフモデルの理論的優位性について解説しました。
+本シリーズの [第1部](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what) および [第2部](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2) では、主要データプラットフォームが「仮想グラフ（Virtual Graph）」に注力する動向と、AIエージェントの知識表現や推論におけるグラフモデルの理論的優位性について解説しました。
 
 第1部では物理的なデータコピーを避ける「仮想グラフ」の可能性を論じましたが、実際のビジネス要件や処理性能、システム構成によっては、専用の物理グラフデータベース（Neo4jなど）を自分たちでゼロから構築し、物理的なインフラとして本番稼働させる選択肢（物理グラフ開発）をとる場面も数多く存在します。
 
-最終章となる第3部では、このように**「物理グラフを独自に開発・運用することになった場合」**を前提とし、現実的に安定した物理グラフデータベースを持続可能（サステナブル）に運用・保守していくための **「変更管理と設計の考え方（How）」** にフォーカスします。
+最終章となる第3部では、このように **「物理グラフを独自に開発・運用することになった場合」** を前提とし、現実的に安定した物理グラフデータベースを持続可能（サステナブル）に運用・保守していくための **「変更管理と設計の考え方（How）」** にフォーカスします。
 
 スキーマレスな物理グラフDBを運用する際に直面する「変更管理の地獄」を回避し、アプリケーションコード側でスキーマと制約を強制しながら、LLMに対する認知的プロンプトやオープン標準のAgent Skillへと繋いでいく現実的なアーキテクチャを解説します。
 
@@ -446,6 +446,6 @@ class SupplyChainRiskAnalysisSkill:
 
 **連載一覧：**
 
-* [第 1 部 Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
-* [第 2 部 AI エージェントの知識表現と推論になぜグラフが使われるのか？](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2)
-* [第 3 部 スキーマレスの地獄を回避するサステナブルな運用戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3) (本作)
+* [第 1 部 AIエージェントを支える次世代データ基盤 - Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
+* [第 2 部 AI エージェントを支える次世代データ基盤 - AI エージェントの知識表現と推論になぜグラフが使われるのか？](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2)
+* [第 3 部 AIエージェントを支える次世代データ基盤 - スキーマレスの地獄を回避するサステナブルな運用戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3) (本作)
