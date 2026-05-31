@@ -9,7 +9,7 @@ published: true
 :::message
 この記事は、Snowflake / Databricks / Google Cloud が推進する仮想グラフによる知識グラフをテーマにした、3部構成のシリーズ記事の **第2部** です。
 
-* [第 1 部 Snowflake / Databricks / Google が挑む仮想グラフ戦略：AIエージェントを支える次世代データ基盤](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
+* [第 1 部 AIエージェントを支える次世代データ基盤 - Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
 * **第 2 部** ：AI エージェントを支える次世代データ基盤 - AI エージェントの知識表現と推論になぜグラフが使われるのか？（本記事）
 * **第 3 部** ：スキーマレスの地獄を回避するサステナブルな運用戦略
 
@@ -18,7 +18,7 @@ published: true
 
 ## 概要
 
-第1部である [Snowflake / Databricks / Google が挑む仮想グラフ戦略：AIエージェントを支える次世代データ基盤](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what) では、主要なデータプラットフォームがそれぞれネイティブ実装やパートナーシップによる「仮想グラフ（Virtual Graph）」サポートを開始した動向を解説しました。
+第1部である [AIエージェントを支える次世代データ基盤 - Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what) では、主要なデータプラットフォームがそれぞれネイティブ実装やパートナーシップによる「仮想グラフ（Virtual Graph）」サポートを開始した動向を解説しました。
 
 各ベンダーがアプローチの違いはあれど仮想グラフ技術に注力する背景には、**「AIエージェント向けの知識表現と推論において、データを関係性で結ぶグラフ構造が極めて有効である」** という技術的な確信が存在します。
 
@@ -321,6 +321,6 @@ RDBにおける多方向JOIN（Multi-way Join）は、数学的に以下の限�
 
 **連載一覧：**
 
-* [第 1 部 Snowflake / Databricks / Google が挑む仮想グラフ戦略：AIエージェントを支える次世代データ基盤](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
+* [第 1 部 AIエージェントを支える次世代データ基盤 - Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
 * [第 2 部 AI エージェントを支える次世代データ基盤 - AI エージェントの知識表現と推論になぜグラフが使われるのか？](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2) (本作)
 * **第 3 部** ：スキーマレスの地獄を回避するサステナブルな運用戦略
