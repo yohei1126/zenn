@@ -1,5 +1,5 @@
 ---
-title: "組織の境界を越えるAIエージェントの知識連携 S2 - 共有IDによるクエリ時フェデレーション（実装編）"
+title: "組織の境界を越えるAIエージェントの知識連携 - 共有IDによるクエリ時フェデレーション（実装編）"
 emoji: "🛠️"
 type: "tech"
 topics: ["ontology", "knowledgegraph", "federation", "llm", "supplychain"]
@@ -118,7 +118,37 @@ def assert_edge_allowed_in_graph(graph_id: GraphId, edge_type: EdgeType) -> None
         raise ValueError(f"edge {edge_type} is not allowed in graph {graph_id}")
 ```
 
-インジェスト時（書き込み処理）において、この関数が実行され、「調達チームのパイプラインが設計ドメインの関係性 `USED_IN` を書き込もうとした」場合にエラーを出して書き込みをブロックします。
+### 2.3 非同期による参照整合性チェックの監査プロセス
+
+更新処理時の同期バリデーションでは「データの形式やノード間の直接的な接続制約」をチェックしますが、ドメイン境界を越えた参照整合性（例：`sourcing` グラフ内の `Component.id` が `bom.duckdb` のコンポーネントマスタに本当に登録されているか）は、システムの疎結合性を維持するため非同期で監査します。
+
+リポジトリ内では、`ontology/contract/graph_context.yaml` に定義された `quality.on_ingest` ルール（`bridge_id_present_in_master` など）に従い、定期実行される監査スクリプト（または夜間バッチジョブ）が以下のチェックを行います。
+
+1. **孤立エッジの検出**: グラフ内でエッジ（関係性）の接続先ノードが存在しない、またはIDがマスタと不一致のレコードをスキャン。
+2. **マスタ存在チェック**: 調達データ（`sourcing`）に登録された `Component.id` が、コンポーネントマスタである DuckDB テーブルに存在するかを検索。
+
+```python
+# 監査スクリプト（非同期チェック）の概念イメージ
+def audit_referential_integrity(store: LanceGraphStore, master_db):
+    # sourcing グラフからすべての部品IDを取得
+    sourcing_components = {
+        n["id"] for n in store.domain("sourcing").all_nodes() 
+        if n["label"] == "Component"
+    }
+    
+    # マスタDBに登録されている正当な部品IDを取得
+    valid_master_ids = set(master_db.get_all_component_ids())
+    
+    # マスタに存在しない部品ID（整合性エラー）を検出
+    orphans = sourcing_components - valid_master_ids
+    if orphans:
+        trigger_data_quality_alert(
+            category="bridge_id_present_in_master_failed",
+            message=f"マスタに未登録のブリッジIDが調達グラフ内で検出されました: {orphans}"
+        )
+```
+
+このような非同期の監査設計を導入することで、インジェスト処理（書き込み）を一時的にブロッキングさせることなく、マルチドメインにおけるデータの整合性を継続的に監視・担保する運用を確立しています。
 
 ---
 
