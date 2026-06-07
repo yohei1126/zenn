@@ -3,7 +3,7 @@ title: "組織の境界を越えるAIエージェントの知識連携 - サプ�
 emoji: "🛠️"
 type: "tech"
 topics: ["ontology", "knowledgegraph", "federation", "llm", "supplychain"]
-published: false
+published: true
 ---
 
 :::message
@@ -230,7 +230,7 @@ def analyze_supplier_disruption(store: Neo4jGraphStore, supplier_id: str) -> Fed
     )
 ```
 
-このフェデレーションロジックのポイントは、**「Cypherクエリの実行が、各ドメインのNeo4jデータベースに対して完全に分離されて実行されている」**点にあります。
+このフェデレーションロジックのポイントは、**「Cypherクエリの実行が、各ドメインのNeo4jデータベースに対して完全に分離されて実行されている」** 点にあります。
 
 `sourcing` データベースに対しては `SUPPLIED_BY` の関係性のみを問うCypherが投げられ、そこから得られた ID（`Component.id`）を仲介して、`ebom` や `routing` のデータベースに次のクエリを投げています。
 
@@ -287,7 +287,7 @@ def shortest_supply_path(self, from_component_id: str, to_product_id: str) -> li
 
 3部にわたるシーズン2の連載を通じて、エンタープライズの組織現実とセキュリティを尊重しながら、迅速な有事の影響分析を実現する「論理フェデレーション」の実装ディテールを解説しました。
 
-本記事で紹介した実装成果は、第2部で定義した**「4つのコア論点」**に対して以下のように具体的な解決手段を提示しています。
+本記事で紹介した実装成果は、第2部で定義した **「4つのコア論点」** に対して以下のように具体的な解決手段を提示しています。
 
 1. **① データ所有権（Data Ownership）の保証**:
    `domains/` 内にコードを分割し、`domains/registry.py` による越境エッジ・ノード制限ロジックを実装することで、他チームからの無秩序な変更を技術的に排除しました。各チームは、自分のドメインのスキーマとデータの「主権」を維持し続けられます。
