@@ -3,7 +3,7 @@ title: "組織の境界を越えるAIエージェントの知識連携 - 組織�
 emoji: "📐"
 type: "tech"
 topics: ["ontology", "knowledgegraph", "federation", "llm", "supplychain"]
-published: false
+published: true
 ---
 
 :::message
