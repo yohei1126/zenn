@@ -11,7 +11,7 @@ published: true
 
 * **第 1 部**：[分断されたグラフと影響分析の課題（背景編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)
 * **第 2 部**：[組織境界を維持する論理フェデレーション（設計編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2)（本記事）
-* **第 3 部**：共有IDによるクエリ時フェデレーション（実装編）（予定）
+* **第 3 部**：サプライチェーン影響分析エージェントの実装（実装編）（予定）
 
 ※ シーズン1（仮想グラフの基本概念、AIエージェントでの有効性、変更管理）は以下からご覧いただけます。
 * [第1部 Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
@@ -156,6 +156,19 @@ Bridge Keys を用いてドメインを跨ぐ関係性を構築する際、**ど
 共通IDのルールや、どのドメインがどのノード・エッジの管理責任を持つかという定義は、人間の合意形成書としてだけでなく、システムやAIエージェントが自律的に解釈できる **「メタデータ（スキーマ定義）」** として構造化されていなければなりません。
 
 これを本設計では **「グラフ・コントラクト（Graph Contract）」** と定義します。
+
+:::message
+**古典的オントロジーと、本設計の Graph Contract の違い**
+
+| | 古典的オントロジー（OWL/RDF 等） | シーズン1第3部の再定義 | 本シリーズの Graph Contract |
+| :--- | :--- | :--- | :--- |
+| **主な内容** | 概念・関係の **語彙体系** | 型・制約・利用文脈の **SSOT（コード）** | 上記に **組織間フェデレーション** を追加 |
+| **文脈（Context）** | 通常は含まない | Agent Skill 等に載せる **利用設計** を含む | Federation Joins・Quality Gates として **契約化** |
+| **スコープ** | 領域全体の概念モデル | **1グラフDB** の変更管理 | **3組織グラフ** の Bridge Keys + 結合経路 |
+| **表現** | OWL/RDF 等 | `ontology/schema.py`（Pydantic） | `graph_contract.yaml` + 生成 JSON |
+
+**スコープが一段広がる背景**: シーズン1第3部は「1つの物理グラフを安全に持続運用する」How でした。本シリーズは **組織がグラフを分離して所有する** 前提のため、型・制約（オントロジー）に加え、**どの ID で・どの順序で・どのドメインを横断するか** まで全社合意が必要になります。Graph Contract は、その追加要件を機械可読にしたものです。詳細な定義は [シーズン1第3部 §3①](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3) を参照してください。
+:::
 
 ### 3.1 グラフ・コントラクトに必要な4つの定義要素
 
@@ -311,4 +324,4 @@ sequenceDiagram
 
 * **第 1 部**：[分断されたグラフと影響分析の課題（背景編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)
 * **第 2 部**：[組織境界を維持する論理フェデレーション（設計編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2)（本記事）
-* **第 3 部**：共有IDによるクエリ時フェデレーション（実装編）（予定）
+* **第 3 部**：サプライチェーン影響分析エージェントの実装（実装編）（予定）
