@@ -36,7 +36,7 @@ Pydanticによるスキーマ検証、各部門の「越境書き込み」を防
 ```text
 ├── ontology/           # 技術的SSOT（共有スキーマ定義、共通バリデータ）
 │   ├── contract/
-│   │   └── graph_context.yaml # 共有IDとフェデレーションの契約
+│   │   └── graph_contract.yaml # 共有IDとフェデレーションの契約
 │   └── schema.py       # Pydanticノード・エッジ定義
 ├── domains/            # 各部門（組織）ごとの専有領域
 │   ├── ebom/           # 設計ドメイン用インジェスト・ルール
@@ -122,7 +122,7 @@ def assert_edge_allowed_in_graph(graph_id: GraphId, edge_type: EdgeType) -> None
 
 更新処理時の同期バリデーションでは「データの形式やノード間の直接的な接続制約」をチェックしますが、ドメイン境界を越えた参照整合性（例：`sourcing` グラフ内の `Component.id` が `bom.duckdb` のコンポーネントマスタに本当に登録されているか）は、システムの疎結合性を維持するため非同期で監査します。
 
-リポジトリ内では、`ontology/contract/graph_context.yaml` に定義された `quality.on_ingest` ルール（`bridge_id_present_in_master` など）に従い、定期実行される監査スクリプト（または夜間バッチジョブ）が以下のチェックを行います。
+リポジトリ内では、`ontology/contract/graph_contract.yaml` に定義された `quality.on_ingest` ルール（`bridge_id_present_in_master` など）に従い、定期実行される監査スクリプト（または夜間バッチジョブ）が以下のチェックを行います。
 
 1. **孤立エッジの検出**: グラフ内でエッジ（関係性）の接続先ノードが存在しない、またはIDがマスタと不一致のレコードをスキャン。
 2. **マスタ存在チェック**: 調達データ（`sourcing`）に登録された `Component.id` が、コンポーネントマスタである DuckDB テーブルに存在するかを検索。
