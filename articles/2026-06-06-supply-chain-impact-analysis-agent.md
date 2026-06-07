@@ -7,11 +7,11 @@ published: true
 ---
 
 :::message
-この記事は、エンタープライズにおける組織分断された複数データドメインの連携と、AIエージェントによるクエリ時論理フェデレーションをテーマにした、3部構成のシリーズの **第1部** です。
+この記事は、エンタープライズにおける組織分断された複数データドメインの連携と、AIエージェントによるクエリ時論理フェデレーションをテーマにした、3部構成のシリーズ（シーズン2）の **第1部** です。
 
 * **第 1 部**：[分断されたグラフと影響分析の課題（背景編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)（本記事）
-* **第 2 部**：組織境界を維持するフェデレーション（設計編）（予定）
-* **第 3 部**：共有IDによるクエリ時フェデレーション（実装編）（予定）
+* **第 2 部**：[組織境界を維持する論理フェデレーション（設計編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2)
+* **第 3 部**：[共有IDによるクエリ時フェデレーション（実装編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3)
 
 ※ 仮想グラフの基本概念、AIエージェントでの有効性、変更管理などを解説した三部作シーズン 1 は以下からご覧いただけます。
 * [第1部 Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
@@ -134,10 +134,10 @@ graph TD
 Supplier X ──(SUPPLIED_BY)──► Component A
                                    │
                                    ▼ [EBOM 領域での ID 結合]
-                             Product Y ◄──(USED_IN)── Component A
+                             Component A ──(USED_IN)──► Product Y
                                    │
                                    ▼ [Routing 領域での ID 結合]
-                             Process Z ◄──(PRODUCED_BY)── Product Y
+                             Product Y ──(PRODUCED_BY)──► Process Z
 ```
 
 ### 3.2 手作業による分析の限界
@@ -168,7 +168,7 @@ Supplier X ──(SUPPLIED_BY)──► Component A
 
 ### 4.2 リレーショナルデータベース（RDB）でのJOIN処理の限界
 
-また、グラフデータベースを使わず、既存のDWHやRDB内のテーブル同士をJOINやビューで連結するアプローチも、BOMのような「階層構造（多ホップ）」が絡むと限界を迎えます。
+統合の選択肢は物理的なグラフ統合だけではありません。既存のDWHやRDB内のテーブル同士をJOINやビューで連結するアプローチも考えられますが、BOMのような「階層構造（多ホップ）」が絡むとやはり限界を迎えます。
 
 * **再帰的クエリの記述難易度**: 製品構成表の「どこに使われているか（Where-Used）」の探索は、何階層あるか事前には分かりません。これをRDBで処理するには、何重もの再帰CTE（Common Table Expressions）や複雑な自己結合（Self-Join）を手書きする必要があります。
 * **メンテナンス性の低さ**: ビジネスルールや構成の定義が少し変わるだけでSQLが容易に崩壊し、データアナリストやAIエージェントがアドホックにクエリを実行して探索することが事実上不可能になります。
@@ -203,33 +203,12 @@ Supplier X ──(SUPPLIED_BY)──► Component A
 
 この「物理分離・論理結合」のアーキテクチャこそが、エンタープライズの組織構造とガバナンスを尊重しながら、瞬時に有事の影響分析を行うための現実的な解となります。
 
-```mermaid
-sequenceDiagram
-    participant User as ユーザー / アナリスト
-    participant Agent as AIエージェント
-    participant Sourcing as 調達グラフ (SRM)
-    participant EBOM as 設計グラフ (PLM)
-    participant Routing as 製造グラフ (MES)
-
-    User->>Agent: 「サプライヤーAの出荷が止まった影響は？」
-    Note over Agent: 1. 計画策定 (調達➔設計➔製造)
-    Agent->>Sourcing: 影響を受ける部品IDをクエリ
-    Sourcing-->>Agent: [COMP-103, COMP-107]
-    Note over Agent: 2. 部品IDをキーにして設計ドメインへ結合
-    Agent->>EBOM: 部品IDから影響製品IDをクエリ
-    EBOM-->>Agent: [PROD-901]
-    Note over Agent: 3. 製品IDをキーにして製造ドメインへ結合
-    Agent->>Routing: 製品IDから影響工程をクエリ
-    Routing-->>Agent: [Process Z (ワークセンター12)]
-    Agent-->>User: 影響を受ける部品・製品・工程を構造化して回答
-```
-
-次回（第2部：設計編）では、この logical federation（論理フェデレーション）を実現するための「共有オントロジー契約」と、各ドメインの独立性を保つための「境界設計」について詳しく解説します。
+次回（第2部：設計編）では、この logical federation（論理フェデレーション）を実現するための「共有オントロジー契約」や、各ドメインの独立性を保つための「境界設計」について、詳細なシーケンスを交えて詳しく解説します。
 
 ---
 
 **連載一覧：**
 
 * **第 1 部**：[分断されたグラフと影響分析の課題（背景編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)（本記事）
-* **第 2 部**：組織境界を維持するフェデレーション（設計編）（予定）
-* **第 3 部**：共有IDによるクエリ時フェデレーション（実装編）（予定）
+* **第 2 部**：[組織境界を維持する論理フェデレーション（設計編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2)
+* **第 3 部**：[共有IDによるクエリ時フェデレーション（実装編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3)

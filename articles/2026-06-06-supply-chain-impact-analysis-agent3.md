@@ -7,16 +7,16 @@ published: false
 ---
 
 :::message
-この記事は、エンタープライズにおける組織分断された複数データドメインの連携と、AIエージェントによるクエリ時論理フェデレーションをテーマにした、3部構成のシリーズ記事の **第3部** です。
+この記事は、エンタープライズにおける組織分断された複数データドメインの連携と、AIエージェントによるクエリ時論理フェデレーションをテーマにした、3部構成のシリーズ記事（シーズン2）の **第3部** です。
 
 * **第 1 部**：[分断されたグラフと影響分析の課題（背景編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)
-* **第 2 部**：[組織境界を維持するフェデレーション（設計編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2)
+* **第 2 部**：[組織境界を維持する論理フェデレーション（設計編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2)
 * **第 3 部**：[共有IDによるクエリ時フェデレーション（実装編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3)（本記事）
 
 ※ シーズン1（仮想グラフの基本概念、AIエージェントでの有効性、変更管理）は以下からご覧いただけます。
-* [第1部 仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
-* [第2部 なぜグラフか](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2)
-* [第3部 変更管理と安定運用](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3)
+* [第1部 Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
+* [第2部  AIエージェントの知識表現と推論になぜグラフが使われるのか？](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2)
+* [第3部 物理グラフDBを独自開発するための変更管理と安定運用戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3)
 :::
 
 ## 概要
@@ -283,5 +283,5 @@ def shortest_supply_path(self, from_component_id: str, to_product_id: str) -> li
 **連載一覧：**
 
 * **第 1 部**：[分断されたグラフと影響分析の課題（背景編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)
-* **第 2 部**：[組織境界を維持するフェデレーション（設計編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2)
+* **第 2 部**：[組織境界を維持する論理フェデレーション（設計編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2)
 * **第 3 部**：[共有IDによるクエリ時フェデレーション（実装編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3)（本記事）
