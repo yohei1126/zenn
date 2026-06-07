@@ -11,7 +11,7 @@ published: true
 
 * **第 1 部**：[分断されたグラフと影響分析の課題（背景編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)（本記事）
 * **第 2 部**：[組織境界を維持する論理フェデレーション（設計編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2)
-* **第 3 部**：[共有IDによるクエリ時フェデレーション（実装編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3)
+* **第 3 部**：共有IDによるクエリ時フェデレーション（実装編）（予定）
 
 ※ 仮想グラフの基本概念、AIエージェントでの有効性、変更管理などを解説した三部作シーズン 1 は以下からご覧いただけます。
 * [第1部 Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
@@ -211,4 +211,4 @@ Supplier X ──(SUPPLIED_BY)──► Component A
 
 * **第 1 部**：[分断されたグラフと影響分析の課題（背景編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)（本記事）
 * **第 2 部**：[組織境界を維持する論理フェデレーション（設計編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2)
-* **第 3 部**：[共有IDによるクエリ時フェデレーション（実装編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3)
+* **第 3 部**：共有IDによるクエリ時フェデレーション（実装編）（予定）
