@@ -128,7 +128,7 @@ Databricks は **OntoRank** という名前で、社内に乱立する「売上�
 
 ### 4.2 連携アプリの射程
 
-Genie Ontology は [Slack](https://slack.com/)・[Confluence](https://www.atlassian.com/software/confluence) 等から **Learned Knowledge** を取り込む 2 系統設計を、[公式発表](https://www.databricks.com/company/newsroom/press-releases/databricks-launches-genie-one-all-new-agentic-coworker-every-team)と[現地レポート](https://zenn.dev/kazushi6/articles/3d58cfe511bcc3)が強調しています。Cortex Sense の公開シグナルは **Snowflake 内と BI コネクタ** が中心で、[SiliconANGLE](https://siliconangle.com/2026/06/02/snowflake-moves-ai-stack-system-intelligence-still-built/) は「SAP / Salesforce / Workday 横断のプロセス知識」は **弱い** と評価しています。CoWork の [MCP コネクタ](https://modelcontextprotocol.io/)（Google Drive、Salesforce、Slack 等）は **アクション接続** であり、Cortex Sense の **意味構築** とはレイヤーが異なります。
+Genie Ontology は [Slack](https://slack.com/)・[Confluence](https://www.atlassian.com/software/confluence) 等から **Learned Knowledge** を取り込む 2 系統設計を、[公式発表](https://www.databricks.com/company/newsroom/press-releases/databricks-launches-genie-one-all-new-agentic-coworker-every-team)と[現地レポート](https://zenn.dev/kazushi6/articles/3d58cfe511bcc3)が強調しています。Cortex Sense の公開シグナルは **Snowflake 内と BI コネクタ** が中心で、[SiliconANGLE](https://siliconangle.com/2026/06/02/snowflake-moves-ai-stack-system-intelligence-still-built/) は「SAP / Salesforce / Workday 横断のプロセス知識」は **弱い** と評価しています。CoWork の [MCP](https://modelcontextprotocol.io/)（Model Context Protocol：LLM と外部ツールを接続するオープン規格）コネクタ（Google Drive、Salesforce、Slack 等）は **アクション接続** であり、Cortex Sense の **意味構築** とはレイヤーが異なります。
 
 ### 4.3 ベンダーロックの対称性
 
@@ -167,13 +167,13 @@ Atlan と [SiliconANGLE](https://siliconangle.com/2026/06/02/snowflake-moves-ai-
 | **意味の構築・裁定** | どの定義を信頼するか | [**Genie Ontology / OntoRank**（前編）](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank) | [**Cortex Sense**（本編）](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology) |
 | 物理グラフの変更管理 | スキーマをどう厳格に保つか | [第 3 部](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3) | CoCo / dbt パイプライン |
 
-[第 3 部](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3) の **二層戦略** ——競争優位に直結するコア（BOM 等）は Pydantic で決定論的に固定し、全社横断メトリクス（「売上」等）だけ統計に任せる——は、プラットフォームを Snowflake に替えても変わりません。Cortex Sense に部品構成グラフまで統計に寄せるのは、Genie Ontology の場合と同じく危険です。
+[第 3 部](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3) の **二層戦略** ——競争優位に直結するコアドメイン（[BOM](https://en.wikipedia.org/wiki/Bill_of_materials)＝部品表 等）は Pydantic で決定論的に固定し、全社横断メトリクス（「売上」等）だけ統計に任せる——は、プラットフォームを Snowflake に替えても変わりません。Cortex Sense に部品構成グラフまで統計に寄せるのは、Genie Ontology の場合と同じく危険です。
 
 ### 5.2 [シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)（論理フェデレーション）——組織境界を越える別の「意味」問題
 
 [シーズン2 第1部](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent) が整理した前提は、[シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)とは異なります。[シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)は **1つの DWH 上** でグラフを扱うのに対し、[シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)は設計（EBOM）・製造（Routing）・調達（Sourcing）のように **部門ごとに別システム・別所有権** のデータを前提にします。全社を1つの物理グラフに統合するアプローチは、[第1部が述べた通り](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent#4-なぜ一元管理セントラルグラフdbは破綻するのか) 組織的・技術的に破綻しやすい。
 
-[第2部](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2) の解は **物理分離・論理結合** です。部品を指す `Component.id` などの **Bridge Keys**（ドメイン横断の共通ID）と **Graph Contract**（どのIDをどの順で結ぶかの機械可読な契約）を全社合意し、クエリ時にだけドメインを横断します。LLM には **決定論的ツール**（検証済みクエリの API）の実行順序だけを任せ、スキーマ丸ごとの SQL 自由生成は避けます——[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)が批判した Text-to-SQL 丸投げと同型の責務分離です。
+[第2部](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2) の解は **物理分離・論理結合** です。部品を指す `Component.id` などの **Bridge Keys**（ドメイン横断の共通ID）と **Graph Contract**（どのIDをどの順で結ぶかの機械可読な契約）を全社合意し、クエリ時にだけドメインを横断します。LLM には **決定論的ツール**（検証済みクエリの API）の実行順序だけを任せます——生のスキーマを見せて SQL を自由生成させると、存在しないカラムや誤った結合を含むクエリ（[ハルシネーション](https://en.wikipedia.org/wiki/Hallucination_(artificial_intelligence))）が多発しやすいため、検証済み API の呼び出しに限定する責務分離は、[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)が批判した Text-to-SQL 丸投げと同型です。
 
 ここで重要なのは、**[Cortex Sense](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology) / [Genie Ontology](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank) が解く問いと、[シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)が解く問いは直交している** 点です。
 
@@ -222,7 +222,7 @@ Cortex Sense は Snowflake 内のクエリ・BI 利用が前提です。分析�
 
 **② CoWork の便利さと Cortex Sense の土台を混同しない**
 
-MCP で Salesforce に繋がることと、「MQL の定義がエージェントに渡る」ことは別問題です。[Harmeet Arora 氏](https://www.linkedin.com/posts/harmeetsarora_snowflakesummit-marketinganalytics-agenticai-share-7467805537636700162-wDcZ/) が述べたように、**定義が Snowflake 内に明示・機械可読で存在するか** を先に確認する必要があります。
+[MCP](https://modelcontextprotocol.io/)（Model Context Protocol）で Salesforce に繋がることと、「MQL の定義がエージェントに渡る」ことは別問題です。[Harmeet Arora 氏](https://www.linkedin.com/posts/harmeetsarora_snowflakesummit-marketinganalytics-agenticai-share-7467805537636700162-wDcZ/) が述べたように、**定義が Snowflake 内に明示・機械可読で存在するか** を先に確認する必要があります。
 
 **③ マルチクラウドでは「どちらの Sense / Ontology が裁定を持つか」**
 
