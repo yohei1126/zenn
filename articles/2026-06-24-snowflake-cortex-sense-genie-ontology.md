@@ -7,14 +7,25 @@ published: false
 ---
 
 :::message
-この記事は、[セマンティック Web の挫折から 20 年 - Databricks「OntoRank」が解く、AIエージェント最大のボトルネック](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank) の続編です。[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)では Genie Ontology / OntoRank を **歴史とアルゴリズム** の観点から整理しました。本編では、同じ 2026 年 6 月に Snowflake が発表した **Cortex Sense** を同じレンズで読み解き、**二大プラットフォームが独立に同じ答えに収束した** という事実を整理します。
+**連載の位置づけ（シーズン1 → 2 → 3）**
 
-[シーズン2（論理フェデレーション 3 部作）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent) とは **別次元のレイヤー**（部門別データの横断結合）を扱いますが、§5 で接続関係を整理します。シーズン1・2 を未読でも §5 冒頭の用語補足で追えるようにしています。
+| シーズン | テーマ | 扱うレイヤー |
+| :--- | :--- | :--- |
+| **[シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)**（仮想グラフ戦略 3 部作） | DWH 上でグラフ的にデータを辿る。コア領域は Pydantic で厳格管理 | ① グラフ探索・型の固定 |
+| **[シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)**（論理フェデレーション 3 部作） | 設計・製造・調達など **部門別データ** を統合せず、共通IDでクエリ時だけ横断 | ② 組織境界のフェデレーション |
+| **シーズン3**（本シリーズ） | 2026 年 6 月の [Snowflake](https://www.snowflake.com/en/news/press-releases/snowflake-cowork-powers-the-agentic-enterprise-as-the-personal-agent-for-knowledge-workers-to-work-smarter/) / [Databricks](https://www.databricks.com/dataaisummit) 各サミットで前面に出た **オントロジー（ビジネス定義）の自動構築** | ③ プラットフォーム内の意味裁定 |
+
+- **シーズン3・前編**：[Genie Ontology / OntoRank](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)（Databricks、歴史とアルゴリズムの観点）
+- **シーズン3・本編**（この記事）：**Cortex Sense**（Snowflake）——公開資料上、**同じカテゴリの機能**であることを整理
+
+シーズン1・2 は、それぞれ「DWH 上でデータをどう辿るか」「部門をまたいだデータをどう結ぶか」を論じました。どちらも整えても、分析エージェントが「先月の売上は？」のような **ビジネス指標** を答える段階では、別の問題が残ります。DWH や BI ツールの中には、**同じ名前でも意味の違う定義**（返品を含むかどうか、どの会計年度に属するか、部門別の集計かなど）が複数並び、テーブル名やカラム名だけでは **どれを信頼すべきか** は決まりません。
+
+シーズン3 が扱うのは、この **ビジネス定義の選択・裁定** です。従来は、人間が定義をすべて先に書き起こすか、LLM に SQL 生成を丸投げするかの二択でした。Genie Ontology / OntoRank と Cortex Sense は、**クエリログ・ダッシュボード利用などの行動統計** から、エージェントが参照すべき定義をプラットフォーム側が自律的に組み立てる——いわゆる **第三の道** です。§5 では、①②③ が有事分析などの実務で **どう重なるか** も示します。
 :::
 
 ## 概要
 
-2026 年 6 月、データインフラの二大巨頭が **ほぼ同時に**、同型の機能を発表しました。
+2026 年 6 月、データインフラの二大巨頭が **ほぼ同時に**、シーズン3が論じる **同型のコンテキストレイヤー** を発表しました。製品名は異なりますが、いずれも **オントロジー snippet の自動抽出と、利用統計に基づく定義の裁定** を担います。
 
 | | Snowflake | Databricks |
 | :--- | :--- | :--- |
@@ -22,7 +33,7 @@ published: false
 | **エージェント UI** | [CoWork](https://www.snowflake.com/en/news/press-releases/snowflake-cowork-powers-the-agentic-enterprise-as-the-personal-agent-for-knowledge-workers-to-work-smarter/)（旧 Snowflake Intelligence） | [Genie One](https://www.databricks.com/product/business-intelligence/ai-bi/genie) |
 | **コンテキストレイヤー** | **Cortex Sense** | [**Genie Ontology**](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)（**OntoRank**） |
 
-[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)が述べた **第三の道** ——人間に全定義を書かせるのでも、LLM に 100% 任せるのでもなく、**プラットフォーム上の利用行動統計から意味レイヤーを自律構築する** ——は、Databricks だけの話ではありませんでした。Snowflake は **2 週間早く** 同じカテゴリの製品を出していました。本記事は、**Cortex Sense** が[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)の Genie Ontology と **同じ思想** であることを、公開資料ベースで整理します。
+[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)が述べた **第三の道** ——人間に全定義を書かせる方式はメンテナンスが破綻し、LLM に [Text-to-SQL](https://en.wikipedia.org/wiki/Text-to-SQL) を100%丸投げすると誤答（[ハルシネーション](https://en.wikipedia.org/wiki/Hallucination_(artificial_intelligence))）を招く——という二大限界に対し、**プラットフォーム上の利用行動統計から意味レイヤーを自律構築する** アプローチは、Databricks だけの話ではありませんでした。Snowflake は **2 週間早く** 同じカテゴリの製品を出していました。本記事は、**Cortex Sense** が[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)の Genie Ontology と **同じ思想** であることを、公開資料ベースで整理します。
 
 ---
 
@@ -46,7 +57,9 @@ Cortex Sense は、この問いに対する Snowflake 版の回答です。[前�
 
 > Snowflake Cortex Sense is a runtime context enrichment layer... It lifts CoCo and CoWork accuracy from 47% to 83% by automatically building a shared context substrate from query history, object metadata, BI dashboards, and Horizon Context semantic views.
 
-要するに **実行時（runtime）の文脈強化レイヤー** です。手動でセマンティックモデルを都度設定するのではなく、すでに Snowflake 内に存在するシグナルから **共有コンテキスト基盤（shared context substrate）** を自動構築し、[CoWork](https://www.snowflake.com/en/news/press-releases/snowflake-cowork-powers-the-agentic-enterprise-as-the-personal-agent-for-knowledge-workers-to-work-smarter/) と [CoCo](https://atlan.com/know/snowflake/snowflake-coco/)（旧 Cortex Code）がクエリ時に引く——という設計です。
+要するに **実行時（runtime）の文脈強化レイヤー** です。手動でセマンティックモデルを都度設定するのではなく、すでに Snowflake 内に存在するシグナルから **共有コンテキスト基盤（shared context substrate）** を自動構築し、[CoWork](https://www.snowflake.com/en/news/press-releases/snowflake-cowork-powers-the-agentic-enterprise-as-the-personal-agent-for-knowledge-workers-to-work-smarter/)（ビジネスユーザー向けの自然言語データ分析エージェント）と [CoCo](https://atlan.com/know/snowflake/snowflake-coco/)（データエンジニア向けのコーディングエージェント、旧 Cortex Code）がクエリ時に引く——という設計です。
+
+Atlan が引用する「精度（accuracy）」は、**自然言語のデータ質問に対し、ビジネス定義を踏まえて正しい SQL や回答を返せた割合**（複雑なエンタープライズクエリを対象とした Snowflake 内部テスト）を指します。
 
 [Snowflake 公式プレスリリース](https://www.snowflake.com/en/news/press-releases/snowflake-cowork-powers-the-agentic-enterprise-as-the-personal-agent-for-knowledge-workers-to-work-smarter/) は、Cortex Sense を **「データ、ビジネス定義、運用知識を自動的に集約し、AI エージェントが信頼できるコンテキストを即座に使えるようにする」** 機能と説明しています。Christian Kleinerman（EVP of Product）は、シグナルを **収集・強化し、CoCo / CoWork / Cortex Agents に渡す** 能力だとキーノートで述べています（Atlan 記事が引用）。
 
@@ -83,7 +96,7 @@ Cortex Sense が参照するシグナルは、公開資料上、次の 4 系統�
 | **解く問い** | 「売上」はどの定義か——複数 snippet の **権威裁定** | スキーマは分かるが **ビジネス意味** が分からない問題 |
 | **入力** | UC メタデータ、クエリ、ダッシュボード、連携アプリ（Slack 等） | クエリ履歴、オブジェクトメタデータ、BI、Horizon セマンティックビュー |
 | **裁定の明示性** | **OntoRank** と名付け、キーノートで説明 | アルゴリズム名は未公開。「runtime enrichment」として説明 |
-| **エージェント** | Genie One | CoWork（ビジネス）、CoCo（ビルダー） |
+| **エージェント** | Genie One | CoWork（分析）、CoCo（データ開発） |
 | **ガバナンス基盤** | [Unity Catalog](https://docs.databricks.com/en/data-governance/unity-catalog/index.html) | [Horizon Catalog / Context](https://www.snowflake.com/en/news/press-releases/snowflake-cowork-powers-the-agentic-enterprise-as-the-personal-agent-for-knowledge-workers-to-work-smarter/) |
 | **手動オントロジー** | 不要（統計的自律構築） | 不要（同上、Atlan 引用） |
 | **権限** | ACL・UC 権限を検索時に適用 | RBAC・マスキングをエージェント経路に適用 |
@@ -114,7 +127,7 @@ Cortex Sense が参照するシグナルは、公開資料上、次の 4 系統�
 
 ### 4.1 OntoRank の「明示性」
 
-Databricks は **OntoRank** という名前で「どの定義を信頼するか」の **格付け** を前面に出しました（[現地レポート](https://zenn.dev/kazushi6/articles/3d58cfe511bcc3)参照）。Snowflake は Cortex Sense を **コンテキスト強化** と呼び、ランキングアルゴリズムの有無や PageRank 変種かどうかは公開されていません。[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)で述べた 2005 年 Swoogle OntoRank との思想的類似は、Snowflake 版では **未確認** です。
+Databricks は **OntoRank** という名前で、社内に乱立する「売上」などの定義候補から、クエリ利用頻度・認証済みアセット・鮮度などのシグナルで **権威スコアを付け、エージェントに渡す snippet を選ぶ格付けロジック** を前面に出しました（[現地レポート](https://zenn.dev/kazushi6/articles/3d58cfe511bcc3)参照）。Snowflake は Cortex Sense を **コンテキスト強化** と呼び、内部のランキング手順や PageRank 変種の有無は公開していません。[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)で述べた 2005 年 Swoogle OntoRank との思想的類似は、Snowflake 版では **未確認** です。
 
 ### 4.2 連携アプリの射程
 
@@ -130,15 +143,16 @@ Atlan と [SiliconANGLE](https://siliconangle.com/2026/06/02/snowflake-moves-ai-
 
 ---
 
-## 5. シリーズとの接続——シーズン1・シーズン2とのレイヤー関係
+## 5. シリーズとの接続——シーズン1・2・3 の三層スタック
 
-Cortex Sense / Genie Ontology は単体ではエンタープライズ AI の全体像を説明しません。[仮想グラフ戦略（シーズン1）](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what) および [論理フェデレーション（シーズン2）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent) と重ねると、**どのレイヤーの問題を解いているか** がはっきりします。
+シーズン3（本記事・前編）だけを読んでも「プラットフォームが意味を自動構築する」ことは分かりますが、エンタープライズ AI 全体では **シーズン1・2 と重ねて初めて実務が閉じます**。§5 冒頭の用語補足とあわせて、レイヤー関係を整理します。
 
 :::message
 **用語の最小補足（シリーズ未読向け）**
 
 - **シーズン1** — データを DWH から動かさずグラフ的に辿る **[仮想グラフ](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)**。BOM などコア領域は [Pydantic](https://docs.pydantic.dev/) で型・制約を固定する（[第3部](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3)）。
 - **シーズン2** — 設計・製造・調達など **部門ごとに分かれたデータ** を1つに統合せず、共通ID（**Bridge Keys**）と結合ルール（**Graph Contract**）で **クエリ時だけ** 横断する **[論理フェデレーション](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2)**。
+- **シーズン3** — エージェントがビジネス指標（売上・MQL など）を答えるとき、「同名でも定義が複数ある」問題の裁定。[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)の Genie Ontology / OntoRank と本編の Cortex Sense が、利用統計から定義を自動構築するレイヤー（③）。
 :::
 
 ### 5.1 シーズン1（仮想グラフ戦略）——単一プラットフォーム上のグラフと厳格層
@@ -158,7 +172,7 @@ Cortex Sense / Genie Ontology は単体ではエンタープライズ AI の全�
 
 [シーズン2 第1部](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent) が整理した前提は、シーズン1とは異なります。シーズン1は **1つの DWH 上** でグラフを扱うのに対し、シーズン2は設計（EBOM）・製造（Routing）・調達（Sourcing）のように **部門ごとに別システム・別所有権** のデータを前提にします。全社を1つの物理グラフに統合するアプローチは、[第1部が述べた通り](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent#4-なぜ一元管理セントラルグラフdbは破綻するのか) 組織的・技術的に破綻しやすい。
 
-[第2部](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2) の解は **物理分離・論理結合** です。部品を指す `Component.id` などの **Bridge Keys**（ドメイン横断の共通ID）と **Graph Contract**（どのIDをどの順で結ぶかの機械可読な契約）を全社合意し、クエリ時にだけドメインを横断します。LLM には **決定論的ツール**（検証済みクエリの API）の実行順序だけを任せる——この責務分離は、前編が批判した「Text-to-SQL 丸投げ」と同型です。
+[第2部](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2) の解は **物理分離・論理結合** です。部品を指す `Component.id` などの **Bridge Keys**（ドメイン横断の共通ID）と **Graph Contract**（どのIDをどの順で結ぶかの機械可読な契約）を全社合意し、クエリ時にだけドメインを横断します。LLM には **決定論的ツール**（検証済みクエリの API）の実行順序だけを任せ、スキーマ丸ごとの SQL 自由生成は避けます——[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)が批判した Text-to-SQL 丸投げと同型の責務分離です。
 
 ここで重要なのは、**Cortex Sense / Genie Ontology が解く問いと、シーズン2が解く問いは直交している** 点です。
 
