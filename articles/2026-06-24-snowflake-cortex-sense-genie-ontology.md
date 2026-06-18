@@ -154,6 +154,7 @@ Atlan と [SiliconANGLE](https://siliconangle.com/2026/06/02/snowflake-moves-ai-
 - **[シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)** — データを DWH から動かさずグラフ的に辿る **[仮想グラフ](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)**。コアドメインは [Pydantic](https://docs.pydantic.dev/) で型・制約を固定する（[第3部](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3)）。
 - **[シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)** — **部門やシステムごとに分かれたデータ** を1つに統合せず、共通ID（**Bridge Keys**）と結合ルール（**Graph Contract**）で **クエリ時だけ** 横断する **[論理フェデレーション](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2)**。
 - **[シーズン3](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)** — エージェントがビジネス指標（売上・MQL など）を答えるとき、「同名でも定義が複数ある」問題の裁定。[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)の Genie Ontology / OntoRank と [本編](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology)の Cortex Sense が、利用統計から定義を自動構築するレイヤー（③）。
+
 :::
 
 ### 5.1 [シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)（仮想グラフ戦略）——単一プラットフォーム上のグラフと厳格層
@@ -190,7 +191,7 @@ Atlan と [SiliconANGLE](https://siliconangle.com/2026/06/02/snowflake-moves-ai-
 
 [第3部（実装編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3) のサプライチェーン影響分析エージェント（例：サプライヤー停止→部品→製品→工程への波及追跡）を、[本記事](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology)の文脈に載せ替えると、実行時にはおおよそ次の三層が重なります（§5 冒頭の用語補足と対応）。
 
-```
+```text
 [ ③ プラットフォーム・コンテキスト層 ]
   Cortex Sense / Genie Ontology — DWH 内メトリクス定義の統計的裁定
            │
