@@ -145,7 +145,7 @@ JOIN products p ON b.product_id = p.product_id;
 | 概念 | 位置づけ |
 | :--- | :--- |
 | **スキーマレス（DB）** | 柔軟だが変更管理が地獄（Season 1 第3部 §2） |
-| **アプリ層スキーマ強制** | Pydantic 等 = TBox 寄りの厳格層 |
+| **アプリ層スキーマ強制** | Pydantic 等 = TBox 寄りのコアドメイン層 |
 | **データ契約 / Graph Contract** | 組織間・フェデレーションの約束（Season 2） |
 
 **`:::message` 案 — TBox vs Playbook（初出）**

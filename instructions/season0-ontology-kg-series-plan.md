@@ -56,7 +56,7 @@ graph LR
 | 用語 | Season 0 での定義 | Season 1 での展開 | Season 2 での展開 |
 | :--- | :--- | :--- | :--- |
 | オントロジー | 古典：語彙・関係・制約・（推論） | 再定義：型・制約・利用文脈の SSOT | 狭義語彙＋契約レイヤーへの分離を示唆 |
-| TBox / ABox | 用語箱 vs 事例箱 | Pydantic = TBox 寄りの厳格層 | `ontology/schema.py` |
+| TBox / ABox | 用語箱 vs 事例箱 | Pydantic = TBox 寄りのコアドメイン層 | `ontology/schema.py` |
 | Playbook | 分析手順・探索テンプレート | Agent Skill | Graph Contract（Federation Joins） |
 | 知識グラフ | RDF 系 / LPG 系の二系譜 | 仮想グラフ + 物理グラフ | Neo4j マルチDB |
 | 推論 | DL / OWL 推論 | LLM との役割分担 | 決定論的ツール境界 |
