@@ -147,7 +147,7 @@ Atlan と [SiliconANGLE](https://siliconangle.com/2026/06/02/snowflake-moves-ai-
 
 一方で **すべてを自動に任せてよいわけではありません**。**①** は、自社の競争優位や業務判断に直結する **コアドメインのエンティティと関係**——誤った解釈がそのまま損失につながるマスタや業務ルール——であり、[シーズン1 第3部](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3) が示したとおり、Pydantic 等で **顧客が決定論的にモデリング・固定** する必要があります。**②** は、部門やシステムの境界をまたぐ **共通IDと結合順序** の問題であり、[シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent) の **Bridge Keys** と **Graph Contract** として、組織が独自に設計・合意しなければなりません——DWH 内のプラットフォーム・コンテキスト層（③）だけでは解けません。
 
-実務では、**どの層をプラットフォームの自動構築に任せ、どの層を自社でモデリングするか** を先に切り分ける必要があります。その設計図を描くのに、[シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)（辿り方・厳格層）と [シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)（部門フェデレーション）の解説がそのまま役立ちます。以下、①②③の三層スタックとして整理します。
+実務では、**どの層をプラットフォームの自動構築に任せ、どの層を自社でモデリングするか** を先に切り分ける必要があります。その設計図を描くのに、[シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)（辿り方・コアドメイン層）と [シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)（部門フェデレーション）の解説がそのまま役立ちます。以下、①②③の三層スタックとして整理します。
 
 :::message
 **過去シリーズ未読の方向けの用語補足**
@@ -158,7 +158,7 @@ Atlan と [SiliconANGLE](https://siliconangle.com/2026/06/02/snowflake-moves-ai-
 
 :::
 
-### 5.1 [シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)（仮想グラフ戦略）——単一プラットフォーム上のグラフと厳格層
+### 5.1 [シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)（仮想グラフ戦略）——単一プラットフォーム上のグラフとコアドメイン層
 
 [仮想グラフ戦略 3 部作](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what) のレイヤー表に、[本編](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology)と[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)を重ねると次のようになります。
 
@@ -202,11 +202,11 @@ Atlan と [SiliconANGLE](https://siliconangle.com/2026/06/02/snowflake-moves-ai-
   決定論的ツール（bom_supplier_impact 等）
            │
            ▼
-[ ① コアドメイン厳格層 ]  ← シーズン1 第3部
+[ ① コアドメイン層 ]  ← シーズン1 第3部
   Pydantic / ontology/schema.py — BOM・関係性の型と越境禁止
 ```
 
-具体例で言えば、「東アジアの港湾停止でサプライヤー X が止まった」という [第1部のシナリオ](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent#31-途絶発生時のシナリオ) では、**②** の `analyze_supplier_disruption` が `Component.id` をバトンに EBOM → Routing を横断します（[シーズン2 第3部 §4.1](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3#41-3段階の連鎖的クエリ実行-appfederationanalysispy)）。その結果を「影響売上はいくらか」と経営層に要約するとき、**③** の [Cortex Sense](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology) / [OntoRank](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank) が「売上」の定義を Horizon / UC 上から選びます。BOM の親子関係そのものは **①** の厳格グラフ（[シーズン1 第3部](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3)の `USED_IN` 接続制約、[シーズン2 第3部](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3)の `domains/registry.py` 越境禁止）が守ります。
+具体例で言えば、「東アジアの港湾停止でサプライヤー X が止まった」という [第1部のシナリオ](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent#31-途絶発生時のシナリオ) では、**②** の `analyze_supplier_disruption` が `Component.id` をバトンに EBOM → Routing を横断します（[シーズン2 第3部 §4.1](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3#41-3段階の連鎖的クエリ実行-appfederationanalysispy)）。その結果を「影響売上はいくらか」と経営層に要約するとき、**③** の [Cortex Sense](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology) / [OntoRank](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank) が「売上」の定義を Horizon / UC 上から選びます。BOM の親子関係そのものは **①** の決定論的グラフ（[シーズン1 第3部](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3)の `USED_IN` 接続制約、[シーズン2 第3部](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3)の `domains/registry.py` 越境禁止）が守ります。
 
 [シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)の `ontology/` ディレクトリは、[第3部](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3) で実装した **Graph Contract**（[シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)の Pydantic 定義に、組織横断の結合ルールを上乗せしたもの）です。[Cortex Sense](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology) はこれを **置き換えません**。DWH 上の分析エージェント向けコンテキストとして **隣接レイヤー** に位置します。
 
