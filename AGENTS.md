@@ -62,7 +62,7 @@ Season 3 は未執筆。執筆順: **3A → Epilogue → Season 4（任意）**�
 | `ontology/schema.py` (Pydantic) | Closed 側意味・Data Product |
 | `graph_contract.yaml` | 社内意味契約 + Federation Joins |
 
-**Graph Contract** は実装では `ontology/contract/graph_contract.yaml`（旧 graph_context からリネーム済み方針）。
+**Graph Contract** は実装では `ontology/contract/graph_contract.yaml`（旧 `graph_context.yaml` からリネーム済み）。
 
 ## 記事執筆ルール
 
