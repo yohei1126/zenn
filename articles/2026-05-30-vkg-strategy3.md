@@ -7,11 +7,23 @@ published: true
 ---
 
 :::message
-この記事は、Snowflake / Databricks / Google Cloud が推進する仮想グラフによる知識グラフをテーマにした、3部構成のシリーズ記事の **第3部** です。
+**連載の位置づけ（[シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what) → [シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent) → [シーズン3](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank) → [シーズン4](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-redefinition)）**
+
+本連載の主題は、エンタープライズ AI に必要な **「意味の層」**（ビジネス定義・関係・信頼すべき資産）の設計です。
+
+| シーズン | 問い |
+| :--- | :--- |
+| **シーズン1**（仮想グラフ・3部作） | ① データをどう辿り、型を固定するか |
+| **シーズン2**（論理フェデレーション・3部作） | ② 部門別データをどう結ぶか |
+| **シーズン3**（[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)・[本編](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology)） | ③ どの定義を信頼するか（Genie Ontology / Cortex Sense） |
+| [シーズン4](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-redefinition)（現代の知識グラフとオントロジー・3部作） | ④ グラフの品質検証からエージェント回答の根拠確認まで、どう実装するか |
+
+**本記事**は **シーズン1「AIエージェントを支える次世代データ基盤」** の **第3部** です。
 
 * [第 1 部 Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
 * [第 2 部 AIエージェントの知識表現と推論になぜグラフが使われるのか？](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2)
 * **第 3 部** ：物理グラフDBを独自開発するための変更管理と安定運用戦略（本記事）
+
 :::
 
 ## 概要
@@ -74,7 +86,7 @@ AIエージェントに知識グラフをクエリさせる際、LLMに直接ア
 
 ### ① スキーマレス運用が直面する3つの壁
 
-* **データ整合性の破壊**: 
+* **データ整合性の破壊**:
   あるエンジニアが定義した `Employee` ノードに `email` プロパティが含まれている一方、別のエンジニアが追加したノードには `mail_address` として登録されたり、必須プロパティが欠落したノードが意図せずコミットされたりします。
 * **関係性の制約崩壊**:
   「`Department` ノードと `Component` ノードの間には関係性（エッジ）を結んではならない」といったビジネスルール（ドメイン制約）が存在しても、スキーマレスの環境では、アプリケーションのバグにより無意味なエッジが容易に書き込まれてしまいます。
@@ -137,15 +149,15 @@ graph TD
         G2["領域B: サプライヤーリスクグラフ"]
         G3["領域C: 物流ルートグラフ"]
     end
-    
+
     G1 -.->|ゆるやかな関連性| G2
     G2 -.->|ゆるやかな関連性| G3
     G3 -.->|ゆるやかな関連性| G1
-    
+
     subgraph Integration ["次のステップ (連動による大きな自動化)"]
         Unified["各領域の連動・オーケストレーション (AIエージェント)"]
     end
-    
+
     Local --> Integration
 ```
 
@@ -185,17 +197,19 @@ graph TD
     PydanticModel["Pydanticモデル (SSOT: 共通定義)"]
     PydanticModel -->|1. データの整合性強制| WriteValidation["更新時のバリデータ"]
     WriteValidation -->|安全な更新| GraphDB["グラフDB (Neo4j等)"]
-    
+
     PydanticModel -->|2. 動的ロード| AgentSkill["Agent Skill (MCP / OpenAPI等)"]
     AgentSkill -->|メタデータ・プロンプト提示| LLMAgent["LLM / AIエージェント"]
     LLMAgent -->|正確なGQL/SQL実行| GraphDB
 ```
 
 #### 役割1：グラフDB更新時の制約バリデータ（インフラ防衛）
+
 アプリケーションがグラフDBを更新する（ノードを追加する、エッジを結ぶ）際、必ずこのスキーマ検証モデルを通してバリデーションをかけます。
 モデルが、未定義プロパティ、型の不一致、さらには「このノードラベル間には存在し得ない未定義のエッジラベル」を検知した時点でデータベースへの書き込みを遮断します。これにより、スキーマレスなデータベースの背後にアプリレイヤーで厳格な防壁を築き、データの一貫性を維持します。
 
 #### 役割2：LLMに対する認知的スキーマの提示（クエリ生成の支援）
+
 AIエージェントがグラフ構造に対してCypherやGQLといったクエリを動的に生成する際、スキーマ検証モデルからエクスポートした「JSON Schema」や「メタデータ定義」を、LLMのシステムプロンプトのコンテキストに提示します。
 これにより、LLMはグラフDB内の正しい型情報や関係性の許容ルールを理解でき、存在しないプロパティや誤った接続パスをクエリしようとするハルシネーション（エラークエリの生成）を低減できます。
 
@@ -206,7 +220,9 @@ AIエージェントがグラフ構造に対してCypherやGQLといったクエ
 そこで、特定のグラフ分析手続きを **「Agent Skill（エージェント・スキル）」** として定義し、以下の設計原則に沿って実装します。
 
 #### 1. メタデータへの「ドメイン知識」の記述
+
 Skillの説明（Description）やプロンプトテンプレートの中に、以下のような**分析のためのドメイン知識**を記述します。
+
 * **どのようなビジネス上の文脈**（例：サプライチェーン途絶リスクのシミュレーション）で実行すべきか
 * **どのノード**（例：`Component`, `Supplier`）および**エッジ**（例：`SUPPLIED_BY`）に着目すべきか
 * **どのようなクエリやアルゴリズム**（例：影響範囲の探索）を組み合わせるべきか
@@ -214,10 +230,12 @@ Skillの説明（Description）やプロンプトテンプレートの中に、�
 この詳細なドメイン定義があることで、Skillをロードしたエージェントは「今はこの意思決定が必要だから、あのノードとエッジを利用するこのSkillを呼び出すべきだ」と適切に判断し、正確な分析を行えるようになります。
 
 #### 2. オープン標準による汎用性（ポータビリティ）
+
 これらのSkillは、特定の自社アプリケーション内だけで機能する閉じた仕組みにするのではなく、**Model Context Protocol (MCP)** や **OpenAPI / JSON Schema** などの「オープン標準」のツール仕様に準拠して定義します。
 オープン標準で実装しておくことで、Web UIアプリ、バックエンドの自律ワークフロー、さらにはCLI型コーディングエージェント（Antigravity等）に至るまで、様々なプラットフォームやランタイムでそのまま汎用的に再利用できるようになります。
 
 #### 3. Single Source of Truth (SSOT) の徹底
+
 将来的にグラフスキーマやデータの物理的制約が変更された際、すべてのSkill定義を個別に手動で修正するのは「スキーマレスの地獄」を上層アプリケーション層に再現するのと同じです。
 そのため、**「スキーマ情報や制約情報はSkill内に決してハードコードしない」** という原則を徹底します。
 型定義や制約情報は、共通のPydanticモデルという **Single Source of Truth（信頼できる唯一の情報源）** に一元化し、Skillは実行時や初期化（ロード）時にその定義から動的にJSON Schemaやプロパティのルールをロードして、LLMへの提示用プロンプトを構築します。これにより、インフラ層のデータモデル変更が、上層のエージェントSkillへと安全かつ即座に伝播します。
@@ -246,7 +264,7 @@ class ComponentNode(BaseModel):
     name: str = Field(..., description="部品の正式名称")
     material: str = Field(..., description="部品の主材質")
     cost: float = Field(..., gt=0.0, description="製造または調達コスト (正の数値のみ)")
-    
+
     # ノードに付与される物理DB用ラベル
     label: Literal["Component"] = "Component"
 
@@ -256,7 +274,7 @@ class SupplierNode(BaseModel):
     company_name: str = Field(..., description="企業名")
     country: str = Field(..., description="調達国 (ISOコード二文字等)")
     risk_level: Literal["Low", "Medium", "High"] = Field(..., description="BCP観点での供給リスク")
-    
+
     label: Literal["Supplier"] = "Supplier"
 
 # ----------------------------------------------------
@@ -269,7 +287,7 @@ class SuppliedByEdge(BaseModel):
     source_id: str
     target_label: Literal["Supplier"] = "Supplier"
     target_id: str
-    
+
     edge_type: Literal["SUPPLIED_BY"] = "SUPPLIED_BY"
     lead_time_days: int = Field(..., ge=1, description="調達リードタイム (日数)")
 ```
@@ -331,7 +349,7 @@ def generate_llm_system_prompt() -> str:
     component_schema = ComponentNode.model_json_schema()
     supplier_schema = SupplierNode.model_json_schema()
     edge_schema = SuppliedByEdge.model_json_schema()
-    
+
     prompt = f"""
 あなたは弊社の製造サプライチェーン(BOM)とサプライヤーに関する知識グラフを探索するAIエージェントです。
 ユーザーの自然言語による意図を理解し、正しいNeo4j Cypherクエリを生成してください。

@@ -7,7 +7,18 @@ published: true
 ---
 
 :::message
-この記事は、[仮想グラフ戦略 3部作](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what) の続編です。発表の機能説明そのものは [Databricks 公式プレスリリース](https://www.databricks.com/company/newsroom/press-releases/databricks-launches-genie-one-all-new-agentic-coworker-every-team) と [Kazushi 氏の現地レポート](https://zenn.dev/kazushi6/articles/3d58cfe511bcc3) に任せ、ここでは **なぜ OntoRank がパラダイムの転換点なのか** を歴史とアルゴリズムの観点から整理します。
+**連載の位置づけ（[シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what) → [シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent) → [シーズン3](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank) → [シーズン4](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-redefinition)）**
+
+本連載の主題は、エンタープライズ AI に必要な **「意味の層」**（ビジネス定義・関係・信頼すべき資産）の設計です。
+
+| シーズン | 問い |
+| :--- | :--- |
+| [シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)（仮想グラフ） | ① データをどう辿り、型を固定するか |
+| [シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)（論理フェデレーション） | ② 部門別データをどう結ぶか |
+| **シーズン3**（[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)・[本編](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology)） | ③ どの定義を信頼するか（Genie Ontology / Cortex Sense） |
+| [シーズン4](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-redefinition)（現代の知識グラフとオントロジー・3部作） | ④ グラフの品質検証からエージェント回答の根拠確認まで、どう実装するか |
+
+**本記事**は **シーズン3 の前編** です。発表の機能説明そのものは [Databricks 公式プレスリリース](https://www.databricks.com/company/newsroom/press-releases/databricks-launches-genie-one-all-new-agentic-coworker-every-team) と [Kazushi 氏の現地レポート](https://zenn.dev/kazushi6/articles/3d58cfe511bcc3) に任せ、ここでは **なぜ OntoRank がパラダイムの転換点なのか** を歴史とアルゴリズムの観点から整理します。[本編（Snowflake Cortex Sense）](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology) では同型のコンテキストレイヤーを Snowflake 側から論じます。
 :::
 
 ## 概要
@@ -133,8 +144,8 @@ OntoRank の核心は、**「どの定義を正とするか」を人間の会議
 
 **OntoRank という名前は、Databricks が初めて付けたものではない可能性が高いです。** 調査すると、2005年の [ISWC](https://iswc.semanticweb.org/) 論文に、まったく同じ名称のアルゴリズムが登場します。
 
-> Li Ding, Rong Pan, Tim Finin, Anupam Joshi, Yun Peng, Pranam Kolari,  
-> **"Finding and Ranking Knowledge on the Semantic Web"**, ISWC 2005, LNCS 3729, pp.156–170  
+> Li Ding, Rong Pan, Tim Finin, Anupam Joshi, Yun Peng, Pranam Kolari,
+> **"Finding and Ranking Knowledge on the Semantic Web"**, ISWC 2005, LNCS 3729, pp.156–170
 > ([UMBC 公開 PDF](https://ebiquity.umbc.edu/_file_directory_/papers/197.pdf))
 
 この論文は、セマンティックWeb検索エンジン **[Swoogle](https://ebiquity.umbc.edu/project/html/id/53/Swoogle)** の一部として **OntoRank** を提案しています。当時すでに顕在化していた問題は、Databricks がキーノートで語った問題と構造的に酷似しています。

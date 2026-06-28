@@ -7,17 +7,18 @@ published: true
 ---
 
 :::message
-**連載の位置づけ（[シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what) → [シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent) → [シーズン3](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)）**
+**連載の位置づけ（[シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what) → [シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent) → [シーズン3](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank) → [シーズン4](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-redefinition)）**
 
-本連載の主題は、エンタープライズ AI に必要な **「意味の層」**（ビジネス定義・関係・信頼すべき資産）の設計です。2026年、分析エージェントが製品の中心になるなか、人力オントロジーの限界を **クエリログ等の行動統計で補う** 方向へ、[知識グラフ](https://neo4j.com/blog/knowledge-graph/)・オントロジーがデータプラットフォームで再注目されています（[シーズン1 第2部](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2)、[シーズン3 前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)）。
+本連載の主題は、エンタープライズ AI に必要な **「意味の層」**（ビジネス定義・関係・信頼すべき資産）の設計です。
 
 | シーズン | 問い |
 | :--- | :--- |
 | [シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)（仮想グラフ） | ① データをどう辿り、型を固定するか |
 | [シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)（論理フェデレーション） | ② 部門別データをどう結ぶか |
-| [シーズン3](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)（[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)・**[本編](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology)**） | ③ どの定義を信頼するか（Genie Ontology / Cortex Sense） |
+| **シーズン3**（[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)・**[本編](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology)**） | ③ どの定義を信頼するか（Genie Ontology / Cortex Sense） |
+| [シーズン4](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-redefinition)（現代の知識グラフとオントロジー・3部作） | ④ グラフの品質検証からエージェント回答の根拠確認まで、どう実装するか |
 
-**本編**は [前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)の続きです。Snowflake **Cortex Sense** が Genie Ontology と同型のコンテキストレイヤーであることを整理します。§5 で①②③の実務上の重なりも示します。
+**本記事**は **シーズン3 の本編** です。[前編（Databricks Genie Ontology / OntoRank）](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank) の続きとして、Snowflake **Cortex Sense** が Genie Ontology と同型のコンテキストレイヤーであることを整理します。§5 で①②③の実務上の重なりも示します。
 :::
 
 ## 概要
