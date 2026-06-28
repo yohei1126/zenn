@@ -172,10 +172,10 @@ uv run python scripts/audit_neo4j.py
 
 ## 4. Graph Contract による部門グラフの結合と監査
 
-複数の異なるデータベースやデータドメイン（設計 EBOM・製造 Routing・調達 Sourcing）を横断してエージェントにクエリさせる **論理フェデレーション** の結合仕様は、[シーズン2 第2部 §3](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2) で設計、[第3部 §4](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3) で実装として解説済みです。本節では、同じ **`ontology/contract/graph_context.yaml`**（Graph Contract）を、シーズン4 の **L4（結合契約）** および取込・結合時の品質ゲートの観点から追います。
+複数の異なるデータベースやデータドメイン（設計 EBOM・製造 Routing・調達 Sourcing）を横断してエージェントにクエリさせる **論理フェデレーション** の結合仕様は、[シーズン2 第2部 §3](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2) で設計、[第3部 §4](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3) で実装として解説済みです。本節では、同じ **`ontology/contract/graph_contract.yaml`**（Graph Contract）を、シーズン4 の **L4（結合契約）** および取込・結合時の品質ゲートの観点から追います。
 
 ```yaml
-# ontology/contract/graph_context.yaml の一部抜粋
+# ontology/contract/graph_contract.yaml の一部抜粋
 federation:
   joins:
     - from_graph: "bom_graph"
@@ -218,6 +218,10 @@ def get_supplier_impact_path(component_id: str) -> dict:
 
 本システムでは、エージェントがユーザーに最終的なテキスト回答を返す直前に、**`app/agent/grounding.py`** の検証プログラムを実行します。
 
+:::message alert
+**実装との差分** — リポジトリ本体では `evaluate_grounding` は `tool_calls`・`results`・`explanation`・`findings`・`evidence` などの構造化入力を受け取り、合格/不合格と違反理由を含む **`GroundingReport`** を返します。エージェント実行全体は `evaluate_agent_run(result)` から呼び出されます。以下は **「ツール出力にない ID を回答が捏造していないか」** という論理の本質を抽出した簡略版です。
+:::
+
 ```python
 # app/agent/grounding.py (簡略化した論理抜粋)
 def evaluate_grounding(llm_answer: str, tool_evidence: dict) -> bool:
@@ -243,7 +247,7 @@ def evaluate_grounding(llm_answer: str, tool_evidence: dict) -> bool:
 
 ### 逸脱検知時のフォールバック処理
 
-もし `evaluate_grounding()` の判定が `False`（ハルシネーションあり）となった場合、エージェントはLLMが生成した危うい文章をそのまま出力するのを止め、システム側で定義された定型要約（`mode=tools` に基づく、エビデンスデータから定型プログラムで自動組み立てされたヒューリスティックなレポート文）に差し替えて出力します。
+もし `evaluate_grounding()`（実装では `GroundingReport.passed`）の判定が不合格（ハルシネーションあり）となった場合、エージェントはLLMが生成した危うい文章をそのまま出力するのを止め、システム側で定義された定型要約（`mode=tools` に基づく、エビデンスデータから定型プログラムで自動組み立てされたヒューリスティックなレポート文）に差し替えて出力します。
 
 これにより、LLMの要約における「勝手なでっち上げ」や「嘘の混入」をユーザーに届ける前に100%水際で防御できます。
 

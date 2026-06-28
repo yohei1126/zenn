@@ -18,7 +18,7 @@ published: false
 | [シーズン3](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)（[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)・[本編](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology)） | ③ どの定義を信頼するか（PF 上の意味レイヤー自動構築） |
 | [シーズン4](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-redefinition)（現代の知識グラフとオントロジー・3部作） | ④ グラフの品質検証からエージェント回答の根拠確認まで、どう実装するか |
 
-**本記事**は **シーズン4「現代の知識グラフとオントロジー」** の **第2部** です。[シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2) の Graph Contract・論理フェデレーションを **検証タイミング（Validation Timing）** と DE/AI 分担の観点で再構成します。
+**本記事**は **シーズン4「現代の知識グラフとオントロジー」** の **第2部** です。[シーズン2 第2部](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2) の Graph Contract・論理フェデレーションを **検証タイミング（Validation Timing）** と DE/AI 分担の観点で再構成します。
 
 * **第 1 部** ： [「推論」から「契約」へ：データ品質保証と回答検証の全体像](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-redefinition)
 * **第 2 部** ： [インジェストから監査まで、DE/AIの検証タイミング設計](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-modern-architecture)（本記事）

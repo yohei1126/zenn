@@ -41,7 +41,7 @@
 | :--- | :--- |
 | 索引 | [ontology-levels.md](file:///Users/yoheionishi/work/supply-chain-impact-analysis-agent/docs/ontology-levels.md) |
 | L0–L2 SSOT | [ontology/schema.py](file:///Users/yoheionishi/work/supply-chain-impact-analysis-agent/ontology/schema.py) |
-| L4 SSOT | [ontology/contract/graph_context.yaml](file:///Users/yoheionishi/work/supply-chain-impact-analysis-agent/ontology/contract/graph_context.yaml)（※ `graph_contract.yaml` 扱い） |
+| L4 SSOT | [ontology/contract/graph_contract.yaml](file:///Users/yoheionishi/work/supply-chain-impact-analysis-agent/ontology/contract/graph_contract.yaml) |
 | export | [scripts/sync_ontology.py](file:///Users/yoheionishi/work/supply-chain-impact-analysis-agent/scripts/sync_ontology.py) |
 | seed + gate | [scripts/seed_complex_bom.py](file:///Users/yoheionishi/work/supply-chain-impact-analysis-agent/scripts/seed_complex_bom.py) |
 | L3 audit | [scripts/audit_neo4j.py](file:///Users/yoheionishi/work/supply-chain-impact-analysis-agent/scripts/audit_neo4j.py), [app/validation/neo4j_l3_audit.py](file:///Users/yoheionishi/work/supply-chain-impact-analysis-agent/app/validation/neo4j_l3_audit.py) |
@@ -154,7 +154,7 @@ validated ingest → federated traversal → grounded answers を実現するた
   - 3) Grounding（回答の根拠検証ゲート）
 * **§2. 検証タイミング（Validation Timing）の設計**:
   - `ontology-levels-project.md` §5 に基づき、データの一貫性を保証するための検証フェーズを定義。
-    - **Authoring時**: `schema.py` や `graph_context.yaml` による「定義」（L0-L2, L4）
+    - **Authoring時**: `schema.py` や `graph_contract.yaml` による「定義」（L0-L2, L4）
     - **Pre-load (メモリ上)**: データ投入前の早期エラー検出
     - **On write (書き込み時)**: closed-world ingest に従い、ストレージ境界で型やリレーション違反をブロック
     - **After load (ロード後監査 - L3)**: Cypher監査と Neosemantics SHACL による実データ整合性の「証明」
@@ -188,7 +188,7 @@ validated ingest → federated traversal → grounded answers を実現するた
   - `seed_complex_bom.py --reset` の実行。
   - `audit_neo4j.py` (Cypher + Pydantic + SHACL) による全体整合の証明。
 * **§4. 【DE/AI境界】L4: Graph Contract によるドメイン連携と監査**:
-  - `graph_contract.yaml` (旧 `graph_context.yaml`) による Bridge Key の定義。
+  - `graph_contract.yaml` による Bridge Key の定義。
   - `audit_ingest_pipeline.py` を用いた連携品質の自動監査。
 * **§5. 【AIトラック】Federated Traversal: 決定論的ツールによる探索**:
   - `app/exploration.py` / `composer.py` の join 処理。LLMに Cypher を書かせないメリット。
