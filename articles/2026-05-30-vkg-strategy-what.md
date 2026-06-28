@@ -7,11 +7,23 @@ published: true
 ---
 
 :::message
-この記事は、Snowflake / Databricks / Google Cloud が推進する仮想グラフによる知識グラフをテーマにした、3部構成のシリーズ記事の **第1部** です。
+**連載の位置づけ（[シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what) → [シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent) → [シーズン3](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank) → [シーズン4](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-redefinition)）**
+
+本連載の主題は、エンタープライズ AI に必要な **「意味の層」**（ビジネス定義・関係・信頼すべき資産）の設計です。
+
+| シーズン | 問い |
+| :--- | :--- |
+| **シーズン1**（仮想グラフ・3部作） | ① データをどう辿り、型を固定するか |
+| **シーズン2**（論理フェデレーション・3部作） | ② 部門別データをどう結ぶか |
+| **シーズン3**（[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)・[本編](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology)） | ③ どの定義を信頼するか（Genie Ontology / Cortex Sense） |
+| [シーズン4](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-redefinition)（現代の知識グラフとオントロジー・3部作） | ④ グラフの品質検証からエージェント回答の根拠確認まで、どう実装するか |
+
+**本記事**は **シーズン1「AIエージェントを支える次世代データ基盤」** の **第1部** です。
 
 * **第 1 部** ： [Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)（本記事）
 * **第 2 部** ： [AIエージェントの知識表現と推論になぜグラフが使われるのか？](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2)
 * **第 3 部** ： [物理グラフDBを独自開発するための変更管理と安定運用戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3)
+
 :::
 
 ## 概要

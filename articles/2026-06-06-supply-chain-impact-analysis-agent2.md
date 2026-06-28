@@ -7,16 +7,23 @@ published: true
 ---
 
 :::message
-この記事は、エンタープライズにおける組織分断された複数データドメインの連携と、AIエージェントによるクエリ時論理フェデレーションをテーマにした、3部構成のシリーズ記事（シーズン2）の **第2部** です。
+**連載の位置づけ（[シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what) → [シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent) → [シーズン3](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank) → [シーズン4](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-redefinition)）**
+
+本連載の主題は、エンタープライズ AI に必要な **「意味の層」**（ビジネス定義・関係・信頼すべき資産）の設計です。
+
+| シーズン | 問い |
+| :--- | :--- |
+| **シーズン1**（仮想グラフ・3部作） | ① データをどう辿り、型を固定するか |
+| **シーズン2**（論理フェデレーション・3部作） | ② 部門別データをどう結ぶか |
+| **シーズン3**（[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)・[本編](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology)） | ③ どの定義を信頼するか（Genie Ontology / Cortex Sense） |
+| [シーズン4](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-redefinition)（現代の知識グラフとオントロジー・3部作） | ④ グラフの品質検証からエージェント回答の根拠確認まで、どう実装するか |
+
+**本記事**は **シーズン2「組織の境界を越えるAIエージェントの知識連携」** の **第2部** です。
 
 * **第 1 部**：[分断されたグラフと影響分析の課題（背景編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)
 * **第 2 部**：[組織境界を維持する論理フェデレーション（設計編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2)（本記事）
 * **第 3 部**：[サプライチェーン影響分析エージェントの実装（実装編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3)
 
-※ シーズン1（仮想グラフの基本概念、AIエージェントでの有効性、変更管理）は以下からご覧いただけます。
-* [第1部 Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
-* [第2部  AIエージェントの知識表現と推論になぜグラフが使われるのか？](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2)
-* [第3部 物理グラフDBを独自開発するための変更管理と安定運用戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3)
 :::
 
 ## 概要
@@ -37,7 +44,7 @@ published: true
 
 これが **「物理分離・論理結合（Physical Separation, Logical Federation）」** の原則です。
 
-```
+```text
 [調達ドメインのローカルグラフ]
 Supplier X ──(SUPPLIED_BY)──► Component A (ID: COMP-103)
                                   │
@@ -81,17 +88,17 @@ graph TD
         BC["Bridge Keys (共有ID契約)"]
         GC["Graph Contract (共有IDと結合規則の契約)"]
     end
-    
+
     subgraph OrgSlices ["組織スライス (各部門の自律領域)"]
         EBOM["EBOMグラフ (設計部門)"]
         Routing["Routingグラフ (製造部門)"]
         Sourcing["Sourcingグラフ (調達部門)"]
     end
-    
+
     subgraph Runtime ["横断ランタイム (フェデレーション層)"]
         Agent["AIエージェント / アナリスト"]
     end
-    
+
     TechSSOT -->|スキーマ検証モデルとして準拠| OrgSlices
     OrgSlices -->|Bridge Keysでクエリ時結合| Runtime
     TechSSOT -->|探索計画の指針として参照| Runtime
@@ -211,7 +218,7 @@ Bridge Keys を用いてドメインを跨ぐ関係性を構築する際、**ど
 
 そこで、本アーキテクチャでは **「決定論的ツール（Deterministic Tools）」** と **「AIプランナー（LLM Planner）」** の責務を厳格に切り分けるツール境界（Tool Boundary）を導入します。
 
-```
+```text
                [ ユーザーの質問 ]
                       │
                       ▼
@@ -276,7 +283,7 @@ sequenceDiagram
 
 実務におけるインプットは「サプライヤーID」といった構造化データだけではなく、「〇〇地域での地震」「〇〇の工場火災」などの非構造なニューステキストである場合がほとんどです。このため、AIプランナーは以下の **3段階パターン** に従って探索をアンカリング（起点登録）します。
 
-1. **LLMによる意図解釈（ニュース解析）**: 
+1. **LLMによる意図解釈（ニュース解析）**:
    ニューステキストから影響のある「地域」「事象」を抽出し、調達（Sourcing）データベースの属性情報（サプライヤーの所在国など）とマッチングできる形に変換します。
 2. **入口ドメインでのアンカリング (ID特定)**:
    抽出した地域情報等をもとに、調達ドメインのツールを呼び出して、影響を受ける具体的な `Supplier.id` および `Component.id` を特定します。
@@ -292,18 +299,22 @@ sequenceDiagram
 本アーキテクチャの評価基準となる **「4つのコア論点」** と、設計判断の根拠（Rationale）を整理します。
 
 ### ① データ所有権（Data Ownership）の保証
+
 * **課題と根拠**: 全社のデータを1箇所に集約しようとすると「スキーマの変更権限」や「マスターデータのメンテナ責任」が曖昧になり、部門間の調整（政治）でプロジェクトが停滞します。
 * **設計判断**: 本設計思想では、ドメイン別にデータスキーマと管理責任（境界づけられたコンテキスト）を完全に分離します。各チームは、自ドメインのデータ構造とクレンジング/インジェスト処理を完全に独立してメンテする権利と義務を有します。
 
 ### ② セキュリティ境界（Security）の維持
+
 * **課題と根拠**: 調達部門が管理する「仕入先の信用リスク」や「単価」などは機密性が高く、全社共有のグラフデータベースに平文で配置することはポリシー上許されません。
 * **設計判断**: データを1つの物理DBに統合するのではなく、ドメインごとに物理データベースインスタンスやストレージディレクトリを分離します。これにより、各データストアに対するアクセス制御（アクセス権限設定やネットワーク境界など）をそのまま適用し、セキュリティ境界を守ります。
 
 ### ③ クエリの品質（Query Quality）と信頼性
+
 * **課題と根拠**: LLMに直接アドホックなクエリ（Text-to-SQL/Cypher）を生成させると、存在しない関係性をクエリするハルシネーション（嘘の接続）や構文エラーが頻発し、実運用に耐えません。
 * **設計判断**: LLMにデータベースのクエリやグラフ走査を直接記述・実行させるのではなく、事前に開発・検証されたAPIや決定論的ツール群をLLMプランナーが順次選択して実行する「ツール境界」を導入しました。これにより、ハルシネーションや構文エラーを排除した安全なデータ抽出と、高い推論品質を保証します。
 
 ### ④ 運用の容易さ（Ease of Operation）
+
 * **課題と根拠**: 専用の分散型グラフデータベースを全社共有用に新規プロビジョニングし、常時稼働・管理するのはインフラ運用の負担や初期コストが大きすぎます。
 * **設計判断**: ドメインを横断する巨大なデータベースクラスタを常時共有インフラとしてプロビジョニング・運用することを避けます。各ドメインがそれぞれ最適な手段（既存のデータレイクやファイルストレージなど）でデータを保持し、クエリ時に疎結合に連携できる軽量なフェデレーション手法を志向します。具体的な技術選定やプロビジョニングの詳細は [第3部：実装編](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3) で扱います。
 

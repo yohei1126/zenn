@@ -7,16 +7,23 @@ published: true
 ---
 
 :::message
-この記事は、エンタープライズにおける組織分断された複数データドメインの連携と、AIエージェントによるクエリ時論理フェデレーションをテーマにした、3部構成のシリーズ記事（シーズン2）の **第3部** です。
+**連載の位置づけ（[シーズン1](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what) → [シーズン2](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent) → [シーズン3](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank) → [シーズン4](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-redefinition)）**
+
+本連載の主題は、エンタープライズ AI に必要な **「意味の層」**（ビジネス定義・関係・信頼すべき資産）の設計です。
+
+| シーズン | 問い |
+| :--- | :--- |
+| **シーズン1**（仮想グラフ・3部作） | ① データをどう辿り、型を固定するか |
+| **シーズン2**（論理フェデレーション・3部作） | ② 部門別データをどう結ぶか |
+| **シーズン3**（[前編](https://zenn.dev/yohei/articles/2026-06-17-databricks-genie-ontology-ontorank)・[本編](https://zenn.dev/yohei/articles/2026-06-24-snowflake-cortex-sense-genie-ontology)） | ③ どの定義を信頼するか（Genie Ontology / Cortex Sense） |
+| [シーズン4](https://zenn.dev/yohei/articles/2026-06-28-kg-ontology-redefinition)（現代の知識グラフとオントロジー・3部作） | ④ グラフの品質検証からエージェント回答の根拠確認まで、どう実装するか |
+
+**本記事**は **シーズン2「組織の境界を越えるAIエージェントの知識連携」** の **第3部** です。
 
 * **第 1 部**：[分断されたグラフと影響分析の課題（背景編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent)
 * **第 2 部**：[組織境界を維持する論理フェデレーション（設計編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent2)
 * **第 3 部**：[サプライチェーン影響分析エージェントの実装（実装編）](https://zenn.dev/yohei/articles/2026-06-06-supply-chain-impact-analysis-agent3)（本記事）
 
-※ シーズン1（仮想グラフの基本概念、AIエージェントでの有効性、変更管理）は以下からご覧いただけます。
-* [第1部 Snowflake / Databricks / Google が挑む仮想グラフ戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy-what)
-* [第2部  AIエージェントの知識表現と推論になぜグラフが使われるのか？](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy2)
-* [第3部 物理グラフDBを独自開発するための変更管理と安定運用戦略](https://zenn.dev/yohei/articles/2026-05-30-vkg-strategy3)
 :::
 
 ## 概要
@@ -156,13 +163,13 @@ def assert_edge_allowed_in_graph(graph_id: GraphId, edge_type: EdgeType) -> None
 def audit_referential_integrity(store: Neo4jGraphStore, master_db):
     # sourcing グラフからすべての部品IDを取得
     sourcing_components = {
-        n["id"] for n in store.domain("sourcing").all_nodes() 
+        n["id"] for n in store.domain("sourcing").all_nodes()
         if n["label"] == "Component"
     }
-    
+
     # マスタDBに登録されている正当な部品IDを取得
     valid_master_ids = set(master_db.get_all_component_ids())
-    
+
     # マスタに存在しない部品ID（整合性エラー）を検出
     orphans = sourcing_components - valid_master_ids
     if orphans:
@@ -210,10 +217,10 @@ def analyze_supplier_disruption(store: Neo4jGraphStore, supplier_id: str) -> Fed
 
     # 3. [Routing ドメイン] 影響部品のIDリストから影響を受ける工程（Process）や工場設備をクエリ
     routing = query_routing_for_components(store, component_ids)
-    
+
     # 共通ID（Component.id）でPython側にてマージして集計結果を作成
     federated_rows = federated_impact_rows(store, supplier_id)
-    
+
     # ルールベースでのリスク・代替案（Mitigation）の抽出
     single_source = _single_source_components(store, component_ids)
     problems = _build_problems(sourcing, ebom, routing, single_source, supplier_id)
