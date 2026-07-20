@@ -3,7 +3,7 @@ title: "現代の知識グラフとオントロジー - PydanticからSHACL、Ag
 emoji: "🧪"
 type: "tech"
 topics: ["knowledgegraph", "ontology", "neo4j", "pydantic", "aiagent"]
-published: false
+published: true
 ---
 
 :::message
