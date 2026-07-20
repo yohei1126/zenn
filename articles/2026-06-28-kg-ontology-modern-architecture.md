@@ -3,7 +3,7 @@ title: "現代の知識グラフとオントロジー - インジェストから
 emoji: "⚙️"
 type: "tech"
 topics: ["knowledgegraph", "ontology", "dataengineering", "aiagent", "architecture"]
-published: false
+published: true
 ---
 
 :::message
