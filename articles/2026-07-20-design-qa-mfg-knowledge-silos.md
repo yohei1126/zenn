@@ -21,9 +21,9 @@ published: true
 
 **本記事**は **シーズン5** の **第1部（問題定義）** です。品質保証（QA）を「設計と製造をつなぎ、評価・検証するハブ」として中央に据え、三者を貫くクロスドメイン課題を整理します。原価と品質のジレンマは、この統合が効く課題の一例です。
 
-* **第 1 部** ： [なぜ知見が分断されるのか](https://zenn.dev/yohei/articles/2026-07-20-design-qa-mfg-knowledge-silos)（本記事・下書き）
-* **第 2 部** ： [幾何・テキスト・構造の理論](https://zenn.dev/yohei/articles/2026-07-20-design-qa-mfg-multimodal-model)（下書き）
-* **第 3 部** ： [CADで完結するシフトレフト](https://zenn.dev/yohei/articles/2026-07-20-design-qa-mfg-shift-left)（下書き）
+* **第 1 部** ： [なぜ知見が分断されるのか](https://zenn.dev/yohei/articles/2026-07-20-design-qa-mfg-knowledge-silos)（本記事）
+* **第 2 部** ： [幾何・テキスト・構造の理論](https://zenn.dev/yohei/articles/2026-07-20-design-qa-mfg-multimodal-model)
+* **第 3 部** ： [CADで完結するシフトレフト](https://zenn.dev/yohei/articles/2026-07-20-design-qa-mfg-shift-left)
 
 :::
 
