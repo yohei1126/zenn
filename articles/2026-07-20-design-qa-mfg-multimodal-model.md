@@ -3,7 +3,7 @@ title: "設計・品証・製造のマルチモーダル知見統合 - 幾何・
 emoji: "📐"
 type: "tech"
 topics: ["manufacturing", "knowledgegraph", "multimodal", "cae", "machinelearning"]
-published: false
+published: true
 ---
 
 :::message
@@ -20,9 +20,9 @@ published: false
 
 **本記事**は **シーズン5** の **第2部（理論）** です。
 
-- **第 1 部** ： [なぜ知見が分断されるのか](https://zenn.dev/yohei/articles/2026-07-20-design-qa-mfg-knowledge-silos)（下書き）
-- **第 2 部** ： [幾何・テキスト・構造の理論](https://zenn.dev/yohei/articles/2026-07-20-design-qa-mfg-multimodal-model)（本記事・下書き）
-- **第 3 部** ： [CADで完結するシフトレフト](https://zenn.dev/yohei/articles/2026-07-20-design-qa-mfg-shift-left)（下書き）
+- **第 1 部** ： [なぜ知見が分断されるのか](https://zenn.dev/yohei/articles/2026-07-20-design-qa-mfg-knowledge-silos)
+- **第 2 部** ： [幾何・テキスト・構造の理論](https://zenn.dev/yohei/articles/2026-07-20-design-qa-mfg-multimodal-model)（本記事）
+- **第 3 部** ： [CADで完結するシフトレフト](https://zenn.dev/yohei/articles/2026-07-20-design-qa-mfg-shift-left)
 
 :::
 
