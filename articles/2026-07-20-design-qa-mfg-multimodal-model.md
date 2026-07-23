@@ -357,3 +357,40 @@ $$
 3. 使うほど知見が溜まる仕組みにする（採用／却下とゲート結果のフィードバック）
 
 「どうつなぐか」を述べた第2部の次に、「現場の画面でどう触るか」へ進みます。
+
+---
+
+## 7. 本稿の理論的根拠（数学・アルゴリズム・代表文献）
+
+第2部の議論は、単一の定理に依拠するのではなく、**三層それぞれに既知の数理・アルゴリズムを割り当てた合成**です。以下に、本文で使った枠組みと、その根拠となる代表文献を層ごとに整理します（網羅カタログではなく、本稿の骨格に直結するものに絞っています）。
+
+### 構造層（設計根拠知識グラフ / EBOM–MBOM対応）
+
+| 本稿での使い方 | 理論・アルゴリズム | 代表文献 |
+| :--- | :--- | :--- |
+| 因果を $(S,R,O)$ トリプルの集合として固定し、グラフ $G=(V,E)$ 上のパスでトレースする | 知識グラフ／RDF 的なトリプルモデル、グラフ上の到達可能性・パスクエリ | [Hogan et al., *Knowledge Graphs*, ACM Computing Surveys, 2021](https://arxiv.org/abs/2003.02320) / [W3C, *RDF 1.1 Concepts and Abstract Syntax*](https://www.w3.org/TR/rdf11-concepts/) |
+| EBOM–MBOM の木構造差を測り、対応候補のコストを置く | Tree Edit Distance（挿入・削除・置換） | [Zhang & Shasha, *Simple Fast Algorithms for the Editing Distance between Trees…*, SIAM J. Comput., 1989](https://doi.org/10.1137/0218082)（先行: [Tai, *The Tree-to-Tree Correction Problem*, JACM, 1979](https://dl.acm.org/doi/10.1145/322139.322143)） |
+| 一般の工程グラフでの対応写像 $m$ | Graph Matching／部分グラフ同型の緩和（コスト付き割当） | [Conte et al., *Thirty Years of Graph Matching in Pattern Recognition*, IJPRAI, 2004](https://doi.org/10.1142/S0218001404003228) / [Bunke, *On a Relation between Graph Edit Distance and Maximum Common Subgraph*, Pattern Recognition Letters, 1997](https://doi.org/10.1016/S0167-8655%2897%2900060-3) |
+
+### 表現層（多峰性共用埋め込み）
+
+| 本稿での使い方 | 理論・アルゴリズム | 代表文献 |
+| :--- | :--- | :--- |
+| 異種モダリティを共通潜在空間 $\mathbb{R}^d$ に写し、近さで候補化する | 対照学習による Joint Multimodal Embedding（多峰性共用埋め込み） | [Radford et al., CLIP, ICML, 2021](https://arxiv.org/abs/2103.00020) / [van den Oord et al., InfoNCE, 2018](https://arxiv.org/abs/1807.03748) |
+| 形状エンコーダの研究方向ラベル | PointNet／メッシュ上の Graph Neural Network | [Qi et al., PointNet, CVPR, 2017](https://arxiv.org/abs/1612.00593) / [Kipf & Welling, GCN, ICLR, 2017](https://arxiv.org/abs/1609.02907) |
+| CAE 場エンコーダの研究方向ラベル | Fourier Neural Operator（FNO）、MeshGraphNets | [Li et al., FNO, ICLR, 2021](https://arxiv.org/abs/2010.08895) / [Pfaff et al., MeshGraphNets, ICLR, 2021](https://arxiv.org/abs/2010.03409) |
+| テキスト側の埋め込み | 文埋め込み（dense retrieval の基礎） | [Reimers & Gurevych, Sentence-BERT, EMNLP, 2019](https://arxiv.org/abs/1908.10084) |
+
+### 意思決定層（制約付き最適化と感度）
+
+| 本稿での使い方 | 理論・アルゴリズム | 代表文献 |
+| :--- | :--- | :--- |
+| $\min_x C(x)\ \mathrm{s.t.}\ g(x)\le 0,\ h(x)\le 0$（必要なら $t(x)\le T_{\mathrm{due}}$） | 制約付き非線形最適化、KKT 条件 | [Nocedal & Wright, *Numerical Optimization*](https://link.springer.com/book/10.1007/978-0-387-40065-5) / [Karush–Kuhn–Tucker（KKT）条件](https://en.wikipedia.org/wiki/Karush%E2%80%93Kuhn%E2%80%93Tucker_conditions)（古典） |
+| ラグランジュ緩和・局所感度 $\nabla C(x)$ を UI に出す | ラグランジュ乗数法、局所感度解析（差分／自動微分／随伴） | [Lagrange multipliers](https://en.wikipedia.org/wiki/Lagrange_multiplier)（古典） / [Martins & Hwang, *Review and Unification of Methods for Computing Derivatives…*, AIAA Journal, 2013](https://doi.org/10.2514/1.J051895) |
+| QCD のトレードオフを枠として捉える（本稿の数式は主に Q・C） | 多目的最適化・パレート最適性 | [Miettinen, *Nonlinear Multiobjective Optimization*, 1999](https://link.springer.com/book/10.1007/978-1-4615-5563-6) / [Deb et al., NSGA-II, IEEE TEC, 2002](https://doi.org/10.1109/4235.996017) |
+| $C(x)$・$h(x)$ を閉形式で書けないときの近似 | サロゲートモデル（応答曲面・代理モデル） | [Forrester et al., *Engineering Design via Surrogate Modelling*, 2008](https://doi.org/10.1002/9780470770801) |
+
+### 読み方の注意
+
+- 本稿はこれらの理論を **実装仕様として再発明しているわけではありません**。構造層で「辿る」、表現層で「候補を出す」、意思決定層で「効き方を見せる」ために、既存の数理を役割分担して置いた、という意味での根拠一覧です。
+- 第3部のデモ規模では、対照学習のフル学習や厳密な最適ソルバより、グラフ対応＋簡易類似＋局所感度のハイブリッドが現実解です（§3.3・§4.1 参照）。上表は「将来フルに載せるときの理論地図」でもあります。

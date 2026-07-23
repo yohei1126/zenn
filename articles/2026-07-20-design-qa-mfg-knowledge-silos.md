@@ -3,7 +3,7 @@ title: "設計・品証・製造のマルチモーダル知見統合 - なぜ知
 emoji: "🏭"
 type: "tech"
 topics: ["manufacturing", "plm", "knowledgegraph", "multimodal", "dx"]
-published: false
+published: true
 ---
 
 :::message
