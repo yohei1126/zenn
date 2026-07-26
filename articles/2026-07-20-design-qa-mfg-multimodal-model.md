@@ -240,7 +240,21 @@ FMEA 項目・DR 指摘・試作合否を、単なる文書ノードや合否フ
 
 たとえるなら、英語・日本語・図面を、同じ棚の座標に並べ直してから「隣かどうか」を見る、というイメージです。元の言語は違っても、棚の上では比較できます。
 
-**対照学習**は、その並べ方をデータから覚える方法の一つです。「同じ案件・同じ故障ストーリーに属する (形状, CAE, テキスト) は近く、無関係は遠く」なるようにエンコーダを調整します。
+ただし、**長さを揃えただけでは足りません**。エンコーダが「どこに置くか」を知らないと、同じ次元のベクトルでも距離に意味がありません。本稿が欲しい配置は、「同じ案件・同じ故障ストーリーに属する (形状, CAE, テキスト) は近く、無関係は遠く」です。その規則を人手の距離定義ではなくデータから覚える代表的な方法が **対照学習**（contrastive learning）で、冒頭の Joint Multimodal Embedding（CLIP など）もこの学習で共有空間を作ります。
+
+:::message
+**対照学習（Contrastive Learning）とは**
+
+正例ペアを近づけ、負例ペアを遠ざけるようにエンコーダを訓練する表現学習の枠組みです。本稿の文脈では、「同じ故障ストーリーに属する (形状, CAE, テキスト)」を正例、「無関係な組」を負例とみなし、共通潜在空間での配置規則をデータから覚えます。冒頭の Joint Multimodal Embedding が「何を並べるか」、対照学習は「その並べ方をどう学習するか」に相当します。
+
+代表的な文献（損失・多峰への適用）:
+
+- [van den Oord et al., *Representation Learning with Contrastive Predictive Coding*（InfoNCE）, 2018](https://arxiv.org/abs/1807.03748) — 正例を負例の中から識別する対照損失（InfoNCE）の基礎枠
+- [Radford et al., *Learning Transferable Visual Models From Natural Language Supervision*（CLIP）, ICML 2021](https://arxiv.org/abs/2103.00020) — 画像–テキストのバッチ内対照で共有空間を学習する代表例（本稿の多峰性共用埋め込みの参照先）
+- [Chen et al., *A Simple Framework for Contrastive Learning of Visual Representations*（SimCLR）, ICML 2020](https://arxiv.org/abs/2002.05709) — 同一モダリティ内の対照学習を簡潔に定式化した枠（データ拡張で正例を作る典型）
+
+なお現場では、正例・負例のペアが揃いにくい、という実装上の壁があります（§3.3）。
+:::
 
 #### モダリティが分かれたままでは「似た過去」を横断検索できない
 
