@@ -93,7 +93,7 @@ published: true
 
 関連する文献（一般概念・表現モデル側）:
 
-- [Lee, *Design rationale systems: understanding the issues*, IEEE Expert, 1997](https://doi.org/10.1109/64.592267) — Design Rationale システムの論点整理（古典サーベイ）
+- [Lee, *Design rationale systems: understanding the issues*, IEEE Expert, 1997](https://users.cs.northwestern.edu/~paritosh/papers/sketch-to-models/LeeDesignRationaleSystems.pdf) — Design Rationale システムの論点整理（古典サーベイ；PDF）
 - [Conklin & Begeman, *gIBIS: a hypertext tool for exploratory policy discussion*, ACM TOIS, 1988](https://doi.org/10.1145/58566.59297) — 論点・立場・論証を結ぶ IBIS 系の代表（設計議論のグラフ表現の祖型）
 - [Poorkiany et al., *Capturing, structuring and accessing design rationale in integrated product design and manufacturing processes*, Advanced Engineering Informatics, 2016](https://doi.org/10.1016/j.aei.2016.06.004) — 設計と製造をまたぐ設計根拠の取り込み・構造化
 - （発展例）設計根拠と知識グラフを結びつける近年の試みとして、[KARMEN（PLM 2023）](https://link.springer.com/chapter/10.1007/978-3-031-62578-7_29) など
