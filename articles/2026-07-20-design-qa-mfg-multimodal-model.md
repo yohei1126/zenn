@@ -69,7 +69,7 @@ published: true
 代表的な文献（用語・実装の参照先）:
 
 - [Miettinen, *Nonlinear Multiobjective Optimization*, Springer, 1999](https://link.springer.com/book/10.1007/978-1-4615-5563-6) — 多目的最適化・パレート最適性の標準的な入門書
-- [Deb et al., *A Fast and Elitist Multiobjective Genetic Algorithm: NSGA-II*, IEEE TEC, 2002](https://ieeexplore.ieee.org/document/996017) — 進化的多目的最適化の代表アルゴリズム（本稿デモはソルバ必須ではない）
+- [Deb et al., *A Fast and Elitist Multiobjective Genetic Algorithm: NSGA-II*, IEEE TEC, 2002](https://web.njit.edu/~horacio/Math451H/download/2002-6-2-DEB-NSGA-II.pdf) — 進化的多目的最適化の代表アルゴリズム（本稿デモはソルバ必須ではない）
 - [Nocedal & Wright, *Numerical Optimization*](https://link.springer.com/book/10.1007/978-0-387-40065-5) — 制約付き最適化（$\min C(x)\ \mathrm{s.t.}\ g,h\le 0$）の数値的骨格
 - [Martins & Hwang, *Review and Unification of Methods for Computing Derivatives of Multidisciplinary Systems*, AIAA Journal, 2013](https://doi.org/10.2514/1.J051895) — 工学設計における微分・感度（随伴法など）の整理
 :::
@@ -425,7 +425,7 @@ $$
 | :--- | :--- | :--- |
 | $\min_x C(x)\ \mathrm{s.t.}\ g(x)\le 0,\ h(x)\le 0$（必要なら $t(x)\le T_{\mathrm{due}}$） | 制約付き非線形最適化、KKT 条件 | [Nocedal & Wright, *Numerical Optimization*](https://link.springer.com/book/10.1007/978-0-387-40065-5) / [Karush–Kuhn–Tucker（KKT）条件](https://en.wikipedia.org/wiki/Karush%E2%80%93Kuhn%E2%80%93Tucker_conditions)（古典） |
 | ラグランジュ緩和・局所感度 $\nabla C(x)$ を UI に出す | ラグランジュ乗数法、局所感度解析（差分／自動微分／随伴） | [Lagrange multipliers](https://en.wikipedia.org/wiki/Lagrange_multiplier)（古典） / [Martins & Hwang, *Review and Unification of Methods for Computing Derivatives…*, AIAA Journal, 2013](https://doi.org/10.2514/1.J051895) |
-| QCD のトレードオフを枠として捉える（本稿の数式は主に Q・C） | 多目的最適化・パレート最適性 | [Miettinen, *Nonlinear Multiobjective Optimization*, 1999](https://link.springer.com/book/10.1007/978-1-4615-5563-6) / [Deb et al., NSGA-II, IEEE TEC, 2002](https://ieeexplore.ieee.org/document/996017) |
+| QCD のトレードオフを枠として捉える（本稿の数式は主に Q・C） | 多目的最適化・パレート最適性 | [Miettinen, *Nonlinear Multiobjective Optimization*, 1999](https://link.springer.com/book/10.1007/978-1-4615-5563-6) / [Deb et al., NSGA-II, IEEE TEC, 2002](https://web.njit.edu/~horacio/Math451H/download/2002-6-2-DEB-NSGA-II.pdf) |
 | $C(x)$・$h(x)$ を閉形式で書けないときの近似 | サロゲートモデル（応答曲面・代理モデル） | [Forrester et al., *Engineering Design via Surrogate Modelling*, 2008](https://doi.org/10.1002/9780470770801) |
 
 ### 読み方の注意
