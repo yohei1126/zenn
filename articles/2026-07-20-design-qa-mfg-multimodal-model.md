@@ -43,7 +43,36 @@ published: true
 3. **トレードオフの中で設計目的を達成する意思決定をする**（意思決定層）  
    製造業のトレードオフの定番は **QCD**（品質・コスト・納期）です。制約の中でバランスを取り、形や公差の変更が何に効くかを見ながら、設計目的に沿った選択をします（※本稿の定式化・デモでは特に品質リスクと製造コストにフォーカスし、納期は同じ枠の拡張として扱います）。
 
-要するに、**辿る（構造）→ 比べる（表現）→ 選ぶ（意思決定）** です。構造だけでは似た事例を高速に引けず、表現だけでは「なぜそれが問題か」を説明しきれず、意思決定だけでは根拠と類似の入力を持てません。三層はこの順で噛み合います。表現層の中核手法を、本稿では **多峰性共用埋め込み**（たほうせいきょうよううめこみ、英: Joint Multimodal Embedding）と呼びます。意思決定層でいう **感度**（かんど、英: sensitivity）は、最適化・感度解析の用語で、「設計変数（Rや公差など）を少し変えたとき、QCD（とくにコストや品質、さらには納期）がどれだけ動くか」を指します。最適解そのものより、この局所的な効き方をUIに出す、という意味で使います。
+要するに、**辿る（構造）→ 比べる（表現）→ 選ぶ（意思決定）** です。構造だけでは似た事例を高速に引けず、表現だけでは「なぜそれが問題か」を説明しきれず、意思決定だけでは根拠と類似の入力を持てません。三層はこの順で噛み合います。表現層の中核手法を、本稿では **多峰性共用埋め込み**（たほうせいきょうよううめこみ、英: Joint Multimodal Embedding）と呼びます。
+
+:::message
+**Joint Multimodal Embedding（多峰性共用埋め込み）とは**
+
+種類の違うデータ（本稿では形状・CAE場・FMEA文など＝モダリティ）を、それぞれ専用のエンコーダで同じ長さのベクトルにし、**共通の潜在空間**に並べることです。意味の近い組は近く、無関係は遠くなるよう学習すると、モダリティをまたいで「似た過去」を距離で候補化できます。本稿の用語でいう「共用」は、この共有空間に載せる、という意味です（埋め込み類似度だけで合否を決める話ではありません。根拠の説明は構造層に残します）。
+
+代表的な文献（用語・実装の参照先）:
+
+- [Radford et al., *Learning Transferable Visual Models From Natural Language Supervision*（CLIP）, ICML 2021](https://arxiv.org/abs/2103.00020) — 画像とテキストのエンコーダを対照学習で同時訓練し、擬似コード上でも *joint multimodal embedding* と呼ぶ共有空間を学習する代表例
+- [van den Oord et al., *Representation Learning with Contrastive Predictive Coding*（InfoNCE）, 2018](https://arxiv.org/abs/1807.03748) — 対照学習の損失の基礎となる枠組み
+- [Frome et al., *DeViSE: A Deep Visual-Semantic Embedding Model*, NeurIPS 2013](https://papers.nips.cc/paper/5204-devise-a-deep-visual-semantic-embedding-model) — 視覚と語義を同一空間へ写す初期の joint embedding の一例
+:::
+
+意思決定層の中核を、本稿では **多目的最適化と感度**（英: multi-objective optimization and sensitivity）と呼びます。
+
+:::message
+**多目的最適化と感度とは**
+
+**多目的最適化**は、品質・コスト・納期のように、同時に追いたい（しばしば相反する）複数の評価軸のもとで、設計変数 $x$（Rや公差など）の良し悪しを扱う枠組みです。すべてを一つに足し込む前に、制約を満たす範囲（実行可能領域）と、トレードオフ（パレート最適性）を意識します。本稿の数式デモは QCD のうち特に品質リスクと製造コストにフォーカスし、納期は同じ枠の拡張として扱います。
+
+**感度**（sensitivity）は、最適解の一点 $x^*$ そのものより、「いまの $x$ を少し動かしたとき、コストや品質（さらには納期）がどれだけ動くか」という**局所的な効き方**です。CAD作業中のUIでは、大域最適の提示より感度の方が使いやすい、というのが本稿の立場です。
+
+代表的な文献（用語・実装の参照先）:
+
+- [Miettinen, *Nonlinear Multiobjective Optimization*, Springer, 1999](https://link.springer.com/book/10.1007/978-1-4615-5563-6) — 多目的最適化・パレート最適性の標準的な入門書
+- [Deb et al., *A Fast and Elitist Multiobjective Genetic Algorithm: NSGA-II*, IEEE TEC, 2002](https://ieeexplore.ieee.org/document/996017) — 進化的多目的最適化の代表アルゴリズム（本稿デモはソルバ必須ではない）
+- [Nocedal & Wright, *Numerical Optimization*](https://link.springer.com/book/10.1007/978-0-387-40065-5) — 制約付き最適化（$\min C(x)\ \mathrm{s.t.}\ g,h\le 0$）の数値的骨格
+- [Martins & Hwang, *Review and Unification of Methods for Computing Derivatives of Multidisciplinary Systems*, AIAA Journal, 2013](https://doi.org/10.2514/1.J051895) — 工学設計における微分・感度（随伴法など）の整理
+:::
 
 ```text
 [仕様 Req] → [CAE/SPDM] → [CAD/EBOM] → [FMEA/品証リスク] → [MBOM/BOP/MOM]
@@ -55,11 +84,20 @@ published: true
                     意思決定層：多目的最適化と感度（QCD／本稿はQ・C中心）
 ```
 
-用語との対応は次のとおりです。
+:::message
+**設計根拠知識グラフとは（本稿での呼称）**
 
-- **構造層** ← 設計根拠知識グラフ、EBOM–MBOM のトポロジー変換
-- **表現層** ← 多峰性共用埋め込み
-- **意思決定層** ← 多目的最適化と感度（※本稿の定式化では、QCDのうち特に Q:品質リスク と C:製造コストにフォーカスします。納期は拡張として扱います）
+**「設計根拠知識グラフ」は、標準規格名というより本稿（シーズン5）での呼称**です。一般に定着した単一用語ではありません。背景にあるのは、設計決定の「なぜ」を残す **Design Rationale（設計根拠）** の研究と、それをグラフ／知識ベースとして辿れるようにする流れです。
+
+本稿での意味合いは次です。仕様→CAE→形状特徴→FMEA→工程、といった工程横断の因果を、帳票の中身として読むだけでなく、**トリプルのグラフとして第一級データに固定し、UIやエージェントがパスクエリで遡れるようにしたもの**です（§2）。埋め込みの類似度だけでは説明に足りない「根拠のトレース」を担う、構造層の本体、と位置づけます。
+
+関連する文献（一般概念・表現モデル側）:
+
+- [Lee, *Design rationale systems: understanding the issues*, IEEE Expert, 1997](https://doi.org/10.1109/64.592267) — Design Rationale システムの論点整理（古典サーベイ）
+- [Conklin & Begeman, *gIBIS: a hypertext tool for exploratory policy discussion*, ACM TOIS, 1988](https://doi.org/10.1145/58566.59297) — 論点・立場・論証を結ぶ IBIS 系の代表（設計議論のグラフ表現の祖型）
+- [Poorkiany et al., *Capturing, structuring and accessing design rationale in integrated product design and manufacturing processes*, Advanced Engineering Informatics, 2016](https://doi.org/10.1016/j.aei.2016.06.004) — 設計と製造をまたぐ設計根拠の取り込み・構造化
+- （発展例）設計根拠と知識グラフを結びつける近年の試みとして、[KARMEN（PLM 2023）](https://link.springer.com/chapter/10.1007/978-3-031-62578-7_29) など
+:::
 
 シーズン2の Graph Contract / Bridge Keys、シーズン4の「契約としての検証」はここでも前提になります。埋め込み類似度だけで合否を決めず、**辿れる根拠（構造層）と、引ける類似（表現層）を役割分担する**ことが要点です。後続の節では、各層を順に詳しく見ていきます。
 
@@ -387,7 +425,7 @@ $$
 | :--- | :--- | :--- |
 | $\min_x C(x)\ \mathrm{s.t.}\ g(x)\le 0,\ h(x)\le 0$（必要なら $t(x)\le T_{\mathrm{due}}$） | 制約付き非線形最適化、KKT 条件 | [Nocedal & Wright, *Numerical Optimization*](https://link.springer.com/book/10.1007/978-0-387-40065-5) / [Karush–Kuhn–Tucker（KKT）条件](https://en.wikipedia.org/wiki/Karush%E2%80%93Kuhn%E2%80%93Tucker_conditions)（古典） |
 | ラグランジュ緩和・局所感度 $\nabla C(x)$ を UI に出す | ラグランジュ乗数法、局所感度解析（差分／自動微分／随伴） | [Lagrange multipliers](https://en.wikipedia.org/wiki/Lagrange_multiplier)（古典） / [Martins & Hwang, *Review and Unification of Methods for Computing Derivatives…*, AIAA Journal, 2013](https://doi.org/10.2514/1.J051895) |
-| QCD のトレードオフを枠として捉える（本稿の数式は主に Q・C） | 多目的最適化・パレート最適性 | [Miettinen, *Nonlinear Multiobjective Optimization*, 1999](https://link.springer.com/book/10.1007/978-1-4615-5563-6) / [Deb et al., NSGA-II, IEEE TEC, 2002](https://doi.org/10.1109/4235.996017) |
+| QCD のトレードオフを枠として捉える（本稿の数式は主に Q・C） | 多目的最適化・パレート最適性 | [Miettinen, *Nonlinear Multiobjective Optimization*, 1999](https://link.springer.com/book/10.1007/978-1-4615-5563-6) / [Deb et al., NSGA-II, IEEE TEC, 2002](https://ieeexplore.ieee.org/document/996017) |
 | $C(x)$・$h(x)$ を閉形式で書けないときの近似 | サロゲートモデル（応答曲面・代理モデル） | [Forrester et al., *Engineering Design via Surrogate Modelling*, 2008](https://doi.org/10.1002/9780470770801) |
 
 ### 読み方の注意
