@@ -69,7 +69,7 @@ published: true
 代表的な文献（用語・実装の参照先）:
 
 - [Miettinen, *Nonlinear Multiobjective Optimization*, Springer, 1999](https://link.springer.com/book/10.1007/978-1-4615-5563-6) — 多目的最適化・パレート最適性の標準的な入門書
-- [Deb et al., *A Fast and Elitist Multiobjective Genetic Algorithm: NSGA-II*, IEEE TEC, 2002](https://ieeexplore.ieee.org/document/996017) — 進化的多目的最適化の代表アルゴリズム（本稿デモはソルバ必須ではない）
+- [Deb et al., *A Fast and Elitist Multiobjective Genetic Algorithm: NSGA-II*, IEEE TEC, 2002](https://web.njit.edu/~horacio/Math451H/download/2002-6-2-DEB-NSGA-II.pdf) — 進化的多目的最適化の代表アルゴリズム（本稿デモはソルバ必須ではない）
 - [Nocedal & Wright, *Numerical Optimization*](https://link.springer.com/book/10.1007/978-0-387-40065-5) — 制約付き最適化（$\min C(x)\ \mathrm{s.t.}\ g,h\le 0$）の数値的骨格
 - [Martins & Hwang, *Review and Unification of Methods for Computing Derivatives of Multidisciplinary Systems*, AIAA Journal, 2013](https://doi.org/10.2514/1.J051895) — 工学設計における微分・感度（随伴法など）の整理
 :::
@@ -93,9 +93,10 @@ published: true
 
 関連する文献（一般概念・表現モデル側）:
 
-- [Lee, *Design rationale systems: understanding the issues*, IEEE Expert, 1997](https://doi.org/10.1109/64.592267) — Design Rationale システムの論点整理（古典サーベイ）
+- [Lee, *Design rationale systems: understanding the issues*, IEEE Expert, 1997](https://users.cs.northwestern.edu/~paritosh/papers/sketch-to-models/LeeDesignRationaleSystems.pdf) — Design Rationale システムの論点整理（古典サーベイ；PDF）
 - [Conklin & Begeman, *gIBIS: a hypertext tool for exploratory policy discussion*, ACM TOIS, 1988](https://doi.org/10.1145/58566.59297) — 論点・立場・論証を結ぶ IBIS 系の代表（設計議論のグラフ表現の祖型）
 - [Poorkiany et al., *Capturing, structuring and accessing design rationale in integrated product design and manufacturing processes*, Advanced Engineering Informatics, 2016](https://doi.org/10.1016/j.aei.2016.06.004) — 設計と製造をまたぐ設計根拠の取り込み・構造化
+- [Hogan et al., *Knowledge Graphs*, ACM Computing Surveys, 2021](https://arxiv.org/abs/2003.02320) — 知識グラフ／トリプルモデルのサーベイ（本稿の「グラフとして固定する」側の一般背景）
 - （発展例）設計根拠と知識グラフを結びつける近年の試みとして、[KARMEN（PLM 2023）](https://link.springer.com/chapter/10.1007/978-3-031-62578-7_29) など
 :::
 
@@ -178,6 +179,24 @@ PDFのFMEAやCADの寸法だけでは、次のことができません。
 
 ここでいう **動的トポロジー変換** は、二つのBOMを無理に同じツリーに揃えることではありません。設計側のノードと製造側のノードのあいだに、**いまのバージョンで有効な対応関係**（対応写像）を置き、設計変更や工程変更に応じてその対応を更新していく、という意味です。「変換」は、一方の構造を他方へ写像する操作を指します。
 
+:::message
+**動的トポロジー変換とは（本稿での呼称）**
+
+**「動的トポロジー変換」は、標準規格名ではなく本稿での呼称**です。一般に定着した単一用語ではありません。
+
+背景にある一般概念は次です。
+
+1. **EBOM–MBOM transformation（BOM変換）** — PLM／製造現場で広く使われる実務語。設計構成（EBOM）と製造構成（MBOM）は観点が違うため、同一ツリー化ではなく **等価リンク／対応づけ** でつなぐ、という問題設定（製品・ベンダー文書でも定番）。
+2. **BOM木の類似・距離** — 研究側では、BOMを（しばしば順序なし）木とみなし、編集距離や対称差などで構造差を測る。本稿が後段で触れる Tree Edit Distance / Graph Matching は、そのための古典的・関連手法です。
+3. **動的** — 本稿では特に、対応写像 $m$ を一度きりで固定せず、**版・設計変更・工程変更に応じて更新し、Graph Contract 上の Bridge として版管理する**、という意味を強調しています（「動的トポロジー」そのものの業界標準語ではありません）。
+
+関連文献（手法・BOM比較側）:
+
+- [Zhang & Shasha, *Simple Fast Algorithms for the Editing Distance between Trees…*, SIAM J. Comput., 1989](https://doi.org/10.1137/0218082) — Tree Edit Distance の代表アルゴリズム
+- [Romanowski & Nagi, *On Comparing Bills of Materials: A Similarity/Distance Measure for Unordered Trees*, IEEE TSMCA, 2005](https://www.eng.buffalo.edu/~nagi/papers/IEEESMCApaper.pdf) — BOMを順序なし木として比較する距離尺度
+- [Conte et al., *Thirty Years of Graph Matching in Pattern Recognition*, IJPRAI, 2004](https://doi.org/10.1142/S0218001404003228) — 一般の工程グラフでの対応写像 $m$ を置くときの Graph Matching 側のサーベイ
+:::
+
 #### 製造知見を設計特徴へ戻すために、EBOM–MBOM対応が要る
 
 2.1 の因果チェーンだけだと、仕様→形状→FMEA までは辿れても、製造現場の歩留まりや工程条件を **どの設計特徴に戻すか** が決まりません。構造層のトレースが工程横断で完結するには、EBOMとMBOMをつなぐ辺（`corresponds_to`）が必要です。
@@ -223,7 +242,21 @@ FMEA 項目・DR 指摘・試作合否を、単なる文書ノードや合否フ
 
 たとえるなら、英語・日本語・図面を、同じ棚の座標に並べ直してから「隣かどうか」を見る、というイメージです。元の言語は違っても、棚の上では比較できます。
 
-**対照学習**は、その並べ方をデータから覚える方法の一つです。「同じ案件・同じ故障ストーリーに属する (形状, CAE, テキスト) は近く、無関係は遠く」なるようにエンコーダを調整します。
+ただし、**長さを揃えただけでは足りません**。エンコーダが「どこに置くか」を知らないと、同じ次元のベクトルでも距離に意味がありません。本稿が欲しい配置は、「同じ案件・同じ故障ストーリーに属する (形状, CAE, テキスト) は近く、無関係は遠く」です。その規則を人手の距離定義ではなくデータから覚える代表的な方法が **対照学習**（contrastive learning）で、冒頭の Joint Multimodal Embedding（CLIP など）もこの学習で共有空間を作ります。
+
+:::message
+**対照学習（Contrastive Learning）とは**
+
+正例ペアを近づけ、負例ペアを遠ざけるようにエンコーダを訓練する表現学習の枠組みです。本稿の文脈では、「同じ故障ストーリーに属する (形状, CAE, テキスト)」を正例、「無関係な組」を負例とみなし、共通潜在空間での配置規則をデータから覚えます。冒頭の Joint Multimodal Embedding が「何を並べるか」、対照学習は「その並べ方をどう学習するか」に相当します。
+
+代表的な文献（損失・多峰への適用）:
+
+- [van den Oord et al., *Representation Learning with Contrastive Predictive Coding*（InfoNCE）, 2018](https://arxiv.org/abs/1807.03748) — 正例を負例の中から識別する対照損失（InfoNCE）の基礎枠
+- [Radford et al., *Learning Transferable Visual Models From Natural Language Supervision*（CLIP）, ICML 2021](https://arxiv.org/abs/2103.00020) — 画像–テキストのバッチ内対照で共有空間を学習する代表例（本稿の多峰性共用埋め込みの参照先）
+- [Chen et al., *A Simple Framework for Contrastive Learning of Visual Representations*（SimCLR）, ICML 2020](https://arxiv.org/abs/2002.05709) — 同一モダリティ内の対照学習を簡潔に定式化した枠（データ拡張で正例を作る典型）
+
+なお現場では、正例・負例のペアが揃いにくい、という実装上の壁があります（§3.3）。
+:::
 
 #### モダリティが分かれたままでは「似た過去」を横断検索できない
 
@@ -245,6 +278,12 @@ FMEA 項目・DR 指摘・試作合否を、単なる文書ノードや合否フ
 | テキスト    | LLM / 文埋め込み           | FMEA、不具合、DR 指摘   |
 | （拡張）時系列 | 時系列エンコーダ              | 加工ログ要約・異常スコア     |
 
+
+上表のラベルは「その方向の代表手法」であり、第3部デモで全部を学習する前提ではありません。参照先の例:
+
+- 形状: [Qi et al., PointNet, CVPR, 2017](https://arxiv.org/abs/1612.00593) / [Kipf & Welling, GCN, ICLR, 2017](https://arxiv.org/abs/1609.02907)
+- CAE 場: [Li et al., FNO, ICLR, 2021](https://arxiv.org/abs/2010.08895) / [Pfaff et al., MeshGraphNets, ICLR, 2021](https://arxiv.org/abs/2010.03409)
+- テキスト: [Reimers & Gurevych, Sentence-BERT, EMNLP, 2019](https://arxiv.org/abs/1908.10084)
 
 学習後、クエリ $q$（例：現在のR形状＋公差＋代表CAE条件）に対し、品証事例・製造リスク事例を類似度で同時に引けます。第3部の小さなデモでは、最初から重い3D学習をせず、数値特徴＋テキスト埋め込みの簡易版でも、同じ「共通物差し」の考え方を示せます。
 
@@ -279,9 +318,18 @@ FMEA 項目・DR 指摘・試作合否を、単なる文書ノードや合否フ
 
 社内スラング、帳票ごとの見出し、同じ不具合の別名表記があると、文埋め込みの近さが実務の近さとずれます。形状側より先に、テキストの表記ゆれが精度のボトルネックになりがちです。
 
-#### だから第3部は、いきなりフル学習しない
+#### だから第3部は、いきなりフル学習しない（先の路線も置く）
 
-以上より、第3部では最初から重い多峰性共用埋め込みの学習を目指しません。まずグラフ対応とルール／従来の類似検索のハイブリッドで「辿る＋候補を出す」体験を作り、データとペアが揃った領域から共用埋め込みを段階導入する、という現実解を採ります。
+以上より、第3部では最初から重い多峰性共用埋め込みのフル学習を目指しません。まずグラフ対応とルール／従来の類似検索のハイブリッドで、「辿る＋候補を出す」体験そのものを示します。
+
+一方、ここまでの壁を越えて表現層を突き詰めるなら、目指す路線は次の段階です（第3部が全部を実装する、という意味ではありません）。
+
+1. **対応とペアの土台** — Graph Contract／Bridge Keys で ID 対応を固定し、正例・負例に使える「同じ故障ストーリー」の組を増やせる状態にする（§3.3 先頭の壁への直接対処）。
+2. **テキスト側から埋め込みを入れる** — 形状・CAEの重いエンコーダより先に、FMEA／不具合文の文埋め込みと表記ゆれ対策を入れ、候補生成の一部をベクトル近傍に寄せる。
+3. **揃ったモダリティから共用空間へ** — ペアが十分な領域だけ対照学習（InfoNCE／CLIP 型）で多峰性共用埋め込みを導入し、未検証候補はグラフ展開できないものとして区別する（§3.2 の二段構えを維持）。
+4. **形状・CAEエンコーダとドメインシフト対策** — 点群／メッシュ、場の正規化、機種差を吸収する学習を足し、クエリを「いまのR＋公差＋CAE条件」まで拡張する。
+
+要するに第3部は **段階1手前〜1の体験デモ**、突き詰めた先は **1→2→3→4 の段階導入** です。フル学習はゴールの地図であって、入口ではありません。
 
 ---
 
@@ -313,7 +361,7 @@ $$
 
 納期（D）も同じ枠に載せるなら、例えば $t(x) \le T_{\mathrm{due}}$ のような制約を足せます。第3部のデモではまずQとCの感度を出し、納期は必要に応じて拡張する想定です。
 
-実務では $C(x)$ も $h(x)$ も、きれいな閉形式の式では書けません。BOP連動のコストモデル、歩留まり予測、過去ゲートの類似度ベースリスクなど、近似モデル（**サロゲート**）として置きます。第3部のデモでも、厳密な最適ソルバより、この骨格に沿った簡易なコスト／リスクの見積もりで足ります。
+実務では $C(x)$ も $h(x)$ も、きれいな閉形式の式では書けません。BOP連動のコストモデル、歩留まり予測、過去ゲートの類似度ベースリスクなど、近似モデル（**サロゲート**）として置きます（工学設計での代理モデルの整理として、例えば [Forrester et al., *Engineering Design via Surrogate Modelling*, 2008](https://doi.org/10.1002/9780470770801)）。第3部のデモでも、厳密な最適ソルバより、この骨格に沿った簡易なコスト／リスクの見積もりで足ります。
 
 ### 4.2 変数を少し動かしたときのQCDの効き方をUIに出す
 
@@ -384,7 +432,7 @@ $$
    * **対処**：制約付きでコストを定式化し、局所感度と根拠リンクをUIに出す。後工程で落ちる案を設計時点で除外する。  
    * **理由**：最適解の一発提示より、作業中の「効き方」が見えた方が設計判断に使え、遅れての露見が手戻りを大きくするから。
 
-シーズン2・4の Bridge Keys／契約／Grounding は、この三層の土台です。「どうつなぐか」を理論側で置いたのが、第2部の結論です。
+シーズン2・4の Bridge Keys／契約／Grounding は、この三層の土台です。「どうつなぐか」を理論側で置いたのが、第2部の結論です。各層の用語の初出では、既存の数理・文献への対応を info panel で示しました。本稿はそれらを実装仕様として再発明しているのではなく、**辿る／候補を出す／効き方を見せる**ために役割分担して置いた、という意味です。
 
 ### 第3部の予告
 
@@ -395,40 +443,3 @@ $$
 3. 使うほど知見が溜まる仕組みにする（採用／却下とゲート結果のフィードバック）
 
 「どうつなぐか」を述べた第2部の次に、「現場の画面でどう触るか」へ進みます。
-
----
-
-## 7. 本稿の理論的根拠（数学・アルゴリズム・代表文献）
-
-第2部の議論は、単一の定理に依拠するのではなく、**三層それぞれに既知の数理・アルゴリズムを割り当てた合成**です。以下に、本文で使った枠組みと、その根拠となる代表文献を層ごとに整理します（網羅カタログではなく、本稿の骨格に直結するものに絞っています）。
-
-### 構造層（設計根拠知識グラフ / EBOM–MBOM対応）
-
-| 本稿での使い方 | 理論・アルゴリズム | 代表文献 |
-| :--- | :--- | :--- |
-| 因果を $(S,R,O)$ トリプルの集合として固定し、グラフ $G=(V,E)$ 上のパスでトレースする | 知識グラフ／RDF 的なトリプルモデル、グラフ上の到達可能性・パスクエリ | [Hogan et al., *Knowledge Graphs*, ACM Computing Surveys, 2021](https://arxiv.org/abs/2003.02320) / [W3C, *RDF 1.1 Concepts and Abstract Syntax*](https://www.w3.org/TR/rdf11-concepts/) |
-| EBOM–MBOM の木構造差を測り、対応候補のコストを置く | Tree Edit Distance（挿入・削除・置換） | [Zhang & Shasha, *Simple Fast Algorithms for the Editing Distance between Trees…*, SIAM J. Comput., 1989](https://doi.org/10.1137/0218082)（先行: [Tai, *The Tree-to-Tree Correction Problem*, JACM, 1979](https://dl.acm.org/doi/10.1145/322139.322143)） |
-| 一般の工程グラフでの対応写像 $m$ | Graph Matching／部分グラフ同型の緩和（コスト付き割当） | [Conte et al., *Thirty Years of Graph Matching in Pattern Recognition*, IJPRAI, 2004](https://doi.org/10.1142/S0218001404003228) / [Bunke, *On a Relation between Graph Edit Distance and Maximum Common Subgraph*, Pattern Recognition Letters, 1997](https://doi.org/10.1016/S0167-8655%2897%2900060-3) |
-
-### 表現層（多峰性共用埋め込み）
-
-| 本稿での使い方 | 理論・アルゴリズム | 代表文献 |
-| :--- | :--- | :--- |
-| 異種モダリティを共通潜在空間 $\mathbb{R}^d$ に写し、近さで候補化する | 対照学習による Joint Multimodal Embedding（多峰性共用埋め込み） | [Radford et al., CLIP, ICML, 2021](https://arxiv.org/abs/2103.00020) / [van den Oord et al., InfoNCE, 2018](https://arxiv.org/abs/1807.03748) |
-| 形状エンコーダの研究方向ラベル | PointNet／メッシュ上の Graph Neural Network | [Qi et al., PointNet, CVPR, 2017](https://arxiv.org/abs/1612.00593) / [Kipf & Welling, GCN, ICLR, 2017](https://arxiv.org/abs/1609.02907) |
-| CAE 場エンコーダの研究方向ラベル | Fourier Neural Operator（FNO）、MeshGraphNets | [Li et al., FNO, ICLR, 2021](https://arxiv.org/abs/2010.08895) / [Pfaff et al., MeshGraphNets, ICLR, 2021](https://arxiv.org/abs/2010.03409) |
-| テキスト側の埋め込み | 文埋め込み（dense retrieval の基礎） | [Reimers & Gurevych, Sentence-BERT, EMNLP, 2019](https://arxiv.org/abs/1908.10084) |
-
-### 意思決定層（制約付き最適化と感度）
-
-| 本稿での使い方 | 理論・アルゴリズム | 代表文献 |
-| :--- | :--- | :--- |
-| $\min_x C(x)\ \mathrm{s.t.}\ g(x)\le 0,\ h(x)\le 0$（必要なら $t(x)\le T_{\mathrm{due}}$） | 制約付き非線形最適化、KKT 条件 | [Nocedal & Wright, *Numerical Optimization*](https://link.springer.com/book/10.1007/978-0-387-40065-5) / [Karush–Kuhn–Tucker（KKT）条件](https://en.wikipedia.org/wiki/Karush%E2%80%93Kuhn%E2%80%93Tucker_conditions)（古典） |
-| ラグランジュ緩和・局所感度 $\nabla C(x)$ を UI に出す | ラグランジュ乗数法、局所感度解析（差分／自動微分／随伴） | [Lagrange multipliers](https://en.wikipedia.org/wiki/Lagrange_multiplier)（古典） / [Martins & Hwang, *Review and Unification of Methods for Computing Derivatives…*, AIAA Journal, 2013](https://doi.org/10.2514/1.J051895) |
-| QCD のトレードオフを枠として捉える（本稿の数式は主に Q・C） | 多目的最適化・パレート最適性 | [Miettinen, *Nonlinear Multiobjective Optimization*, 1999](https://link.springer.com/book/10.1007/978-1-4615-5563-6) / [Deb et al., NSGA-II, IEEE TEC, 2002](https://ieeexplore.ieee.org/document/996017) |
-| $C(x)$・$h(x)$ を閉形式で書けないときの近似 | サロゲートモデル（応答曲面・代理モデル） | [Forrester et al., *Engineering Design via Surrogate Modelling*, 2008](https://doi.org/10.1002/9780470770801) |
-
-### 読み方の注意
-
-- 本稿はこれらの理論を **実装仕様として再発明しているわけではありません**。構造層で「辿る」、表現層で「候補を出す」、意思決定層で「効き方を見せる」ために、既存の数理を役割分担して置いた、という意味での根拠一覧です。
-- 第3部のデモ規模では、対照学習のフル学習や厳密な最適ソルバより、グラフ対応＋簡易類似＋局所感度のハイブリッドが現実解です（§3.3・§4.1 参照）。上表は「将来フルに載せるときの理論地図」でもあります。
