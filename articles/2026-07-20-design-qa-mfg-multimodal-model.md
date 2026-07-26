@@ -178,6 +178,23 @@ PDFのFMEAやCADの寸法だけでは、次のことができません。
 
 ここでいう **動的トポロジー変換** は、二つのBOMを無理に同じツリーに揃えることではありません。設計側のノードと製造側のノードのあいだに、**いまのバージョンで有効な対応関係**（対応写像）を置き、設計変更や工程変更に応じてその対応を更新していく、という意味です。「変換」は、一方の構造を他方へ写像する操作を指します。
 
+:::message
+**動的トポロジー変換とは（本稿での呼称）**
+
+**「動的トポロジー変換」は、標準規格名ではなく本稿での呼称**です。一般に定着した単一用語ではありません。
+
+背景にある一般概念は次です。
+
+1. **EBOM–MBOM transformation（BOM変換）** — PLM／製造現場で広く使われる実務語。設計構成（EBOM）と製造構成（MBOM）は観点が違うため、同一ツリー化ではなく **等価リンク／対応づけ** でつなぐ、という問題設定（製品・ベンダー文書でも定番）。
+2. **BOM木の類似・距離** — 研究側では、BOMを（しばしば順序なし）木とみなし、編集距離や対称差などで構造差を測る。本稿が後段で触れる Tree Edit Distance / Graph Matching は、そのための古典的・関連手法です。
+3. **動的** — 本稿では特に、対応写像 $m$ を一度きりで固定せず、**版・設計変更・工程変更に応じて更新し、Graph Contract 上の Bridge として版管理する**、という意味を強調しています（「動的トポロジー」そのものの業界標準語ではありません）。
+
+関連文献（手法・BOM比較側）:
+
+- [Zhang & Shasha, *Simple Fast Algorithms for the Editing Distance between Trees…*, SIAM J. Comput., 1989](https://doi.org/10.1137/0218082) — Tree Edit Distance の代表アルゴリズム
+- [Romanowski & Nagi, *On Comparing Bills of Materials: A Similarity/Distance Measure for Unordered Trees*, IEEE TSMCA, 2005](https://www.eng.buffalo.edu/~nagi/papers/IEEESMCApaper.pdf) — BOMを順序なし木として比較する距離尺度
+:::
+
 #### 製造知見を設計特徴へ戻すために、EBOM–MBOM対応が要る
 
 2.1 の因果チェーンだけだと、仕様→形状→FMEA までは辿れても、製造現場の歩留まりや工程条件を **どの設計特徴に戻すか** が決まりません。構造層のトレースが工程横断で完結するには、EBOMとMBOMをつなぐ辺（`corresponds_to`）が必要です。
