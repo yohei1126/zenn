@@ -24,6 +24,8 @@ ODS（Open Dataspaces）接続は Season 3 以降の企画。宣伝記事では�
 | 2 実装整合 | `instructions/supply-chain-neo4j-migration-plan.md`, `plan-20260706-01.md` |
 | 3A 社内本番 | `instructions/season3-production-trust-series-plan.md` |
 | 3B / ODS | `instructions/season3-b2b-ods-connection-plan.md` |
+| ODS 世界観 | `instructions/ods-owa-vs-cwa-worldview.md`（OWA/CWA・セマンティックWeb系譜） |
+| 5 設計・品証・製造 | `instructions/season5-design-qa-mfg-sample-implementation.md` |
 
 ## ディレクトリと gitignore
 
@@ -94,8 +96,9 @@ npx zenn preview
 | :--- | :--- |
 | Season 2 記事修正 | `plan-20260706-01.md`, コンパニオン repo, agent/agent2/agent3 |
 | Season 3A 執筆 | `season3-production-trust-series-plan.md` |
-| ODS / B2B 執筆 | `season3-b2b-ods-connection-plan.md`, `raw/ods/`, `analytics/ods/` |
+| ODS / B2B 執筆 | `season3-b2b-ods-connection-plan.md`, `ods-owa-vs-cwa-worldview.md`, `raw/ods/`, `analytics/ods/` |
 | Season 0 執筆 | `season0-ontology-kg-series-plan.md`, part outlines |
+| Season 5 サンプル実装 | `season5-design-qa-mfg-sample-implementation.md`, 第1–3部記事 |
 | 用語の古典的背景 | Season 0 企画、Season 1 第3部 |
 
 ## 成功基準（Season 3 全体）
