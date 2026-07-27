@@ -1,0 +1,27 @@
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "primaryColor": "#d5ecec",
+    "primaryTextColor": "#1a2332",
+    "primaryBorderColor": "#0b6e6e",
+    "lineColor": "#5c6778",
+    "secondaryColor": "#e6ecf1",
+    "tertiaryColor": "#f2f4f6",
+    "fontFamily": "IBM Plex Sans JP, Hiragino Sans, Noto Sans JP, sans-serif",
+    "fontSize": "15px"
+  },
+  "flowchart": { "curve": "basis", "padding": 10, "htmlLabels": true, "nodeSpacing": 28, "rankSpacing": 48 }
+}}%%
+flowchart LR
+  Spec["要求・設計・試験などの仕様書"] -->|"根拠となる"| ReqCond["解析要件／解析条件"]
+  ReqCond -->|"規定する"| Case["解析ケース"]
+  ReqCond -->|"具体化する"| MatLoad["材料／荷重条件"]
+  Part["製品／部品"] -->|"モデルを持つ"| CAD["CADモデル"]
+  Case -->|"対象とする"| Part
+  CAD -->|"生成する"| Mesh["メッシュ"]
+  Case -->|"起動する"| Sim["シミュレーション"]
+  Sim -->|"入力する"| Mesh
+  Sim -->|"入力する"| MatLoad
+  Sim -->|"使う"| Solver["ソルバー"]
+  Sim -->|"出力する"| Result["結果"]
+  Result -->|"属する"| Case
