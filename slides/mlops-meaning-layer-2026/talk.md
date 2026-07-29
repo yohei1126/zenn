@@ -218,14 +218,21 @@ style: |
     margin: 0.08em 0;
   }
 
-  img.diagram {
+  img.diagram,
+  svg.diagram {
     display: block;
     width: 100%;
     max-width: 100%;
-    max-height: 58vh;
+    max-height: 74vh;
     height: auto;
     margin: 0.15em auto 0;
     object-fit: contain;
+  }
+
+  svg.diagram foreignObject div,
+  svg.diagram foreignObject span,
+  svg.diagram foreignObject p {
+    font-family: "IBM Plex Sans JP", "Hiragino Sans", "Noto Sans JP", sans-serif !important;
   }
 
   section.lead h2 {
@@ -366,7 +373,9 @@ RDB でいえば、オントロジーがテーブルスキーマ・制約、知�
 
 設計工程における数値シミュレーションの流れ・条件・結果を一つの枠でつなぐ管理
 
+<!-- spdm-ontology:start -->
 <img class="diagram" src="./spdm-ontology.svg" alt="SPDM簡易オントロジ" />
+<!-- spdm-ontology:end -->
 
 <!--
 【口頭】4. 例: SPDM の簡易オントロジ
