@@ -96,6 +96,13 @@ Ontographia の設計原則（[Architecture ガイド](https://edgesentry.github
 * **セキュリティ保証:** 「LLM が直接 Cypher 文字列を書き換えることは絶対にない」という保証が、言語境界・クレート境界によって物理的に担保されます。
 * **マルチ言語展開:** コアが軽量かつ純粋なロジックであるため、Python、Go、WebAssembly などの言語バインディングを薄いラッパーとして安全に提供できます。
 
+#### コア外の実装をあえて `examples` に用意している意図
+プロンプトの生成、LLM 呼び出し、Neo4j ドライバによる実行、スキーマの動的 Subset 化や実行フィードバックといった機能は、プロダクションごとのフレームワーク（LangChain、LlamaIndex、自社製エージェント基盤など）の自由度に委ねるべき領域であり、**コアライブラリ自体のスコープからは意図的に外しています**。
+
+しかし、完全に切り離してしまうと「アプリ層を含めた End-to-End（E2E）の統合テストや実環境での効果検証」を行うことができません。また、利用するエンジニアにとっても「コアライブラリを実際にどう呼び出してエージェントへ組み込めばよいのか」が見えにくくなります。
+
+そのため Ontographia では、リポジトリの [`examples/`](https://github.com/edgesentry/ontographia/tree/main/examples) フォルダ（特に `examples/llm/`）に、コア外の Python 実装をオープンに用意しています。これにより、**コアの決定論性を一切損なわずに E2E 統合テストを厳密に検証できる環境を確保しつつ、開発者にとっての『生きたコアライブラリの使い方リファレンス』を提供する** という意図を持たせています。
+
 :::message
 **主要コンポーネントの用語定義**
 
@@ -208,7 +215,7 @@ ontographia build \
 ```
 
 ### Python からの E2E 実行（LLM 抽出 → ビルド → Neo4j 実行）
-リポジトリの `examples/` ディレクトリには、自然言語の質問から LLM で Intent を抽出し、Neo4j まで一気通貫で実行するサンプルスクリプト（[`examples/run_llm_e2e.py`](https://github.com/edgesentry/ontographia/blob/main/examples/run_llm_e2e.py)）が用意されています。
+リポジトリの `examples/` ディレクトリには、自然言語の質問から LLM で Intent を抽出し、Neo4j まで一気通貫で実行するサンプルスクリプト（[`examples/run_llm_e2e.py`](https://github.com/edgesentry/ontographia/blob/main/examples/run_llm_e2e.py)）が用意されています。これはアプリ層を含めた E2E 統合テストを検証するための実装であると同時に、コアライブラリ（Python パッケージ）を自社システムやエージェントへどう組み込めばよいかを示すリファレンス実装になっています。
 
 ```bash
 # 依存関係のセットアップ（uv を使用）
