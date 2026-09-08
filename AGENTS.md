@@ -27,6 +27,8 @@ ODS（Open Dataspaces）接続は Season 3 以降の企画。宣伝記事では�
 | ODS 世界観 | `instructions/ods-owa-vs-cwa-worldview.md`（OWA/CWA・セマンティックWeb系譜） |
 | 5 設計・品証・製造 | `instructions/season5-design-qa-mfg-sample-implementation.md` |
 
+別シリーズ（Season 番号なし）: Ontographia 第1〜3部 `articles/2026-09-08-ontographia-*.md`（下書き）
+
 ## ディレクトリと gitignore
 
 | パス | コミット | 説明 |
