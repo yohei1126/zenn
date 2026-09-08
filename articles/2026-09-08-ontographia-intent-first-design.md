@@ -3,7 +3,7 @@ title: "Ontographia 第2部 - Intent-first の設計と実装：決定論的 Cyp
 emoji: "⚙️"
 type: "tech"
 topics: ["neo4j", "cypher", "llm", "ontology", "architecture"]
-published: false
+published: true
 ---
 
 :::message
@@ -112,7 +112,7 @@ Ontographia の設計原則（[Architecture ガイド](https://edgesentry.github
 * **マルチ言語展開:** コアが軽量かつ純粋なロジックであるため、Python、Go、WebAssembly などの言語バインディングを薄いラッパーとして安全に提供できます。
 
 #### コア外の実装をあえて `examples` に用意している意図
-プロンプトの生成、LLM 呼び出し、Neo4j ドライバによる実行、スキーマの動的 Subset 化や実行フィードバックといった機能は、プロダクションごとのフレームワーク（LangChain、LlamaIndex、自社製エージェント基盤など）の自由度に委ねるべき領域であり、**コアライブラリ自体のスコープからは意図的に外しています**。
+プロンプトの生成、LLM 呼び出し、Neo4j ドライバによる実行、スキーマの動的サブセット化や実行フィードバックといった機能は、プロダクションごとのフレームワーク（LangChain、LlamaIndex、自社製エージェント基盤など）の自由度に委ねるべき領域であり、**コアライブラリ自体のスコープからは意図的に外しています**。
 
 しかし、完全に切り離してしまうと「アプリ層を含めた End-to-End（E2E）の統合テストや実環境での効果検証」を行うことができません。また、利用するエンジニアにとっても「コアライブラリを実際にどう呼び出してエージェントへ組み込めばよいのか」が見えにくくなります。
 
@@ -129,9 +129,9 @@ Ontographia の設計原則（[Architecture ガイド](https://edgesentry.github
 
 ---
 
-## 3. 最新研究を「Intent 層」へ写像した2つの拡張
+## 3. 最新研究を「Intent 層」へ写像した3つの拡張
 
-[第1部](https://zenn.dev/yohei/articles/2026-09-08-ontographia-template-cost)で紹介した Neo4j の関連研究（Schema Filtering や Iterative Refinement）は非常に有用ですが、LLM に Cypher を書かせる前提でした。
+[第1部](https://zenn.dev/yohei/articles/2026-09-08-ontographia-template-cost)で紹介した Neo4j の関連研究（Schema Filtering、Iterative Refinement、Difficulty-Adaptive Spend）は非常に有用ですが、いずれも LLM に Cypher を書かせる前提でした。
 
 Ontographia では、これら先端研究のエッセンスを **アプリ層（`examples/llm/`）における Intent 生成の改善** へと鮮やかに写像しています。
 
@@ -140,23 +140,26 @@ flowchart TB
     subgraph Related [Text2Cypher 関連研究の前提]
         SF[Schema Filtering<br>Cypher 生成前にスキーマ枝刈り]
         IR[Iterative Refinement<br>生成 Cypher の構文/エラー自己修復]
+        AS[Adaptive Spend<br>難易度に応じた動的計算資源配分]
     end
 
     subgraph Ontographia [Ontographia での写像]
-        Sub[3.1 Ontology Subset<br>Intent 抽出プロンプトの動的語彙絞り込み]
+        Sub[3.1 サブセット化<br>Intent 抽出プロンプトの動的語彙絞り込み]
         Ref[3.2 Exec Feedback Loop<br>Neo4j 実行結果に基づく Intent JSON の再修復]
+        Ada[3.3 Adaptive Allocation<br>簡単な問題は最小リソース・難問のみフルへ昇格]
     end
 
     SF -.->|概念の転写| Sub
     IR -.->|概念の転写| Ref
+    AS -.->|概念の転写| Ada
 ```
 
-### 3.1 Ontology Subset + フルスキーマフォールバック
+### 3.1 オントロジーのサブセット化 + フルスキーマフォールバック
 大規模なエンタープライズオントロジーでは、何百・何千というクラスやプロパティが存在します。これらをすべてプロンプトに載せると、トークン消費が爆発するだけでなく、LLM が「似て非なるプロパティ」を誤選択する原因になります。
 
-そこで Ontographia のアプリ層（`examples/llm/subset.py`）では、ユーザーの質問に含まれるトークンとオントロジーの要素名との **Exact-match（大小文字無視・複数形正規化）** を行い、関係するクラス間の最小トポロジー（Relationship Closure）を抽出して、プロンプトに渡すオントロジーを大幅に圧縮します。
+そこで Ontographia のアプリ層（`examples/llm/subset.py`）では、ユーザーの質問に含まれるトークンとオントロジーの要素名との **完全一致（大小文字無視・複数形正規化）** を行い、関係するクラス間の最小トポロジー（Relationship Closure）を抽出して、プロンプトに渡すオントロジーを大幅に圧縮します。
 
-もし Subset で Intent 検証（`validate_intent`）が通らなかった場合は、自動的にフルスキーマへフォールバックします（`schema_policy=auto`）。
+もしサブセットで Intent 検証（`validate_intent`）が通らなかった場合は、自動的にフルスキーマへフォールバックします（`schema_policy=auto`）。
 
 ### 3.2 実行結果フィードバックによる Intent 訂正
 オントロジーの語彙的には正しくコンパイル（`Engine::build`）できたとしても、「実際に Neo4j で実行したら 0 件だった（Empty Result）」、あるいは「データ型変換で Neo4j ドライバがエラーを返した」というケースが発生します。
@@ -165,6 +168,12 @@ flowchart TB
 
 Ontographia（`examples/llm/exec_feedback.py`）では、**Neo4j の実行結果（0件またはエラー情報）をコンテキストにして、LLM に「Intent JSON」を再修正させます**。
 修正された Intent は再びコアの `validate_intent` と AST コンパイルを通るため、**Cypher 文字列の安全性を 1 ミリも毀損することなく、実行結果に応じた自己修復ループ（Refine）を実現**しています。
+
+### 3.3 難易度適応型コスト配分（Adaptive Spend）
+業務で投げられる質問のすべてが複雑な結合を要するわけではありません。日常の問い合わせの大半は単純な単一ノード参照や浅い探索であり、最初からフルスキーマの巨大プロンプトを渡し、多段リトライ（5回等）のバジェットを確保するのは推論コスト（トークン代とレイテンシ）の過剰な浪費です。
+
+そこで Ontographia（`examples/run_llm_e2e.py`）では、**「最初は軽量なサブセット ＋ 最小リトライ回数（`initial_retries=1`）で即答を試み、検証エラーや実行失敗が発生した時のみフルスキーマへ自動エスカレーションして多段リトライ（`escalated_retries=5`）を解禁する」** という動的リソース配分機構を組み込んでいます。
+これにより、日常の簡単な質問の TCO（総所有コスト）を劇的に削減しながら、エッジケースの難問に対しても高い回答完了率を維持できます。
 
 ---
 
@@ -252,7 +261,7 @@ uv run python examples/run_llm_e2e.py \
 
 * **境界線の厳格化:** 自然言語の受け口は Intent JSON、Cypher の組み立ては決定論的 AST。この分離が安全とスケールを両立する鍵である。
 * **コアの軽量性と独立性:** LLM や Neo4j ドライバをあえてコアに入れないことで、100% の検証可能性と堅牢なセキュリティを実現した。
-* **最新研究の Intent 層への写像:** Schema Filtering は「プロンプトの動的 Subset 化」へ、Iterative Refinement は「実行結果に基づく Intent 再修復」へと昇華させた。
+* **最新研究の Intent 層への写像:** Schema Filtering は「プロンプトの動的サブセット化」へ、Iterative Refinement は「実行結果に基づく Intent 再修復」へ、Difficulty-Adaptive Spend は「難易度適応型コスト配分」へと昇華させた。
 
 しかし、この Intent-first 設計は、実際の現場規模の巨大なオントロジー（数千プロパティ）や、公開 Text-to-Cypher ベンチマークで本当に通用するのでしょうか？
 
