@@ -212,7 +212,7 @@ flowchart LR
 * Neo4j 最新研究（Schema Filtering / Iterative Refinement）は有用だが、Cypher 直接生成を前提とした対症療法に留まる。
 * 必要なのは、**「LLM は Intent JSON、Cypher の組み立ては決定論」** という責務の再定義である。
 
-続く第2部では、この Intent-first を具現化するアーキテクチャ設計と、Python / Rust による実際の実装コードを詳しく解説します。
+続く第2部では、この Intent-first を具現化するアーキテクチャ設計と実装を詳しく解説します。決定論性を担保する Rust 製コア、Python や Go 向けにパッケージ化された薄いバインディング、そしてコア外の LLM 連携・実行ループを担う `examples` の Python 実装について紹介します。
 
 👉 **[Ontographia 第2部：Intent-first の設計と実装 へ進む](https://zenn.dev/yohei/articles/2026-09-08-ontographia-intent-first-design)**
 
