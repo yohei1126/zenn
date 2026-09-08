@@ -24,7 +24,7 @@ published: true
 
 ## 概要
 
-製造業の部品表（BOM）、サプライチェーンの多段追跡、品質保証、企業内の複雑なナレッジグラフ――ビジネスの現場では、「関係性（リレーション）」を辿るグラフ構造の探索を自然言語で行いたいという需要が急速に高まっています。
+製造業の部品表（BOM）、サプライチェーンの多段追跡、品質保証、企業内の複雑な知識グラフ――ビジネスの現場では、「関係性（リレーション）」を辿るグラフ構造の探索を自然言語で行いたいという需要が急速に高まっています。
 
 しかし、**「Neo4j に投げる Cypher クエリを LLM に直接生成させる（Text-to-Cypher）」** 運用を本番環境で成立させるのは極めて困難です。構文ミスや存在しないラベル・プロパティの捏造（スキーマハルシネーション）、プロンプトインジェクション、さらには Cartesian Product（デカルト積）による意図しない DB 高負荷など、安全性とガバナンスの壁が立ちはだかるからです。
 
@@ -184,7 +184,7 @@ flowchart LR
 3. **AST 経由で 100% 決定論的に Cypher を組み立てる:**
    検証を通過した Intent のみを方言中立な AST（Query AST）に変換し、安全な Cypher（Cypher 25 等）へ決定論的に emit します。フィルタ条件の値はすべて自動的に `$param_N` にバインドされ、文字列連結によるインジェクションの余地をゼロにします。
 4. **最新研究のインサイトを「Intent 層」へ写像する:**
-   Neo4j の最新研究（Schema Filtering や Iterative Refinement）の知見を無駄にはしません。ただし、それを Cypher レベルで行うのではなく、「LLM に渡すオントロジーの部分集合（Subset）の選定」や「Neo4j 実行結果に応じた Intent JSON の修復」として、**アプリ層（Intent 境界）** に適用します。
+   Neo4j の最新研究（Schema Filtering や Iterative Refinement）の知見を無駄にはしません。ただし、それを Cypher レベルで行うのではなく、「LLM に渡すオントロジーの部分集合（サブセット）の選定」や「Neo4j 実行結果に応じた Intent JSON の修復」として、**アプリ層（Intent 境界）** に適用します。
 
 この構成をとることで、ユーザーの多様な自然言語は **オントロジーが定義する語彙の組み合わせ空間** で受け止めることができます。ユースケースごとの固定テンプレを 1 枚も増やすことなく、かつ生の Cypher 生成が持つ危険を 100% 排除した状態で、安全にシステムをスケールさせることが可能になります。
 
@@ -197,11 +197,11 @@ flowchart LR
 * **[Ontographia 第2部 - Intent-first の設計と実装：決定論的 Cypher 組み立てのアーキテクチャ](https://zenn.dev/yohei/articles/2026-09-08-ontographia-intent-first-design)**
   * 「なぜ LLM をコアに入れないのか」というアーキテクチャの責務境界。
   * Canonical Ontology Model（COM）、Intent JSON Schema、AST、パラメータバインディングの実装詳細。
-  * Neo4j の Schema Filtering / Iterative Refinement を Intent 層へ写像する具体的なパイプライン設計。
+  * Neo4j 先端研究の3潮流（Filtering, Refine, Adaptive Spend）を Intent 層へ写像する3つの拡張設計。
 * **[Ontographia 第3部 - 検証結果と今後のロードマップ：大規模オントロジー評価と外的妥当性](https://zenn.dev/yohei/articles/2026-09-08-ontographia-eval-and-roadmap)**
-  * 数千プロパティ規模のオントロジーを用いたストレス試験（Track A）。
-  * 構文は通るが誤答となる「サイレント誤フィールド選択」の実態と、Subset 化によるトークン 91% 削減・正答率改善の定量的エビデンス（仮説 H1 の検証）。
-  * 公開 Text2Cypher ベンチマーク（15 DB）の取り込み検証（Track B）と、今後のリアル LLM 評価へのロードマップ。
+  * 巨大オントロジーで未知名は弾けても「実在する誤プロパティ」を平然と通してしまう「サイレント誤答」の実態。
+  * 3つの仮説（H1: 動的サブセットによるトークン91%削減と誤答排除、H2: 実行フィードバックによるEmpty@Validの自己修復、H3: 難易度適応型配分によるTCO最小化）の定量的実証（Track A）。
+  * Neo4j 公式の公開 15 DB ベンチマークを用いた外的妥当性の検証（Track B）と、機械アームからライブ LLM へ繋ぐ誠実なロードマップ。
 
 ---
 
@@ -212,7 +212,7 @@ flowchart LR
 * Neo4j 最新研究（Schema Filtering / Iterative Refinement）は有用だが、Cypher 直接生成を前提とした対症療法に留まる。
 * 必要なのは、**「LLM は Intent JSON、Cypher の組み立ては決定論」** という責務の再定義である。
 
-続く第2部では、この Intent-first を具現化するアーキテクチャ設計と、Python / Rust による実際の実装コードを詳しく解説します。
+続く第2部では、この Intent-first を具現化するアーキテクチャ設計と実装を詳しく解説します。決定論性を担保する Rust 製コア、Python や Go 向けにパッケージ化された薄いバインディング、そしてコア外の LLM 連携・実行ループを担う `examples` の Python 実装について紹介します。
 
 👉 **[Ontographia 第2部：Intent-first の設計と実装 へ進む](https://zenn.dev/yohei/articles/2026-09-08-ontographia-intent-first-design)**
 

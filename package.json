@@ -21,6 +21,6 @@
     "@qiita/qiita-cli": "^1.8.0",
     "agentkeepalive": "^4.1.4",
     "yoga-wasm": "^0.0.2",
-    "zenn-cli": "^0.5.2"
+    "zenn-cli": "^0.5.4"
   }
 }
