@@ -396,8 +396,6 @@ uv run python examples/run_llm_e2e.py \
 | Track B：Exec Match スポット（限界込み） | §4・§7 |
 | 業務用語 repair mapping の一般化 | §7 |
 
-旧計画で「今後」に置いていたライブ H1・Exec スポット・mapping 一般化は、すでに検証本編へ吸収済みです。
-
 ### 意図的に主張しない／本記事のスコープ外
 
 * **SOTA 級の Track B Exec Match:** Gold が Cypher（Intent ではない）ため、完全一致率の低さは評価設計の制約であり、Intent-first の敗退ではない。本記事はスポット計測と正直な読み方までに留める。
