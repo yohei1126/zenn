@@ -3,7 +3,7 @@ title: "HPCワークロード設計の勘所（前編）：Web/APIクラウド�
 emoji: "⚡"
 type: "tech"
 topics: ["hpc", "architecture", "distributed", "gcp", "cloud"]
-published: false
+published: true
 ---
 
 :::message
