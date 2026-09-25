@@ -71,6 +71,7 @@ Season 3 は未執筆。執筆順: **3A → Epilogue → Season 4（任意）**�
 ## 記事執筆ルール
 
 - 応答・記事本文は **日本語**
+- **日本語技術文書の推敲規範**: 記事の執筆および推敲時には、必ず `~/.agents/skills/japanese-tech-writing/SKILL.md` の規範を適用する（パラグラフライティング、論証の厳密さ・ツッコミどころの排除、読み手の負荷管理、LLM特有の空句・過剰な修飾や擬人化の排除、冗長の排除）。
 - 連載は **Problem / Design / Build** の型を維持
 - 新 Season 執筆前に該当 `instructions/*.md` を読み、用語を企画メモに合わせる
 - ODS 記事: ODP 網羅・IPA 逐語解説・法務詳細は **やらない**（`season3-b2b-ods-connection-plan.md` §9）
@@ -96,6 +97,7 @@ npx zenn preview
 
 | タスク | 読むもの |
 | :--- | :--- |
+| **記事の執筆・推敲全般** | `~/.agents/skills/japanese-tech-writing/SKILL.md`（文章規範） |
 | Season 2 記事修正 | `plan-20260706-01.md`, コンパニオン repo, agent/agent2/agent3 |
 | Season 3A 執筆 | `season3-production-trust-series-plan.md` |
 | ODS / B2B 執筆 | `season3-b2b-ods-connection-plan.md`, `ods-owa-vs-cwa-worldview.md`, `raw/ods/`, `analytics/ods/` |
