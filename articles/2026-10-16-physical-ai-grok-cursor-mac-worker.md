@@ -1,5 +1,5 @@
 ---
-title: "チャットで頼むだけで、MacでAIロボットの学習が回る ― Grok Bot × Cursor クラウドエージェント × MacBook ワーカー"
+title: "チャットで頼むだけでMacでAIロボット学習が回る ― Grok Bot × Cursorクラウド × MacBookワーカー"
 emoji: "🤖"
 type: "tech"
 topics: ["cursor", "grok", "robotics", "machinelearning", "pytorch"]
