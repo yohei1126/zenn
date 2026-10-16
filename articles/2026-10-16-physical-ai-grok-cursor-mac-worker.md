@@ -3,7 +3,7 @@ title: "チャットで頼むだけでMacでAIロボット学習が回る ― Gr
 emoji: "🤖"
 type: "tech"
 topics: ["cursor", "grok", "robotics", "machinelearning", "pytorch"]
-published: false
+published: true
 ---
 
 ## 1. 卓上ロボット開発における一人運用の負荷
