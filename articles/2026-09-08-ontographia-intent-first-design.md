@@ -87,7 +87,11 @@ Ontographia が導き出した回答は以下のパイプラインです。
 ### なぜこれでテンプレ地獄が消えるのか
 従来のハイブリッド方式では、「サプライヤ一覧用テンプレ」「再帰的 BOM 展開用テンプレ」といったように、**クエリのパターンごとに Cypher 文字列を人間が事前作成**していました。
 
-Intent-first では、探索の開始クラス（`start`）、辿るリレーション（`traverse`）、絞り込み条件（`filter`）、出力項目（`return`）を、構造化された JSON のフィールドの組み合わせで表現します。並べ替え（`order_by`）、件数の制御（`limit` / `skip`）、`optional` フラグも任意で指定できます。未知のキーはエラーにならず黙って無視されるため、フィールド名は正確に書く必要があります（たとえば `filters` と書くと、絞り込み条件がそのまま落ちます）。
+Intent-first では、探索の開始クラス（`start`）、辿るリレーション（`traverse`）、絞り込み条件（`filter`）、出力項目（`return`）を、構造化された JSON のフィールドの組み合わせで表現します。並べ替え（`order_by`）、件数の制御（`limit` / `skip`）、`optional` フラグも任意で指定できます。
+
+v0.1.5 以降、Intent JSON の未知のキーは検証エラーになり、問題のフィールド名がエラーに含まれます（それ以前は黙って無視されていました）。たとえば `filters` というタイポは、それ以前は絞り込み条件が落ちたままビルドが通っていましたが、v0.1.5 では検証で弾かれます。
+
+方言名も同様で、Python と FFI / Go バインディングは未知の方言をエラーにし、以前のように `cypher25` へ黙ってフォールバックしません。
 
 オントロジーが定義する語彙の範囲内であれば、LLM は探索パターンをこれらのフィールドの組み合わせとして表現できます。そのため、**新しい探索パターンに対応するためにテンプレを追加する必要がありません**。
 
@@ -204,10 +208,10 @@ Ontographia はソースコードからビルドする必要はありません�
 
 | 言語 / ツール | インストール方法 | 備考 |
 | :--- | :--- | :--- |
-| **CLI** | `brew install ontographia` | Homebrew で一発導入（GitHub Releases にもバイナリあり） |
+| **CLI** | `brew install ontographia` | Homebrew で一発導入（`cargo install ontographia-cli`、GitHub Releases にもバイナリあり） |
 | **Python** | `pip install ontographia` | PyPI 公開済み（Linux, macOS arm64, Windows 対応） |
 | **Go** | `go get github.com/edgesentry/ontographia/bindings/go` | cgo / FFI バインディング |
-| **Rust** | `cargo add ontographia-core` | crates.io 公開済み |
+| **Rust** | `cargo add ontographia-core ontographia-adapters` | crates.io に `ontographia-core` / `ontographia-adapters` / `ontographia-schema` / `ontographia-cli` を公開 |
 
 ここでは、公式リポジトリ [**edgesentry/ontographia**](https://github.com/edgesentry/ontographia) に同梱されている製造ドメインのサンプルデータを使って、実際に動作を確認してみましょう。
 
