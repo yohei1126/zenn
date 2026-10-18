@@ -87,8 +87,9 @@ Ontographia が導き出した回答は以下のパイプラインです。
 ### なぜこれでテンプレ地獄が消えるのか
 従来のハイブリッド方式では、「サプライヤ一覧用テンプレ」「再帰的 BOM 展開用テンプレ」といったように、**クエリのパターンごとに Cypher 文字列を人間が事前作成**していました。
 
-Intent-first では、探索の開始クラス（`target`）、辿るリレーション（`traversals`）、絞り込み（`filters`）、出力項目（`returns`）が、構造化された JSON の組み合わせとして表現されます。
-オントロジーが定義する語彙の組み合わせ空間全体を LLM が表現できるため、**テンプレを 1 枚も追加することなく、無数の探索パターンに即座に対応可能**になります。
+Intent-first では、探索の開始クラス（`start`）、辿るリレーション（`traverse`）、絞り込み条件（`filter`）、出力項目（`return`）を、構造化された JSON のフィールドの組み合わせで表現します。並べ替え（`order_by`）、件数の制御（`limit` / `skip`）、`optional` フラグも任意で指定できます。未知のキーはエラーにならず黙って無視されるため、フィールド名は正確に書く必要があります（たとえば `filters` と書くと、絞り込み条件がそのまま落ちます）。
+
+オントロジーが定義する語彙の範囲内であれば、LLM は探索パターンをこれらのフィールドの組み合わせとして表現できます。そのため、**新しい探索パターンに対応するためにテンプレを追加する必要がありません**。
 
 ---
 
@@ -101,13 +102,13 @@ Ontographia の設計原則（[Architecture ガイド](https://edgesentry.github
 | **Ontology が唯一の正本** | クラス名、リレーション名、プロパティ名は COM（Canonical Ontology Model）に定義されたもの以外一切認めない。 |
 | **LLM は Intent、Cypher ではない** | スキーマ制約付き JSON（Intent）を機械検証して初めて、クエリ生成パイプラインが起動する。 |
 | **決定論的パラメータバインド** | ユーザー入力値やフィルタ値は必ず `$param_N` に切り離す。クエリ文字列への埋め込みは構造上不可能にする。 |
-| **同一入力・同一出力の再現性** | 同じオントロジー + Intent + ダイアレクトであれば、ミリ秒単位で完全に同一の `{ query, params }` を出力する。 |
+| **同一入力・同一出力の再現性** | 同じオントロジー + Intent + 方言であれば、常に同一の `{ query, params }` を出力する。 |
 | **コアとアプリ層の厳格な分離** | コア（Rust 製 `ontographia-core`）にはネットワーク、LLM API、Neo4j ドライバを一切持ち込まない。 |
 
 ### なぜコアに LLM やドライバを入れないのか
 多くの AI ツールキットは、エンジン内部に LLM 呼び出しや DB コネクタを統合しがちです。しかし Ontographia はそれを固く拒否しています（[What is intentionally outside the core](https://edgesentry.github.io/ontographia/architecture/#what-is-intentionally-outside-the-core)）。
 
-* **検証可能性とテスト容易性:** コアが純粋な決定論的コンパイラであれば、CI 上で数万件の AST / クエリ生成テストをミリ秒単位で回せます。LLM のトークン代やモックの複雑さに悩まされません。
+* **検証可能性とテスト容易性:** コアが純粋な決定論的コンパイラであれば、AST とクエリ生成のテストを、LLM もデータベースも使わずに CI で実行できます。トークン代はかからず、LLM の応答をモックする必要もありません。
 * **セキュリティ保証:** 「LLM が直接 Cypher 文字列を書き換えることは絶対にない」という保証が、言語境界・クレート境界によって物理的に担保されます。
 * **マルチ言語展開:** コアが軽量かつ純粋なロジックであるため、Python、Go、WebAssembly などの言語バインディングを薄いラッパーとして安全に提供できます。
 
@@ -123,8 +124,8 @@ Ontographia の設計原則（[Architecture ガイド](https://edgesentry.github
 
 * **COM (Canonical Ontology Model):** 複数形式（native YAML, OWL, RDF 等）のオントロジーを正規化した内部データモデル。
 * **Intent JSON:** 探索意図（どのノードから、どの関係を辿り、どう絞り込んで何を返すか）を記述する JSON 仕様。
-* **Query AST:** Cypher や GQL 等の方言に依存しない、安全なクエリ中間表現。
-* **Emitter:** AST を走査し、特定バージョン（Cypher 25, Cypher 5 等）の安全なクエリ文字列とパラメータ辞書を出力する生成器。
+* **Query AST:** 方言に依存しない形で設計した、安全なクエリ中間表現。GQL への対応も想定した構造にしている。
+* **Emitter:** AST を走査し、特定の方言（既定の Cypher 25、または Cypher 5）の安全なクエリ文字列とパラメータ辞書を出力する生成器。GQL 向けの Emitter はプロトタイプ段階である。
 :::
 
 ---
@@ -159,21 +160,25 @@ flowchart TB
 
 そこで Ontographia のアプリ層（`examples/llm/subset.py`）では、ユーザーの質問に含まれるトークンとオントロジーの要素名との **完全一致（大小文字無視・複数形正規化）** を行い、関係するクラス間の最小トポロジー（Relationship Closure）を抽出して、プロンプトに渡すオントロジーを大幅に圧縮します。
 
-もしサブセットで Intent 検証（`validate_intent`）が通らなかった場合は、自動的にフルスキーマへフォールバックします（`schema_policy=auto`）。
+サブセット段階で Intent の抽出や検証が失敗した場合は、フルスキーマに切り替えて抽出をやり直します。この切り替えは、サンプルアプリのパイプライン（`examples/llm/pipeline.py`）の `schema_policy` で制御しており、pip パッケージや Rust コアの機能ではありません。
+
+`schema_policy` は `auto`（既定）、`subset`、`full` の三つの値を取ります。`auto` ではまずサブセットで抽出を試み、サブセット段階で抽出の失敗、`validate_intent` による検証の失敗、リペア中の例外のいずれかが起きると、フルスキーマに切り替えます。質問に一致する語彙が見つからずサブセットが空になった場合は、最初からフルスキーマを使います。
 
 ### 3.2 実行結果フィードバックによる Intent 訂正
 オントロジーの語彙的には正しくコンパイル（`Engine::build`）できたとしても、「実際に Neo4j で実行したら 0 件だった（Empty Result）」、あるいは「データ型変換で Neo4j ドライバがエラーを返した」というケースが発生します。
 
 従来の Text2Cypher 研究ではここで「Cypher 文字列を LLM に渡して直させる」のですが、それでは非決定論の事故が再発します。
 
-Ontographia（`examples/llm/exec_feedback.py`）では、**Neo4j の実行結果（0件またはエラー情報）をコンテキストにして、LLM に「Intent JSON」を再修正させます**。
-修正された Intent は再びコアの `validate_intent` と AST コンパイルを通るため、**Cypher 文字列の安全性を 1 ミリも毀損することなく、実行結果に応じた自己修復ループ（Refine）を実現**しています。
+Ontographia のサンプルアプリ（`examples/llm/exec_feedback.py`）では、**Neo4j の実行結果（0 件またはエラー情報）を LLM に渡し、Cypher ではなく Intent JSON を修正させます**。この修正ループは、`--execute --refine-on-exec` を指定したときだけ動作します。
+
+修正された Intent は、再びコアの `validate_intent` と AST コンパイルを通ります。そのため、修正を繰り返しても、実行される Cypher は常にコアの決定論的な生成を経たものになります（LLM が Cypher 文字列を直接書き換える経路はありません）。修正は既定で最大 2 回（`--max-exec-refines` で変更可能）で、常にフルスキーマを使い、修正後の Intent が検証を通らなかった時点でループを止めます。
 
 ### 3.3 難易度適応型コスト配分（Adaptive Spend）
 業務で投げられる質問のすべてが複雑な結合を要するわけではありません。日常の問い合わせの大半は単純な単一ノード参照や浅い探索であり、最初からフルスキーマの巨大プロンプトを渡し、多段リトライ（5回等）のバジェットを確保するのは推論コスト（トークン代とレイテンシ）の過剰な浪費です。
 
-そこで Ontographia（`examples/run_llm_e2e.py`）では、**「最初は軽量なサブセット ＋ 最小リトライ回数（`initial_retries=1`）で即答を試み、検証エラーや実行失敗が発生した時のみフルスキーマへ自動エスカレーションして多段リトライ（`escalated_retries=5`）を解禁する」** という動的リソース配分機構を組み込んでいます。
-これにより、日常の簡単な質問の TCO（総所有コスト）を劇的に削減しながら、エッジケースの難問に対しても高い回答完了率を維持できます。
+そこでサンプルパイプライン（`examples/llm/pipeline.py`。`examples/run_llm_e2e.py` から呼び出す）では、**最初は軽量なサブセットと最小のリトライ回数（`initial_retries=1`）で抽出を試み、サブセット段階が失敗したときだけフルスキーマに切り替えてリトライ回数を増やす（`escalated_retries=5`）** という配分にしています。切り替えの条件は 3.1 と同じで、抽出・検証・リペアのいずれかの失敗です。Neo4j での実行失敗（エラーや 0 件）はこの切り替えの対象ではなく、3.2 の実行フィードバックループで扱います。
+
+この配分は、日常の簡単な質問ではトークン消費とレイテンシを抑え、難しい質問にだけ多くのリトライを割り当てることを狙っています。効果の定量的な評価は第3部で扱います。
 
 ---
 
@@ -214,7 +219,35 @@ cd ontographia
 ```
 
 ### CLI による決定論的クエリビルド
-Homebrew で CLI をインストールすれば、リポジトリ内のサンプルオントロジー（[`examples/manufacturing.native.yaml`](https://github.com/edgesentry/ontographia/blob/main/examples/manufacturing.native.yaml)）とサンプル Intent（[`examples/sample_intent.json`](https://github.com/edgesentry/ontographia/blob/main/examples/sample_intent.json)）を渡すだけで、即座に安全な Cypher 25 が出力されます。
+Homebrew で CLI をインストールすれば、リポジトリ内のサンプルオントロジー（[`examples/manufacturing.native.yaml`](https://github.com/edgesentry/ontographia/blob/main/examples/manufacturing.native.yaml)）とサンプル Intent（[`examples/sample_intent.json`](https://github.com/edgesentry/ontographia/blob/main/examples/sample_intent.json)）を渡すだけで、安全な Cypher 25 が出力されます。
+
+サンプル Intent は、製品 SKU `SPX-100` を構成する部品（Part）のサプライヤ（Supplier）名を返す探索を表しています。
+
+```json
+{
+  "start": { "class": "Product", "alias": "product" },
+  "traverse": [
+    {
+      "relationship": "has_part",
+      "direction": "out",
+      "to": { "class": "Part", "alias": "part" }
+    },
+    {
+      "relationship": "supplied_by",
+      "direction": "out",
+      "to": { "class": "Supplier", "alias": "supplier" }
+    }
+  ],
+  "filter": [
+    { "alias": "product", "property": "sku", "op": "eq", "value": "SPX-100" }
+  ],
+  "return": [
+    { "alias": "supplier", "property": "name", "as_name": "supplier_name" }
+  ],
+  "limit": 20,
+  "optional": false
+}
+```
 
 ```bash
 # Homebrew によるインストール
@@ -228,15 +261,17 @@ ontographia build \
   --json
 ```
 
-出力される結果（抜粋）:
+出力される結果:
 ```json
 {
-  "query": "MATCH (plant:Plant) WHERE plant.id = $param_0 RETURN plant.name AS name",
   "params": {
-    "param_0": "PLANT-01"
-  }
+    "param_0": "SPX-100"
+  },
+  "query": "CYPHER 25\nMATCH (product:Product)-[:has_part]->(part:Part)-[:supplied_by]->(supplier:Supplier)\nFILTER product.sku = $param_0\nRETURN supplier.name AS supplier_name\nLIMIT 20"
 }
 ```
+
+SKU の値 `SPX-100` はクエリ文字列に含まれず、`param_0` として別に渡されています。
 
 ### Python からの E2E 実行（LLM 抽出 → ビルド → Neo4j 実行）
 リポジトリの `examples/` ディレクトリには、自然言語の質問から LLM で Intent を抽出し、Neo4j まで一気通貫で実行するサンプルスクリプト（[`examples/run_llm_e2e.py`](https://github.com/edgesentry/ontographia/blob/main/examples/run_llm_e2e.py)）が用意されています。これはアプリ層を含めた E2E 統合テストを検証するための実装であると同時に、コアライブラリ（Python パッケージ）を自社システムやエージェントへどう組み込めばよいかを示すリファレンス実装になっています。
@@ -268,4 +303,3 @@ uv run python examples/run_llm_e2e.py \
 続く第3部では、数千プロパティのストレス試験（Track A）と公開データセット（Track B）を用いた**客観的かつ定量的な検証結果**を包み隠さず公開します。
 
 👉 **[Ontographia 第3部：検証結果と今後のロードマップ へ進む](https://zenn.dev/yohei/articles/2026-09-08-ontographia-eval-and-roadmap)**
-
