@@ -1,6 +1,8 @@
 # zenn
 
-[Zenn](https://zenn.dev) 向けの記事原稿と、連載企画メモを管理するリポジトリです。
+[Zenn](https://zenn.dev) 向けの記事原稿と、連載企画メモを管理するリポジトリです（**Zenn 専用**）。
+
+LinkedIn 向けの英語記事・投稿下書きは、別リポジトリ [yohei1126/writing](https://github.com/yohei1126/writing/tree/main/linkedin) の `linkedin/` で管理します。
 
 ## このリポジトリでやっていること
 
