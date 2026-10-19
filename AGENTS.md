@@ -4,7 +4,9 @@
 
 ## リポジトリの目的
 
-Zenn 連載原稿（`articles/`）と執筆企画（`instructions/`）の管理。主題は **エンタープライズ向け Graph RAG / 論理フェデレーション / Graph Contract** 。題材は **サプライチェーン影響分析**（ebom / routing / sourcing）。
+**Zenn 専用**の連載原稿（`articles/`）と執筆企画（`instructions/`）の管理。主題は **エンタープライズ向け Graph RAG / 論理フェデレーション / Graph Contract** 。題材は **サプライチェーン影響分析**（ebom / routing / sourcing）。
+
+LinkedIn 向け英語記事・投稿は本リポジトリ外: [yohei1126/writing](https://github.com/yohei1126/writing/tree/main/linkedin)（`linkedin/`）。
 
 ODS（Open Dataspaces）接続は Season 3 以降の企画。宣伝記事ではなく **実装者視点のマッピングと摩擦の記録** が貢献方針。
 
@@ -44,6 +46,7 @@ ODS（Open Dataspaces）接続は Season 3 以降の企画。宣伝記事では�
 | パス / URL | 役割 |
 | :--- | :--- |
 | `github.com/yohei1126/supply-chain-impact-analysis-agent` | Season 2 コンパニオン実装（Neo4j, Graph Contract, tools） |
+| `github.com/yohei1126/writing`（`linkedin/`） | LinkedIn 英語記事・投稿下書き |
 | `/Users/yoheionishi/work/open-dataspaces/` | ODS L4 OSS クローン（SDK-for-semantics, L4-discovery-*, L4-crawler-service 等） |
 
 ## 連載マップ（公開済み記事 slug）
