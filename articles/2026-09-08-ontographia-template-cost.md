@@ -7,7 +7,7 @@ published: true
 ---
 
 :::message
-**連載の位置づけ（Ontographia 三部作）**
+**連載の位置づけ（Ontographia）**
 
 自然言語からグラフデータベース（Neo4j 等）へ問い合わせを行う際、多くの現場は「LLM に直接 Cypher クエリを書かせるか」「手書きの巨大な固定クエリ／テンプレ集で縛るか」の二者択一で揺れ動きます。
 
@@ -18,6 +18,7 @@ published: true
 | **第1部** | [グラフAIのジレンマ：LLMにCypherを書かせるか、テンプレ保守地獄に耐えるか](https://zenn.dev/yohei/articles/2026-09-08-ontographia-template-cost)（本記事） | 現場の課題・最新研究の整理と新仮説 |
 | **第2部** | [Intent-first の設計と実装：決定論的 Cypher 組み立てのアーキテクチャ](https://zenn.dev/yohei/articles/2026-09-08-ontographia-intent-first-design) | コアとアプリ層の分離・実装詳解 |
 | **第3部** | [検証結果と今後のロードマップ：大規模オントロジー評価と外的妥当性](https://zenn.dev/yohei/articles/2026-09-08-ontographia-eval-and-roadmap) | 定量的ストレス試験・公開データ検証 |
+| **第4部** | [リリース後に分かったこと：MCP・検証器・オントロジー供給](https://zenn.dev/yohei/articles/2026-10-22-ontographia-release-findings) | 公開パッケージでの追試 |
 
 プロジェクト公開ドキュメント: [edgesentry.github.io/ontographia](https://edgesentry.github.io/ontographia/)
 :::
