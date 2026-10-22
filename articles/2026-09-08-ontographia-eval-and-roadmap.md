@@ -18,7 +18,7 @@ published: true
 | **第1部** | [グラフAIのジレンマ：LLMにCypherを書かせるか、テンプレ保守地獄に耐えるか](https://zenn.dev/yohei/articles/2026-09-08-ontographia-template-cost) | 現場の課題・最新研究の整理と新仮説 |
 | **第2部** | [Intent-first の設計と実装：決定論的 Cypher 組み立てのアーキテクチャ](https://zenn.dev/yohei/articles/2026-09-08-ontographia-intent-first-design) | コアとアプリ層の分離・実装詳解 |
 | **第3部** | [検証結果と今後のロードマップ：大規模オントロジー評価と外的妥当性](https://zenn.dev/yohei/articles/2026-09-08-ontographia-eval-and-roadmap)（本記事） | 定量的ストレス試験・公開データ検証 |
-| **第4部** | [リリース後の再評価](https://zenn.dev/yohei/articles/2026-10-22-ontographia-release-findings) | 公開パッケージでの追試 |
+| **第4部** | [新しい LLM での精度評価とハルシネーション防止機構の検証](https://zenn.dev/yohei/articles/2026-10-22-ontographia-release-findings) | 公開パッケージでの追試 |
 
 公式評価ドキュメント: [Evaluation ガイド](https://edgesentry.github.io/ontographia/evaluation/) · 再現コード: [`examples/llm/eval/`](https://github.com/edgesentry/ontographia/tree/main/examples/llm/eval)  
 リポジトリ: [edgesentry/ontographia](https://github.com/edgesentry/ontographia)
