@@ -25,7 +25,7 @@ published: false
 
 [第3部](https://zenn.dev/yohei/articles/2026-09-08-ontographia-eval-and-roadmap)では、Intent-first の仮説を Track A / Track B で測った。その後、2026-10-21 に [v0.1.6](https://github.com/edgesentry/ontographia/releases/tag/v0.1.6) が公開され、Intent 層は `pip install "ontographia[llm]"`、実験的 MCP サーバは `pip install "ontographia[mcp]"` で入れられるようになった（いずれも experimental / 0.x。関連: [PR #93](https://github.com/edgesentry/ontographia/pull/93)、[PR #94](https://github.com/edgesentry/ontographia/pull/94)、実 Neo4j 向け CI: [PR #99](https://github.com/edgesentry/ontographia/pull/99)）。
 
-本記事は、公開 PyPI パッケージ上で第3部と同条件のライブ評価をやり直し、実 LLM と実 Neo4j の E2E も記録したうえで、次の3点に絞る。数値はリポジトリにコミットされたベースラインからの引用である（比較表: [`gemini_3.7_vs_3.8_v0.1.6.md`](https://github.com/edgesentry/ontographia/blob/main/examples/llm/eval/baselines/gemini_3.7_vs_3.8_v0.1.6.md)。記録 PR: [PR #107](https://github.com/edgesentry/ontographia/pull/107)、[PR #109](https://github.com/edgesentry/ontographia/pull/109)）。
+本記事は、公開 PyPI パッケージ上で第3部と同条件のライブ評価をやり直し（Gemini 3.7 / 3.8 Flash）、実 LLM と実 Neo4j の E2E も記録したうえで、次の3点に絞る。ハルシネーション防止については、計測できた範囲——invent-without-seeing が0であること、および不正なスキーマ名が検証で DB 到達前に止まること——に限定して述べる。数値はリポジトリにコミットされたベースラインからの引用である（比較表: [`gemini_3.7_vs_3.8_v0.1.6.md`](https://github.com/edgesentry/ontographia/blob/main/examples/llm/eval/baselines/gemini_3.7_vs_3.8_v0.1.6.md)。記録 PR: [PR #107](https://github.com/edgesentry/ontographia/pull/107)、[PR #109](https://github.com/edgesentry/ontographia/pull/109)）。
 
 評価条件は temperature 0、Track A n=40、Track B n=60 seed 53、各条件1回のみ、実施日 2026-10-22。ライブラリは `ontographia[llm]==0.1.6`（PyPI）。LiteLLM の Gemini エイリアスは版付きのみ（`ontographia-gemini-3.7` / `ontographia-gemini-3.8`）。無版の `ontographia-gemini` は [PR #109](https://github.com/edgesentry/ontographia/pull/109) で削除済み。
 
