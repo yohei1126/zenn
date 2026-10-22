@@ -1,5 +1,5 @@
 ---
-title: "Ontographia 第4部 - リリース後に分かったこと：MCP・検証器・オントロジー供給"
+title: "Ontographia 第4部 - リリース後の再評価"
 emoji: "🔬"
 type: "tech"
 topics: ["neo4j", "cypher", "llm", "mcp", "ontology"]
@@ -9,14 +9,14 @@ published: false
 :::message
 **連載の位置づけ（Ontographia）**
 
-自然言語からグラフ DB へ問い合わせるとき、LLM に Cypher を書かせるか、固定テンプレで縛るかの二者択一になりやすい。本連載は、**Intent JSON だけを LLM に任せ、Cypher はオントロジー拘束の決定論的パイプラインで組み立てる** [Ontographia](https://github.com/edgesentry/ontographia) を設計・検証する。
+自然言語からグラフ DB へ問い合わせるとき、LLM に Cypher を書かせるか、固定テンプレで縛るかの二者択一になりやすい。本連載は、Intent JSON だけを LLM に任せ、Cypher はオントロジー拘束の決定論的パイプラインで組み立てる [Ontographia](https://github.com/edgesentry/ontographia) を設計・検証する。
 
 | 部 | 記事 | 役割 |
 | :--- | :--- | :--- |
 | **第1部** | [グラフAIのジレンマ：LLMにCypherを書かせるか、テンプレ保守地獄に耐えるか](https://zenn.dev/yohei/articles/2026-09-08-ontographia-template-cost) | 課題と仮説 |
 | **第2部** | [Intent-first の設計と実装](https://zenn.dev/yohei/articles/2026-09-08-ontographia-intent-first-design) | アーキテクチャ |
 | **第3部** | [検証結果と今後のロードマップ](https://zenn.dev/yohei/articles/2026-09-08-ontographia-eval-and-roadmap) | Track A / B の定量評価 |
-| **第4部** | リリース後に分かったこと：MCP・検証器・オントロジー供給（本記事） | 公開パッケージでの追試 |
+| **第4部** | リリース後の再評価（本記事） | 公開パッケージでの追試 |
 
 リポジトリ: [edgesentry/ontographia](https://github.com/edgesentry/ontographia) · 評価ベースライン: [`examples/llm/eval/baselines/`](https://github.com/edgesentry/ontographia/tree/main/examples/llm/eval/baselines)
 :::
@@ -25,15 +25,13 @@ published: false
 
 [第3部](https://zenn.dev/yohei/articles/2026-09-08-ontographia-eval-and-roadmap)では、Intent-first の仮説を Track A / Track B で測った。その後、2026-10-21 に [v0.1.6](https://github.com/edgesentry/ontographia/releases/tag/v0.1.6) が公開され、Intent 層は `pip install "ontographia[llm]"`、実験的 MCP サーバは `pip install "ontographia[mcp]"` で入れられるようになった（いずれも experimental / 0.x。関連: [PR #93](https://github.com/edgesentry/ontographia/pull/93)、[PR #94](https://github.com/edgesentry/ontographia/pull/94)、実 Neo4j 向け CI: [PR #99](https://github.com/edgesentry/ontographia/pull/99)）。
 
-本記事は、**公開 PyPI パッケージ**上で第3部と同条件のライブ評価をやり直し、実 LLM × 実 Neo4j の E2E も記録したうえで、分かったことを3点に絞る。数値はすべてリポジトリにコミットされたベースラインからの引用である（比較表: [`gemini_3.7_vs_3.8_v0.1.6.md`](https://github.com/edgesentry/ontographia/blob/main/examples/llm/eval/baselines/gemini_3.7_vs_3.8_v0.1.6.md)。記録 PR: [PR #107](https://github.com/edgesentry/ontographia/pull/107)、[PR #109](https://github.com/edgesentry/ontographia/pull/109)）。
+本記事は、公開 PyPI パッケージ上で第3部と同条件のライブ評価をやり直し、実 LLM と実 Neo4j の E2E も記録したうえで、次の3点に絞る。数値はリポジトリにコミットされたベースラインからの引用である（比較表: [`gemini_3.7_vs_3.8_v0.1.6.md`](https://github.com/edgesentry/ontographia/blob/main/examples/llm/eval/baselines/gemini_3.7_vs_3.8_v0.1.6.md)。記録 PR: [PR #107](https://github.com/edgesentry/ontographia/pull/107)、[PR #109](https://github.com/edgesentry/ontographia/pull/109)）。
 
-条件の要約: temperature 0、Track A n=40、Track B n=60 seed 53、各アームは1回のみ、実施日 2026-10-22。ライブラリは `ontographia[llm]==0.1.6`（PyPI）。LiteLLM の Gemini エイリアスは版付きのみ（`ontographia-gemini-3.7` / `ontographia-gemini-3.8`）。無版の `ontographia-gemini` は [PR #109](https://github.com/edgesentry/ontographia/pull/109) で削除済み。
+評価条件は temperature 0、Track A n=40、Track B n=60 seed 53、各条件1回のみ、実施日 2026-10-22。ライブラリは `ontographia[llm]==0.1.6`（PyPI）。LiteLLM の Gemini エイリアスは版付きのみ（`ontographia-gemini-3.7` / `ontographia-gemini-3.8`）。無版の `ontographia-gemini` は [PR #109](https://github.com/edgesentry/ontographia/pull/109) で削除済み。
 
 ---
 
-## リリース後の再評価で分かったこと（3点）
-
-### 1. MCP サーバが入り、4ツールが実機で通った
+## 1. MCP サーバが入り、4ツールが実機で通った
 
 v0.1.6 の新機能のひとつが、実験的な MCP サーバ（`ontographia[mcp]`）である。サーバ自身は LLM を呼ばない。クライアントが Intent JSON を出し、サーバは検証・Cypher 生成・（任意で）Neo4j 実行だけを担う（[docs/mcp.md](https://edgesentry.github.io/ontographia/mcp/)）。
 
@@ -46,11 +44,11 @@ v0.1.6 の新機能のひとつが、実験的な MCP サーバ（`ontographia[m
 
 E2E 記録（[`examples/e2e/v0.1.6-gemini/`](https://github.com/edgesentry/ontographia/tree/main/examples/e2e/v0.1.6-gemini)）では、`tools/list` で上記4つが返り、保存済み Intent のリプレイで `build_cypher` → `execute` まで通った（結果2行）。`execute` の結合テストは実 Neo4j に対して CI でも走っている（[PR #99](https://github.com/edgesentry/ontographia/pull/99)）。
 
-Intent 抽出ヘルパー自体は別 extra（`ontographia[llm]`）である。MCP と組み合わせると「ホスト側 LLM → Intent → Ontographia MCP」という境界がはっきりする。
+Intent 抽出ヘルパーは別 extra（`ontographia[llm]`）である。MCP と組み合わせると、ホスト側 LLM → Intent → Ontographia MCP という境界がはっきりする。
 
-### 2. 実 E2E では、壊れた Intent が DB に届く前に止まった
+## 2. 実 E2E では、壊れた Intent が DB に届く前に止まった
 
-同じディレクトリに、質問「List suppliers for parts in product SKU SPX-100」を実 Gemini 3.7 Flash（temperature 0）とローカル Neo4j で試した記録がある。試行は4件すべて残してある（[`runs.json`](https://github.com/edgesentry/ontographia/blob/main/examples/e2e/v0.1.6-gemini/runs.json)）。
+同じディレクトリに、質問「List suppliers for parts in product SKU SPX-100」を実 Gemini 3.7 Flash（temperature 0）とローカル Neo4j で試した記録がある。試行は4件すべて残してある（[`runs.json`](https://github.com/edgesentry/ontographia/blob/main/examples/e2e/v0.1.6-gemini/runs.json)）。モデルは Gemini 3.7 Flash（記録時の LiteLLM エイリアスは当時の `ontographia-gemini`）である。
 
 | 試行 | 経路 | Cypher | 実行 | 行数 |
 | :--- | :--- | :---: | :---: | ---: |
@@ -60,8 +58,6 @@ Intent 抽出ヘルパー自体は別 extra（`ontographia[llm]`）である。M
 | `mcp_replay` | MCP（保存 Intent の再実行、LLM なし） | 成功 | 成功 | 2 |
 
 成功した `cli_run1` の成果物は次のとおり（要約）。
-
-Intent（抜粋）:
 
 ```json
 {
@@ -76,8 +72,6 @@ Intent（抜粋）:
 }
 ```
 
-生成 Cypher とパラメータ:
-
 ```cypher
 CYPHER 25
 MATCH (product:Product)-[:has_part]->(part:Part)-[:supplied_by]->(supplier:Supplier)
@@ -90,17 +84,17 @@ LIMIT 20
 { "param_0": "SPX-100" }
 ```
 
-結果行: `MikroMotors`, `FormTech`。
+結果行は `MikroMotors` と `FormTech` である。
 
-失敗側は、LLM が壊れたプロパティ名を出したところで検証が落ち、Cypher は発行されず DB にも届いていない。これは設計どおりの安全側動作である。一方、この小さなサンプルでは LLM 経由の end-to-end 成功は **4試行中1件** にとどまる。temperature 0 でも出力は揺れる、という前提は変わらない。
+一方、`cli_run2` と `mcp_llm` では、この 3.7 Flash セッションの LLM 出力に壊れたプロパティ名が含まれ、検証が落ちて Cypher は発行されず DB にも届いていない。設計どおりの安全側動作である。しかし、この小さなサンプルでは LLM 経由の end-to-end 成功は4試行中1件にとどまる。temperature 0 でも出力は揺れる。
 
-### 3. 安全も精度の大半も、オントロジーの与え方が動かす（モデル差より大きい）
+## 3. オントロジーの渡し方が、安全と精度・コストの差の大半を説明する
 
-第3部と同じ Track A H1（mid / large × full / subset / subset_fallback）を、公開パッケージ上で Gemini 3.7 Flash と 3.8 Flash の両方で取り直した。ここで効いている主因はモデル名ではなく、**オントロジー拘束と、プロンプトへのオントロジーの渡し方**である。
+第3部と同じ Track A H1（mid / large × full / subset / subset_fallback）を、公開 PyPI パッケージ上で Gemini 3.7 Flash と 3.8 Flash の両方で取り直した。各条件は1回のみである。
 
-**安全:** invent-without-seeing（プロンプトに無い名前の捏造）と near-dup 選択は、**3ランすべて・全条件で0**。未知語彙はオントロジー列挙＋コア検証で弾かれる。モデルを 3.8 に替えてもこの境界は崩れていない。
+まず安全側である。invent-without-seeing（プロンプトに無い名前の捏造）と near-dup 選択は、3ランすべて・全条件で0だった。未知語彙はオントロジー列挙とコア検証で弾かれる。モデルを 3.8 に替えても、この境界は崩れていない。
 
-**精度とコスト（同じモデル内の比較）:** large で推奨の `subset_fallback`（オントロジー誘導のサブセット、失敗時のみフル）は、同ランの `full`（オントロジー全体をプロンプトに載せる）に対し Property Hit が **+30pt（3.7）/ +16.25pt（3.8）**、tok p95 はいずれも約 **−90.5%**。3ランとも H1 の事前ゲートを満たし **support**。公開 PyPI パッケージでも、第3部で見たサブセット効果は再現した。
+次に、同じモデル内でオントロジーの渡し方を変えた比較である。large で推奨の `subset_fallback`（質問に合わせたサブセット、失敗時のみフル）は、同ランの `full`（オントロジー全体をプロンプトに載せる）に対し Property Hit が +30pt（3.7）/ +16.25pt（3.8）、tok p95 はいずれも約 −90.5% だった。3ランとも H1 の事前ゲートを満たし support である。公開 PyPI パッケージでも、第3部で見たサブセット効果は再現した。
 
 | 条件 | 第3部 3.7 | v0.1.6 3.7 | v0.1.6 3.8 |
 | :--- | ---: | ---: | ---: |
@@ -109,26 +103,22 @@ LIMIT 20
 | subset_fallback Hit | 0.95 | 0.95 | 0.8875 |
 | subset_fallback Compile | 40/40 | 40/40 | 37/40 |
 
-**モデル差し替え（3.7 → 3.8）で起きたこと:** オントロジー供給が弱い側では 3.8 が助けた。large full の Hit は同日の v0.1.6 3.7 の 0.65 → 0.725、subset 単体も 0.6125 → 0.75（Compile 25/40 → 31/40）。一方、すでにチューニング済みの推奨 `subset_fallback` ではやや下がる（Hit 0.95 → 0.8875、Compile 40/40 → 37/40）。Track B の Compile も 39 → 36/60。Compile の低下は Intent が検証を通らなかったケース増と一致し、出力形式の崩れがより目立つ。invent-without-seeing はどちらでも0のまま。
+ここで「オントロジーなし」との比較ではない、と限定する。本評価に「オントロジーなし」条件はない。`full` もオントロジー全体をプロンプトに含んでいる。オントロジー導入そのものの利得は主張しない。言えるのは、同じオントロジーをどう渡すか（全体ダンプか、質問誘導のサブセット＋必要時フォールバックか）で精度とコストが大きく変わる、ということだけである。
 
-**モデル間の差は、サブセット効果より小さい。** 上記の数ポイントのどちら寄りも、同モデル内の subset_fallback 対 full（+16〜30pt・tok p95 約 −90.5%）には及ばない。「新しいモデルだから自動的に良い」とは言えない。
+モデル差し替え（3.7 → 3.8）では、供給が弱い側で数値が上がった。large full の Hit は同日の v0.1.6 3.7 の 0.65 → 0.725、subset 単体も 0.6125 → 0.75（Compile 25/40 → 31/40）である。一方、推奨の `subset_fallback` では Hit 0.95 → 0.8875、Compile 40/40 → 37/40 とやや下がる。Track B の Compile も 39 → 36/60 である。invent-without-seeing はどちらでも0のままである。
 
-**含意:** モデル差し替えは安全面では低リスク（捏造名0は維持）で、同じ評価セットで測れる。ただし改善の有無は条件ごとにばらつくので、**差し替えるたびに測る**。本評価の各条件はいずれも1回のみの実行である。
+このモデル間の差は、同モデル内の subset_fallback 対 full（+16〜30pt・tok p95 約 −90.5%）より小さい。「新しいモデルだから自動的に良い」とは言えない。差し替えは安全面では低リスク（捏造名0は維持）で、同じ評価セットで測れる。改善の有無は条件ごとにばらつくので、差し替えるたびに測る。
 
-**この評価に無いもの:** 「オントロジーなし」条件はない。`full` もオントロジー全体をプロンプトに含んでいる。したがって、オントロジー導入そのものの利得は主張しない。言えるのは、**同じオントロジーをどう渡すか（全体ダンプか、質問誘導のサブセット＋必要時フォールバックか）で、精度とコストが大きく変わる**ことだけである。
+補足として、3.7 の再計測では full / subset 単体が第3部より落ちている（例: mid full Hit 0.75 vs 0.8875、large full 0.65 vs 0.825）。原因はソース上も未特定である。Track B の Exec Match は3ランとも1件である。Gold が Cypher（Intent ではない）ため、完全一致は弱証拠である、という第3部の注記はそのまま使う。
 
-補足: 3.7 の再計測では full / subset 単体が第3部より落ちている（例: mid full Hit 0.75 vs 0.8875、large full 0.65 vs 0.825）。原因はソース上も未特定。Track B の Exec Match は3ランとも1件。Gold が Cypher であるための弱証拠、という第3部の注記はそのまま使う。
-
----
-
-## 試すとき（短く）
+## 試すとき
 
 ```bash
 pip install "ontographia[llm]"   # Intent 層（experimental）
 pip install "ontographia[mcp]"   # MCP サーバ（experimental）
 ```
 
-LiteLLM 経由なら版付きエイリアスを使う（[docs/litellm-local.md](https://edgesentry.github.io/ontographia/litellm-local/)）:
+LiteLLM 経由なら版付きエイリアスを使う（[docs/litellm-local.md](https://edgesentry.github.io/ontographia/litellm-local/)）。
 
 ```bash
 source scripts/litellm/use-provider.sh gemini-3.7   # または gemini-3.8
@@ -137,13 +127,8 @@ source scripts/litellm/use-provider.sh gemini-3.7   # または gemini-3.8
 
 詳細は [docs/llm.md](https://edgesentry.github.io/ontographia/llm/)、[docs/mcp.md](https://edgesentry.github.io/ontographia/mcp/)、E2E 再現手順は [`examples/e2e/v0.1.6-gemini/README.md`](https://github.com/edgesentry/ontographia/blob/main/examples/e2e/v0.1.6-gemini/README.md)。
 
----
-
 ## 限界と次
 
-* 各アームは1回のみ。temperature 0 でもライブ LLM は揺れる。
-* full ベースラインの低下理由は未特定（ソースも断定していない）。
-* E2E の LLM 経由成功率は小さいサンプルで低い。検証器が止めたことと、タスク完了率は別問題である。
-* Intent gold 化・言い換え許容メトリクス、シノニム付きサブセット、実業務オントロジーでの追試は、第3部で挙げた計画の延長として残る（日付は約束しない）。
+各条件は1回のみであり、temperature 0 でもライブ LLM の出力は揺れる。full ベースラインの低下理由は未特定である。E2E の LLM 経由成功率は小さいサンプルで低く、検証器が止めたこととタスク完了率は別問題である。Intent gold 化・言い換え許容メトリクス、シノニム付きサブセット、実業務オントロジーでの追試は、第3部で挙げた計画の延長として残る（日付は約束しない）。
 
-三部作で示した境界——LLM は Intent、Cypher は決定論——は、公開パッケージと MCP でも同じ形で動いた。安全（捏造名0、壊れた Intent の遮断）も、精度・コストの大きな差（サブセット対フル）も、主にオントロジー拘束とその供給の仕方から来る。モデル差し替えは安全を壊さず測れるが、自動では良くならない——同じ評価で測れ、というのが今回の再評価の要点である。
+LLM は Intent、Cypher は決定論、という境界は、公開パッケージと MCP でも同じ形で動いた。安全（捏造名0、壊れた Intent の遮断）も、精度・コストの大きな差（サブセット対フル）も、主にオントロジー拘束とその供給の仕方から来る。モデル差し替えは安全を壊さず測れるが、自動では良くならない。
