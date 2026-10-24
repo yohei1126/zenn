@@ -27,11 +27,11 @@ published: true
 
 自然言語で Neo4j に問い合わせる仕組みを LLM で作ると、オントロジーに存在しないプロパティ名をモデルがもっともらしく書き、そのままクエリとして実行されてしまう心配があります。Ontographia はこの問題に対して、LLM の仕事を質問の意図を表す Intent JSON の出力だけに限っています。Cypher を組み立てるのは、オントロジーで拘束した Rust 製の決定論的パイプラインです。パイプラインは Intent をオントロジーと照合して検証し、通過したものだけを、値をパラメータとして切り離した Cypher へ変換します。
 
-[第3部](https://zenn.dev/yohei/articles/2026-09-08-ontographia-eval-and-roadmap)では、この設計をオントロジーの規模を変えながら評価しました。その後、2026-10-21 に [v0.1.6](https://github.com/edgesentry/ontographia/releases/tag/v0.1.6) を公開し、Intent 層の `ontographia[llm]` と実験的な MCP サーバ `ontographia[mcp]` を PyPI から入れられるようにしました。どちらもまだ experimental（0.x）の扱いです。パッケージ化の変更は [PR #93](https://github.com/edgesentry/ontographia/pull/93) と [PR #94](https://github.com/edgesentry/ontographia/pull/94) に、実 Neo4j に対する CI は [PR #99](https://github.com/edgesentry/ontographia/pull/99) にあります。
+[第3部](https://zenn.dev/yohei/articles/2026-09-08-ontographia-eval-and-roadmap)では、この設計をオントロジーの規模を変えながら評価しました。その後、2026-10-21 に [v0.1.6](https://github.com/edgesentry/ontographia/releases/tag/v0.1.6) を公開し、Intent 層の `ontographia[llm]` と実験的な MCP サーバ `ontographia[mcp]` を PyPI から入れられるようにしました。どちらもまだ experimental（0.x）の扱いです。
 
 公開パッケージを手元に入れた人が、第3部と同じ結果を得られるとは限りません。また、LLM のモデルは次々に新しくなるので、差し替えたときに何が変わるのかも確かめておく必要があります。そこで本記事では、公開パッケージの上で第3部と同じ条件のライブ評価をやり直しました。分かったことは三つあります。一つ目は、MCP サーバの 4 ツールが実機で動いたことです。二つ目は、実際に質問を最後まで流した実行で、オントロジーに無いプロパティ名が DB に届く前に検証で止まったことです。三つ目は、Gemini 3.7 Flash と 3.8 Flash を比べると、精度とトークン数を大きく左右したのはモデルよりもオントロジーの渡し方であり、新しいモデルが常に良い結果を出すわけではなかったことです。
 
-測り方は第3部のライブ評価に揃えました。temperature は 0 で、製造ドメインの合成評価である Track A は 40 問、公開ベンチマークを使う Track B は 60 問（seed 53）です。ライブラリは PyPI の `ontographia[llm]==0.1.6` を使い、2026-10-22 に各条件を 1 回ずつ実行しました。1 回だけの計測なので、以下に示す差は「この日の 1 回の結果」として読んでください。数値の出典は [PR #107](https://github.com/edgesentry/ontographia/pull/107) と [PR #109](https://github.com/edgesentry/ontographia/pull/109) で、表や試行ログもそちらに残しています。
+測り方は第3部のライブ評価に揃えました。temperature は 0 で、製造ドメインの合成評価である Track A は 40 問、公開ベンチマークを使う Track B は 60 問（seed 53）です。ライブラリは PyPI の `ontographia[llm]==0.1.6` を使い、2026-10-22 に各条件を 1 回ずつ実行しました。1 回だけの計測なので、以下に示す差は「この日の 1 回の結果」として読んでください。
 
 ---
 
@@ -41,7 +41,7 @@ v0.1.6 で加えた実験的な MCP（Model Context Protocol）サーバ `ontogr
 
 このサーバは、それ自体では LLM を呼び出しません。MCP クライアントの側が Intent JSON を渡し、サーバはそれを検証してから Cypher を組み立てます。そのため、モデルに生の Cypher を書かせないという[第2部](https://zenn.dev/yohei/articles/2026-09-08-ontographia-intent-first-design)の責務の分け方は、MCP クライアントを介して使う場合でも変わりません。
 
-なお、`execute` の結合テストは実 Neo4j に対する CI でも実行しています。動作確認は手元での 1 回にとどまらず、継続的に行われています。サーバの導入手順は [docs/mcp.md](https://edgesentry.github.io/ontographia/mcp/) に、CI の内容は [PR #99](https://github.com/edgesentry/ontographia/pull/99) にまとめています。
+なお、`execute` の結合テストは実 Neo4j に対する CI でも実行しています。動作確認は手元での 1 回にとどまらず、継続的に行われています。サーバの導入手順は [docs/mcp.md](https://edgesentry.github.io/ontographia/mcp/) にまとめています。
 
 ## 2. 実 E2E 実行でのオントロジーに無いプロパティ名の扱い
 
