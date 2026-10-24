@@ -25,40 +25,58 @@ published: true
 
 ## 概要
 
-[第3部](https://zenn.dev/yohei/articles/2026-09-08-ontographia-eval-and-roadmap)のあと、2026-10-21 に [v0.1.6](https://github.com/edgesentry/ontographia/releases/tag/v0.1.6) が公開されました。Intent 層の `ontographia[llm]` と、実験的な MCP サーバ `ontographia[mcp]` を、PyPI から入れられるようになったリリースです。どちらも experimental / 0.x です。パッケージ化は [PR #93](https://github.com/edgesentry/ontographia/pull/93) と [PR #94](https://github.com/edgesentry/ontographia/pull/94)、実 Neo4j に対する CI は [PR #99](https://github.com/edgesentry/ontographia/pull/99) にあります。
+自然言語で Neo4j に問い合わせる仕組みを LLM で作ると、オントロジーに存在しないプロパティ名をモデルがもっともらしく書き、そのままクエリとして実行されてしまう心配があります。Ontographia はこの問題に対して、LLM の仕事を質問の意図を表す Intent JSON の出力だけに限っています。Cypher を組み立てるのは、オントロジーで拘束した Rust 製の決定論的パイプラインです。パイプラインは Intent をオントロジーと照合して検証し、通過したものだけを、値をパラメータとして切り離した Cypher へ変換します。
 
-本記事（第4部）では、その公開パッケージの上で第3部と同じ条件のライブ評価をやり直し、分かったことを 3 点にまとめます。リポジトリを手元に落とさなくても結果の意味は追えるようにし、表や試行ログは記録側へ残しました。数値の出典は [PR #107](https://github.com/edgesentry/ontographia/pull/107) と [PR #109](https://github.com/edgesentry/ontographia/pull/109)、比較表の [`gemini_3.7_vs_3.8_v0.1.6.md`](https://github.com/edgesentry/ontographia/blob/main/examples/llm/eval/baselines/gemini_3.7_vs_3.8_v0.1.6.md)、E2E の [`examples/e2e/v0.1.6-gemini/`](https://github.com/edgesentry/ontographia/tree/main/examples/e2e/v0.1.6-gemini) です。
+[第3部](https://zenn.dev/yohei/articles/2026-09-08-ontographia-eval-and-roadmap)では、この設計をオントロジーの規模を変えながら評価しました。その後、2026-10-21 に [v0.1.6](https://github.com/edgesentry/ontographia/releases/tag/v0.1.6) を公開し、Intent 層の `ontographia[llm]` と実験的な MCP サーバ `ontographia[mcp]` を PyPI から入れられるようにしました。どちらもまだ experimental（0.x）の扱いです。パッケージ化の変更は [PR #93](https://github.com/edgesentry/ontographia/pull/93) と [PR #94](https://github.com/edgesentry/ontographia/pull/94) に、実 Neo4j に対する CI は [PR #99](https://github.com/edgesentry/ontographia/pull/99) にあります。
 
-測り方は第3部のライブ評価に揃えています。temperature は 0、Track A は n=40、Track B は n=60（seed 53）で、各条件は 1 回だけ、実施日は 2026-10-22 です。使ったライブラリは PyPI の `ontographia[llm]==0.1.6` です。1 回だけの計測なので、あとで示す差は「この日の 1 回」として読んでください。
+公開パッケージを手元に入れた人が、第3部と同じ結果を得られるとは限りません。また、LLM のモデルは次々に新しくなるので、差し替えたときに何が変わるのかも確かめておく必要があります。そこで本記事では、公開パッケージの上で第3部と同じ条件のライブ評価をやり直しました。分かったことは三つあります。一つ目は、MCP サーバの 4 ツールが実機で動いたことです。二つ目は、実際に質問を最後まで流した実行で、オントロジーに無いプロパティ名が DB に届く前に検証で止まったことです。三つ目は、Gemini 3.7 Flash と 3.8 Flash を比べると、精度とトークン数を大きく左右したのはモデルよりもオントロジーの渡し方であり、新しいモデルが常に良い結果を出すわけではなかったことです。
+
+測り方は第3部のライブ評価に揃えました。temperature は 0 で、製造ドメインの合成評価である Track A は 40 問、公開ベンチマークを使う Track B は 60 問（seed 53）です。ライブラリは PyPI の `ontographia[llm]==0.1.6` を使い、2026-10-22 に各条件を 1 回ずつ実行しました。1 回だけの計測なので、以下に示す差は「この日の 1 回の結果」として読んでください。数値の出典は [PR #107](https://github.com/edgesentry/ontographia/pull/107) と [PR #109](https://github.com/edgesentry/ontographia/pull/109) で、表や試行ログもそちらに残しています。
 
 ---
 
-## 1. 実験的 MCP サーバが入り、4 ツールが通った
+## 1. 実験的 MCP サーバの 4 ツール
 
-実験的な MCP サーバ `ontographia[mcp]` を入れると、`list_ontology`、`intent_schema`、`build_cypher`、`execute` の 4 ツールが実機で動きました。保存しておいた Intent をあとから流すと、`build_cypher` から `execute` まで通っています。
+v0.1.6 で加えた実験的な MCP（Model Context Protocol）サーバ `ontographia[mcp]` は、`list_ontology`、`intent_schema`、`build_cypher`、`execute` の 4 ツールを提供します。実機で試したところ、4 ツールはすべて動作しました。保存しておいた Intent をあとから流す使い方でも、`build_cypher` から `execute` まで通っています。
 
-サーバ側の実装は LLM を呼びません。クライアントが Intent JSON を渡し、サーバがそれを検証して Cypher を組み立てます。モデルに生の Cypher を書かせない、という第2部の境界が、MCP のクライアント越しでも同じ形で残ります。`execute` の結合テストは実 Neo4j に対する CI でも走っていて、手元の 1 回だけでなく継続的に確認されています。手順は [docs/mcp.md](https://edgesentry.github.io/ontographia/mcp/)、CI の内容は [PR #99](https://github.com/edgesentry/ontographia/pull/99) を参照してください。
+このサーバは、それ自体では LLM を呼び出しません。MCP クライアントの側が Intent JSON を渡し、サーバはそれを検証してから Cypher を組み立てます。そのため、モデルに生の Cypher を書かせないという[第2部](https://zenn.dev/yohei/articles/2026-09-08-ontographia-intent-first-design)の責務の分け方は、MCP クライアントを介して使う場合でも変わりません。
 
-## 2. 実 E2E では、オントロジーに無い名前が DB に届く前に止まった
+なお、`execute` の結合テストは実 Neo4j に対する CI でも実行しています。動作確認は手元での 1 回にとどまらず、継続的に行われています。サーバの導入手順は [docs/mcp.md](https://edgesentry.github.io/ontographia/mcp/) に、CI の内容は [PR #99](https://github.com/edgesentry/ontographia/pull/99) にまとめています。
 
-Gemini 3.7 Flash とローカル Neo4j で質問を最後まで流すと、オントロジーに無いプロパティ名は検証で落ちました。Cypher は発行されず、データベースにも届いていません。記録に残っている例が `"name激as_name"` です。
+## 2. 実 E2E 実行でのオントロジーに無いプロパティ名の扱い
 
-成功した 1 件では、生成した Cypher が `MikroMotors` と `FormTech` の 2 行を返しました。試行は 4 件すべて残してあり、LLM を挟んだ end-to-end の成功はそのうち 1 件です。検証が不正な名前を止めたことと、質問が最後まで解けたことは別で、この小さなサンプルでは後者は高くありません。
+次に、Gemini 3.7 Flash とローカルの Neo4j を使い、質問から結果の取得までを end-to-end（E2E）で流しました。この実行では、モデルがオントロジーに無いプロパティ名を Intent に含めた場合、その Intent は検証で不合格になりました。不合格の Intent からは Cypher が発行されないので、問題の名前はデータベースまで届いていません。記録に残っている例は `"name激as_name"` という名前です。
 
-ここでいうハルシネーション防止は、オントロジーに無いスキーマ名がクエリとして DB に到達するのを止めることです。「すべてのハルシネーションが消える」のではありません。名前がオントロジーに実在する誤選択、つまり第3部のサイレント誤答は、検証を通過しうるからです。事実誤認も対象外です。試行の記録は [`examples/e2e/v0.1.6-gemini/`](https://github.com/edgesentry/ontographia/tree/main/examples/e2e/v0.1.6-gemini) にまとまっています。
+一方で、質問が最後まで解けた件数は多くありません。試行は 4 件すべて記録してあり、LLM を挟んだ E2E が成功したのはそのうち 1 件です。成功した 1 件では、生成された Cypher が `MikroMotors` と `FormTech` の 2 行を返しました。検証が不正な名前を止めたことと、質問に正しく答えられたことは別の事柄であり、この小さなサンプルでは後者の割合は低いままです。
 
-## 3. 新しいモデルでも、精度とコストを左右したのはオントロジーの渡し方
+ここでいうハルシネーション防止の範囲は、オントロジーに無いスキーマ名がクエリとして DB に到達するのを止めることに限られます。これは「すべてのハルシネーションを防げる」ことを意味しません。オントロジーに実在する別の名前を誤って選んだ場合、Intent は検証を通過しうるからです。第3部では、このように誤った名前がエラーにならずに通ってしまう現象をサイレント誤答と呼びました。同じく、事実誤認も検証の対象外です。4 件の試行記録は [`examples/e2e/v0.1.6-gemini/`](https://github.com/edgesentry/ontographia/tree/main/examples/e2e/v0.1.6-gemini) にあります。
 
-公開パッケージ上で Gemini 3.7 Flash と 3.8 Flash の両方を回しても、プロンプトに無い名前をモデルが捏造した件数は全条件で 0 のままでした。モデルを替えても、未知の名前はオントロジーの列挙と検証で止まります。
+## 3. Gemini 3.7 Flash と 3.8 Flash の比較
 
-精度とコストの差の大半は、モデル名より、オントロジーをプロンプトへどう渡すかにありました。`large` で推奨の `subset_fallback` は、同じランの `full` に対して Property Hit が +30pt（3.7）/ +16.25pt（3.8）、プロンプトトークン数の p95 はいずれも約 −90.5% です。質問に関係する語彙を先に渡し、足りないときだけ全体へ戻すと、正答率が上がりトークンも大きく減る、という第3部の結果が、公開 PyPI でも再現しています。
+三つ目の評価では、公開パッケージの上で Gemini 3.7 Flash と 3.8 Flash の両方を同じ条件で動かしました。まず、プロンプトに無い名前をモデルが捏造した件数は、どちらのモデルでも全条件で 0 件でした。モデルを替えても、オントロジーの語彙を列挙して渡し、出力を検証するという仕組みは変わらないので、未知の名前はそこで止まります。
 
-ただし、本評価に「オントロジーなし」条件はありません。`full` もオントロジー全体をプロンプトに載せています。したがって、オントロジーを入れた利得ではなく、同じオントロジーの渡し方で Hit とトークンが変わる、とだけ読めます。
+### オントロジーの渡し方による差
 
-モデルを 3.7 から 3.8 へ差し替えると、向きは条件で分かれました。`full` と `subset` 単体は上がり、たとえば `large` の full Hit は 0.65 → 0.725 です。一方、すでに推奨している `subset_fallback` はやや下がり、Hit は 0.95 → 0.8875、Compile は 40/40 → 37/40 になりました。Track B の Compile も 39 → 36/60 です。新しいモデルが自動的に良いわけではなく、条件によって上がったり下がったりするので、差し替えるたびに同じ評価セットで測る必要があります。数値の一覧は [`gemini_3.7_vs_3.8_v0.1.6.md`](https://github.com/edgesentry/ontographia/blob/main/examples/llm/eval/baselines/gemini_3.7_vs_3.8_v0.1.6.md) にあります。
+精度とトークン数の差は、モデルの違いよりも、オントロジーをプロンプトへどう渡すかで大きく開きました。比べた渡し方は三つです。`full` はオントロジー全体を載せ、`subset` は質問に関係する語彙だけを載せます。`subset_fallback` は、まず質問に関係する語彙を渡し、足りないときだけ全体へ戻す方式で、プロジェクトとして推奨しているものです。指標には、Intent が正しいプロパティを選べた割合である Property Hit と、Cypher へのコンパイルに成功した件数（Compile）を使いました。
+
+Track A の大規模オントロジー `large` で比べると、`subset_fallback` は同じランの `full` に対して、Property Hit が 3.7 では +30pt、3.8 では +16.25pt 高くなりました。プロンプトトークン数の p95 は、どちらのモデルでも約 −90.5% です。つまり、関係する語彙を先に渡して足りないときだけ全体へ戻すと、正答率が上がり、トークンも大きく減るという第3部の結果が、公開 PyPI 版でも再現しました。
+
+ただし、この比較から読み取れる範囲には注意が必要です。本評価には「オントロジーを渡さない」条件がなく、`full` もオントロジー全体をプロンプトに載せています。したがって、この結果はオントロジーを使うこと自体の利得を示すものではありません。同じオントロジーでも、渡し方によって Property Hit とトークン数が変わる、ということだけが言えます。
+
+### モデルの差し替えによる差
+
+これに対して、モデルを 3.7 から 3.8 へ替えたときの変化は、条件によって向きが分かれました。`full` と `subset` 単体では上がり、たとえば `large` の `full` では Property Hit が 0.65 から 0.725 になりました。しかし、推奨している `subset_fallback` ではやや下がり、Property Hit は 0.95 から 0.8875 へ、Compile は 40/40 から 37/40 へ減りました。Track B の Compile も 39/60 から 36/60 に減っています。
+
+このように、新しいモデルに替えれば自動的に結果が良くなるわけではありません。上がる条件と下がる条件が混在するので、モデルを差し替えるたびに同じ評価セットで測り直す必要があります。条件ごとの数値の一覧は [`gemini_3.7_vs_3.8_v0.1.6.md`](https://github.com/edgesentry/ontographia/blob/main/examples/llm/eval/baselines/gemini_3.7_vs_3.8_v0.1.6.md) にまとめました。
 
 ## 限界
 
-各条件は 1 回のみです。E2E の LLM 経由成功率は小さいサンプルで低く、検証が不正なスキーマ名を止めたことと、タスク完了率は別問題です。Track B の Exec Match は 3 ランとも 1 件で、Gold が Cypher（Intent ではない）ため、完全一致は弱証拠です。この読み方は第3部と同じです。Intent の Gold 化や実業務オントロジーでの追試は、第3部で挙げた計画の延長として残ります（時期は未定です）。
+今回の結果には、いくつかの限界があります。まず、各条件は 1 回ずつしか実行していないので、ここで示した差がどこまで安定しているかは分かりません。次に、E2E で LLM を経由して質問が解けたのは 4 件中 1 件と、サンプルが小さく成功率も低い状態です。前述のとおり、検証が不正なスキーマ名を止めたこととタスクを完了できたこととは別問題です。
 
-手元で試すときは `pip install "ontographia[llm]"` と `"ontographia[mcp]"` です。どちらも experimental です。手順は [docs/llm.md](https://edgesentry.github.io/ontographia/llm/) と [docs/mcp.md](https://edgesentry.github.io/ontographia/mcp/) にあります。
+また、Track B の Exec Match（実行結果の行集合が正解と完全に一致した件数）は、3 ランとも 1 件でした。Track B の正解（Gold）は Intent ではなく Cypher で用意されているため、完全一致は弱い証拠にしかなりません。この読み方は第3部と同じです。
+
+今後の課題としては、正解を Intent の形で用意することと、実業務のオントロジーでの追試が残っています。どちらも第3部で挙げた計画の延長ですが、時期は未定です。
+
+## 手元で試すには
+
+手元で試す場合は、`pip install "ontographia[llm]"` で Intent 層を、`pip install "ontographia[mcp]"` で MCP サーバを入れられます。どちらも experimental の扱いです。使い方は [docs/llm.md](https://edgesentry.github.io/ontographia/llm/) と [docs/mcp.md](https://edgesentry.github.io/ontographia/mcp/) にあります。
