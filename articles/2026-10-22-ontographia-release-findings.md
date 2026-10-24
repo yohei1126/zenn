@@ -35,17 +35,17 @@ published: true
 
 ## 1. 実験的 MCP サーバが入り、4 ツールが通った
 
-結果から言うと、`ontographia[mcp]` の 4 ツール（`list_ontology` / `intent_schema` / `build_cypher` / `execute`）は実機で動き、保存した Intent のリプレイでは `build_cypher` から `execute` まで通りました。サーバ自身は LLM を呼ばず、クライアントが出した Intent を検証して Cypher を組み立てます。`execute` の結合テストは実 Neo4j に対する CI でも走っています（[PR #99](https://github.com/edgesentry/ontographia/pull/99)）。使い方は [docs/mcp.md](https://edgesentry.github.io/ontographia/mcp/) を見てください。
+`ontographia[mcp]` の 4 ツール（`list_ontology` / `intent_schema` / `build_cypher` / `execute`）は実機で動き、保存した Intent のリプレイでは `build_cypher` から `execute` まで通りました。サーバ自身は LLM を呼ばず、クライアントが出した Intent を検証して Cypher を組み立てます。`execute` の結合テストは実 Neo4j に対する CI でも走っています（[PR #99](https://github.com/edgesentry/ontographia/pull/99)）。使い方は [docs/mcp.md](https://edgesentry.github.io/ontographia/mcp/) を見てください。
 
 ## 2. 実 E2E では、オントロジーに無い名前が DB に届く前に止まった
 
-結果から言うと、Gemini 3.7 Flash とローカル Neo4j での E2E では、壊れたプロパティ名（例: `"name激as_name"`）を含む Intent が検証で落ち、Cypher は発行されずデータベースにも届きませんでした。成功した 1 件では、生成 Cypher が 2 行（`MikroMotors` / `FormTech`）を返しています。試行は 4 件すべて記録してあり、LLM 経由の end-to-end 成功はそのうち 1 件です。
+Gemini 3.7 Flash とローカル Neo4j での E2E では、壊れたプロパティ名（例: `"name激as_name"`）を含む Intent が検証で落ち、Cypher は発行されずデータベースにも届きませんでした。成功した 1 件では、生成 Cypher が 2 行（`MikroMotors` / `FormTech`）を返しています。試行は 4 件すべて記録してあり、LLM 経由の end-to-end 成功はそのうち 1 件です。
 
 ここでいうハルシネーション防止は、オントロジーに無いスキーマ名がクエリとして DB に到達するのを止めることです。「すべてのハルシネーションが消える」のではありません。実在語彙の誤選択（第3部のサイレント誤答）は、名前がオントロジーにある限り検証を通過しうるからです。ログと成果物は [`examples/e2e/v0.1.6-gemini/`](https://github.com/edgesentry/ontographia/tree/main/examples/e2e/v0.1.6-gemini) にあります。
 
-## 3. 新しいモデルでも、差の大半はオントロジーの渡し方
+## 3. 新しいモデルでも、精度とコストを左右したのはオントロジーの渡し方
 
-結果から言うと、公開パッケージ上で Gemini 3.7 Flash と 3.8 Flash の両方を回しても、invent-without-seeing（プロンプトに無い名前の捏造）は全条件で 0 のままでした。精度とコストの差の大半は、モデル名よりオントロジーの渡し方にあります。`large` で推奨の `subset_fallback` は、同ランの `full` に対し Property Hit が +30pt（3.7）/ +16.25pt（3.8）、プロンプトトークン数の p95 はいずれも約 −90.5% でした。公開 PyPI でも、第3部で見たサブセット効果は再現しています。
+公開パッケージ上で Gemini 3.7 Flash と 3.8 Flash の両方を回しても、プロンプトに無い名前をモデルが捏造した件数は全条件で 0 のままでした。精度とコストの差の大半は、モデル名よりオントロジーの渡し方にあります。`large` で推奨の `subset_fallback` は、同ランの `full` に対し Property Hit が +30pt（3.7）/ +16.25pt（3.8）、プロンプトトークン数の p95 はいずれも約 −90.5% でした。公開 PyPI でも、第3部で見たサブセット効果は再現しています。
 
 ただし、本評価に「オントロジーなし」条件はありません。`full` もオントロジー全体をプロンプトに載せています。オントロジー導入そのものの利得ではなく、同じオントロジーをどう渡すかで Hit とトークンが変わる、とだけ言えます。
 
@@ -53,6 +53,6 @@ published: true
 
 ## 限界
 
-各条件は 1 回のみです。E2E の LLM 経由成功率は小さいサンプルで低く、検証が不正なスキーマ名を止めたことと、タスク完了率は別問題です。Track B の Exec Match は 3 ランとも 1 件で、Gold が Cypher（Intent ではない）ため完全一致は弱証拠です（第3部と同じ注記です）。Intent の Gold 化や実業務オントロジーでの追試は、第3部で挙げた計画の延長として残ります（日付は約束しません）。
+各条件は 1 回のみです。E2E の LLM 経由成功率は小さいサンプルで低く、検証が不正なスキーマ名を止めたことと、タスク完了率は別問題です。Track B の Exec Match は 3 ランとも 1 件で、Gold が Cypher（Intent ではない）ため完全一致は弱証拠です（第3部と同じ注記です）。Intent の Gold 化や実業務オントロジーでの追試は、第3部で挙げた計画の延長として残ります（時期は未定です）。
 
 試すときは `pip install "ontographia[llm]"` / `"ontographia[mcp]"`（いずれも experimental）です。手順は [docs/llm.md](https://edgesentry.github.io/ontographia/llm/) と [docs/mcp.md](https://edgesentry.github.io/ontographia/mcp/) を参照してください。
