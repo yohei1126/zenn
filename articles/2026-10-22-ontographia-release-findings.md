@@ -3,7 +3,7 @@ title: "Ontographia 第4部 - 新しい LLM での精度評価とハルシネー
 emoji: "🔬"
 type: "tech"
 topics: ["neo4j", "cypher", "llm", "mcp", "ontology"]
-published: false
+published: true
 ---
 
 :::message
