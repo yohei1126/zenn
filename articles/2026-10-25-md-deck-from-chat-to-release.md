@@ -10,9 +10,9 @@ published: false
 
 登場するのは、論点を伝えて版を確定させる書き手（私）、依頼を受けて Markdown を書き直す Grok Bot、スライド本文とスタイルガイドを置くスライド資料のリポジトリ、Markdown を検証して PDF にする md-deck、そしてタグの push で PDF をビルドして Release に添付する GitHub Actions です。
 
-![登場人物と流れ。書き手→Grok Bot→スライド資料リポジトリ→md-deck、レビュー用PDFはGrok Botへ戻り、書き手のOK後にタグ→GitHub Actions→Release](/images/md-deck-flow.png)
+![登場人物と流れ。書き手⇔Grok Bot→スライド資料リポジトリ→md-deck、レビュー用PDFはGrok Botへ戻り、書き手のOK後にタグ→GitHub Actions→Release](/images/md-deck-flow.png)
 
-上段がチャットでの下書きと修正の往復で、破線は md-deck が作ったレビュー用 PDF が Grok Bot に戻る経路です。下段が書き手の OK のあとに版を確定させて Release に PDF を載せる流れです。
+上段では書き手と Grok Bot がやり取りし、破線は md-deck が作ったレビュー用 PDF が Grok Bot に戻る経路です。下段が書き手の OK のあとに版を確定させて Release に PDF を載せる流れです。
 
 ## NotebookLM で作っていたときの二つの不満
 

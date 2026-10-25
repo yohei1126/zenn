@@ -1,9 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="920" height="440" viewBox="0 0 920 440" role="img" aria-labelledby="title desc">
   <title id="title">md-deck の登場人物と流れ</title>
-  <desc id="desc">書き手が Grok Bot に依頼し、スライド資料リポジトリの Markdown を md-deck が PDF 化し、PDF はレビュー用に Grok Bot へ戻り、OK 後にタグで GitHub Release へ添付する流れ</desc>
+  <desc id="desc">書き手と Grok Bot がやり取りし、スライド資料リポジトリの Markdown を md-deck が PDF 化し、PDF はレビュー用に Grok Bot へ戻り、書き手の OK 後にタグで GitHub Release へ添付する流れ</desc>
   <defs>
     <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
       <path d="M0,0 L8,3 L0,6 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-start" markerWidth="10" markerHeight="10" refX="2" refY="3" orient="auto">
+      <path d="M8,0 L0,3 L8,6 Z" fill="#334155"/>
     </marker>
     <marker id="arrow-return" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
       <path d="M0,0 L8,3 L0,6 Z" fill="#0369a1"/>
@@ -16,8 +19,10 @@
       .sub { font-family: "Hiragino Sans", "Noto Sans CJK JP", "Segoe UI", sans-serif; font-size:12px; fill:#475569; }
       .title { font-family: "Hiragino Sans", "Noto Sans CJK JP", "Segoe UI", sans-serif; font-size:16px; font-weight:700; fill:#0f172a; }
       .edge { stroke:#334155; stroke-width:1.75; fill:none; marker-end:url(#arrow); }
+      .edge-both { stroke:#334155; stroke-width:1.75; fill:none; marker-start:url(#arrow-start); marker-end:url(#arrow); }
       .edge-return { stroke:#0369a1; stroke-width:1.75; fill:none; stroke-dasharray:6 4; marker-end:url(#arrow-return); }
       .edge-label { font-family: "Hiragino Sans", "Noto Sans CJK JP", "Segoe UI", sans-serif; font-size:11px; fill:#0369a1; }
+      .edge-label-dark { font-family: "Hiragino Sans", "Noto Sans CJK JP", "Segoe UI", sans-serif; font-size:11px; fill:#334155; }
     </style>
   </defs>
   <rect width="920" height="440" fill="#ffffff"/>
@@ -39,11 +44,11 @@
   <text x="795" y="90" text-anchor="middle" class="label">md-deck</text>
   <text x="795" y="112" text-anchor="middle" class="sub">検証・PDF 化</text>
 
-  <path class="edge" d="M190,95 H232"/>
+  <path class="edge-both" d="M190,95 H232"/>
+  <text x="211" y="88" text-anchor="middle" class="edge-label-dark">やり取り</text>
   <path class="edge" d="M410,95 H452"/>
   <path class="edge" d="M660,95 H702"/>
 
-  <!-- return: md-deck → Grok Bot for review PDF -->
   <path class="edge-return" d="M795,130 C795,165 325,165 325,130"/>
   <text x="560" y="158" text-anchor="middle" class="edge-label">レビュー用 PDF</text>
 
@@ -68,6 +73,6 @@
   <text x="795" y="392" text-anchor="middle" class="sub">PDF を添付</text>
   <path class="edge" d="M795,290 V332"/>
 
-  <text x="40" y="360" class="sub">下書き〜修正: チャット往復で Markdown を直し、md-deck の PDF を Grok Bot 経由で確認</text>
+  <text x="40" y="360" class="sub">下書き〜修正: 書き手と Grok Bot がやり取りし、md-deck の PDF を Grok Bot 経由で確認</text>
   <text x="40" y="382" class="sub">確定後: タグ起点の CI だけが Release の PDF を作る（Markdown と成果物を対応づける）</text>
 </svg>
