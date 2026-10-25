@@ -12,7 +12,7 @@ published: false
 
 ![登場人物と流れ。書き手⇔Grok Bot→スライド資料リポジトリ→md-deck、レビュー用PDFはGrok Botへ戻り、書き手のOK後にタグ→GitHub Actions→Release](/images/md-deck-flow.png)
 
-上段では書き手と Grok Bot がやり取りし、破線は md-deck が作ったレビュー用 PDF が Grok Bot に戻る経路です。下段が書き手の OK のあとに版を確定させて Release に PDF を載せる流れです。
+上段では書き手と Grok Bot がやり取りし、破線の折れ線は、md-deck が作ったレビュー用 PDF が Grok Bot に戻る経路です。下段が書き手の OK のあとに版を確定させて Release に PDF を載せる流れです。
 
 ## NotebookLM で作っていたときの二つの不満
 
