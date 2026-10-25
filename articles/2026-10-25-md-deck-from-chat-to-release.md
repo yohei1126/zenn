@@ -10,9 +10,9 @@ published: false
 
 登場するのは、論点を伝えて版を確定させる書き手（私）、依頼を受けて Markdown を書き直す Grok Bot、スライド本文とスタイルガイドを置くスライド資料のリポジトリ、Markdown を検証して PDF にする md-deck、そしてタグの push で PDF をビルドして Release に添付する GitHub Actions です。
 
-![登場人物と流れ。人→Grok Bot→スライド資料リポジトリ→md-deck、OK後にタグ→GitHub Actions→Release](/images/md-deck-flow.png)
+![登場人物と流れ。書き手→Grok Bot→スライド資料リポジトリ→md-deck、OK後にタグ→GitHub Actions→Release](/images/md-deck-flow.png)
 
-上段がチャットでの下書きと修正の往復で、下段が人の OK のあとに版を確定させて Release に PDF を載せる流れです。
+上段がチャットでの下書きと修正の往復で、下段が書き手の OK のあとに版を確定させて Release に PDF を載せる流れです。
 
 ## NotebookLM で作っていたときの二つの不満
 
@@ -41,7 +41,7 @@ published: false
 
 | ツール | 使う目的 |
 | --- | --- |
-| Grok Bot | チャットでの依頼の受付、`slides.md` の下書きと修正、スタイルガイドに沿っているかのレビュー、人の OK を受けたあとのリリースタグ付け |
+| Grok Bot | チャットでの依頼の受付、`slides.md` の下書きと修正、スタイルガイドに沿っているかのレビュー、書き手の OK を受けたあとのリリースタグ付け |
 | md-deck（CLI / GitHub Action） | 入力の検証、Markdown から HTML への変換、headless Chromium による 16:9 の PDF 化、PDF のメタデータの固定 |
 | uv（`uvx`） | md-deck を PyPI に登録していないので、Git のタグを指定して md-deck を実行する |
 | Playwright + Chromium | md-deck の内部で、HTML を PDF に描画する |
@@ -57,13 +57,13 @@ md-deck が受け取る入力は、スライド本文の Markdown とスタイ�
 
 スライド本文の Markdown は、front matter に `title`、`version`、`date`、`lang`、`style` の五つを必ず書きます。`style` にはスタイルの Markdown への相対パスを書き、本文は `---` でスライドを区切ります。本文から相対パスで画像を参照する場合は、その画像もスライドのファイルの隣（またはその下）に置きます。
 
-スタイルの Markdown は、front matter に配色やフォントなどのトークンを YAML で書き、その下に人が読む文章の規範を書く形式です。必須のトークンは `color_background`、`color_text`、`color_title`、`font_family`、`font_size_body` の五つで、ほかのトークンは省略すると白黒の素の既定値になります。追加の CSS を書きたいときは、任意で `css` のコードブロックを置けます。トークンは md-deck が読み取ってレイアウトに反映し、文章の規範は書き手（私でも Grok Bot でも）が読んでスライドの文面に反映します。一つのファイルを md-deck と書き手の両方が参照するので、スライド資料の「見た目」と「書き方」の決まりが一か所にまとまります。
+スタイルの Markdown は、front matter に配色やフォントなどのトークンを YAML で書き、その下に書き手が読む文章の規範を書く形式です。必須のトークンは `color_background`、`color_text`、`color_title`、`font_family`、`font_size_body` の五つで、ほかのトークンは省略すると白黒の素の既定値になります。追加の CSS を書きたいときは、任意で `css` のコードブロックを置けます。トークンは md-deck が読み取ってレイアウトに反映し、文章の規範は書き手（私でも Grok Bot でも）が読んでスライドの文面に反映します。一つのファイルを md-deck と書き手の両方が参照するので、スライド資料の「見た目」と「書き方」の決まりが一か所にまとまります。
 
 examples フォルダの三つのファイルは、それぞれ次の見本です。
 
 | ファイル | 何の見本か |
 | --- | --- |
-| [deck_style.md](https://github.com/yohei1126/md-deck/blob/main/examples/deck_style.md) | スタイルの Markdown。YAML のトークン、人が読む規範、任意の CSS の三つを含む。白黒の見本であり、本番のテーマではない |
+| [deck_style.md](https://github.com/yohei1126/md-deck/blob/main/examples/deck_style.md) | スタイルの Markdown。YAML のトークン、書き手が読む規範、任意の CSS の三つを含む。白黒の見本であり、本番のテーマではない |
 | [sample.md](https://github.com/yohei1126/md-deck/blob/main/examples/sample.md) | スライド本文の Markdown。入力の決まりと記法を一通り使った見本で、front matter の `style: deck_style.md` で上のスタイルを指す |
 | [routing_demo.md](https://github.com/yohei1126/md-deck/blob/main/examples/routing_demo.md) | 図（`::: flow`）の見本。レーンをまたぐ矢印をノードを避けて直角に折り曲げる配置などを確認できる |
 
@@ -79,7 +79,7 @@ examples フォルダの三つのファイルは、それぞれ次の見本で�
 4. 内容に納得したら、私が「OK」と伝えます。そこで初めて Grok Bot がリリースタグを打ちます。
 5. タグの push をきっかけに、スライド資料のリポジトリの GitHub Actions が md-deck の Action で PDF をビルドし、Release に成果物として添付します。
 
-**タグを打つのは人の OK のあとに限っています。** 下書きや修正版の PDF はいくらでも作り直せますが、Release に載った PDF は「この版で話した」という記録として相手と共有するものだからです。どの版を確定させるかは書き手が判断し、そのあとのタグ付け、ビルド、添付は機械的に進むようにしました。
+**タグを打つのは書き手の OK のあとに限っています。** 下書きや修正版の PDF はいくらでも作り直せますが、Release に載った PDF は「この版で話した」という記録として相手と共有するものだからです。どの版を確定させるかは書き手が判断し、そのあとのタグ付け、ビルド、添付は機械的に進むようにしました。
 
 Release に PDF を添付する形にしたのは、版と成果物の対応を GitHub 上で一意にするためです。タグ名から、その時点の `slides.md` と `deck_style.md`、そして生成された PDF の三つを辿れます。PDF そのものをリポジトリにコミットする方法もありますが、その場合は Markdown と食い違った PDF がコミットされる余地が残ります。タグを起点に CI でビルドすれば、CI はそのタグの時点の Markdown から PDF を作るので、添付される PDF とタグの Markdown が食い違うことはありません。
 
@@ -130,7 +130,7 @@ GitHub Actions からは、タグを固定して Action を呼び出します。
 
 ## いまできることと、この先やりたいこと
 
-いまの時点でできるのは、Grok Bot へのチャットでの依頼から、人の OK を経て、タグに対応する PDF が Release に載るところまでです。生成器の md-deck は v0.1.0 として OSS で公開しており、examples の見本を使えば手元でも同じ検証とビルドを試せます。一方で、バイト単位で同じ PDF が出るのは Chromium とフォントが揃った環境に限られ、日本語の資料では CJK フォントを自分で用意する必要があります。
+いまの時点でできるのは、Grok Bot へのチャットでの依頼から、書き手の OK を経て、タグに対応する PDF が Release に載るところまでです。生成器の md-deck は v0.1.0 として OSS で公開しており、examples の見本を使えば手元でも同じ検証とビルドを試せます。一方で、バイト単位で同じ PDF が出るのは Chromium とフォントが揃った環境に限られ、日本語の資料では CJK フォントを自分で用意する必要があります。
 
 この先は、いまの制約に対応する次の三つを候補として考えています。
 
