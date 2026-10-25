@@ -47,6 +47,7 @@ ODS（Open Dataspaces）接続は Season 3 以降の企画。宣伝記事では�
 | :--- | :--- |
 | `github.com/yohei1126/supply-chain-impact-analysis-agent` | Season 2 コンパニオン実装（Neo4j, Graph Contract, tools） |
 | `github.com/yohei1126/writing`（`linkedin/`） | LinkedIn 英語記事・投稿下書き |
+| `github.com/yohei1126/agent-skills`（`visual-color/`, `visual-diagram/`） | 配色と図のスキル。参照は main の blob URL |
 | `/Users/yoheionishi/work/open-dataspaces/` | ODS L4 OSS クローン（SDK-for-semantics, L4-discovery-*, L4-crawler-service 等） |
 
 ## 連載マップ（公開済み記事 slug）
@@ -77,6 +78,8 @@ Season 3 は未執筆。執筆順: **3A → Epilogue → Season 4（任意）**�
 - **日本語技術文書の推敲規範**: 記事の執筆および推敲時には、必ず `~/.agents/skills/japanese-tech-writing/SKILL.md` の規範を適用する（パラグラフライティング、論証の厳密さ・ツッコミどころの排除、読み手の負荷管理、LLM特有の空句・過剰な修飾や擬人化の排除、冗長の排除）。
 - **Zenn 記事の推敲規範**: 記事本文の執筆および推敲時には、`~/.agents/skills/zenn-article/SKILL.md` も適用する。
 - **PR 前レビュー**: `articles/` 配下のファイルを追加または変更する PR を開く前、およびその PR を更新する前に、記事本文へ `japanese-tech-writing` と `zenn-article` のレビューを適用する。未レビューの下書きを PR の先端コミットにしない。
+- **配色**: カバー、図、記事画像で配色が必要なときは [visual-color/SKILL.md](https://github.com/yohei1126/agent-skills/blob/main/visual-color/SKILL.md) に従う。スキル本文をこのリポジトリへコピーしない。
+- **図**: カバー、図、記事画像を描くときは [visual-diagram/SKILL.md](https://github.com/yohei1126/agent-skills/blob/main/visual-diagram/SKILL.md) に従う。スキル本文をこのリポジトリへコピーしない。
 - 連載は **Problem / Design / Build** の型を維持
 - 新 Season 執筆前に該当 `instructions/*.md` を読み、用語を企画メモに合わせる
 - ODS 記事: ODP 網羅・IPA 逐語解説・法務詳細は **やらない**（`season3-b2b-ods-connection-plan.md` §9）
@@ -103,6 +106,8 @@ npx zenn preview
 | タスク | 読むもの |
 | :--- | :--- |
 | **記事の執筆・推敲全般** | `~/.agents/skills/japanese-tech-writing/SKILL.md`（文章規範）、`~/.agents/skills/zenn-article/SKILL.md`（Zenn 記事体裁）。`articles/` を変える PR の前に両方で本文をレビューする |
+| 配色（カバー・図・記事画像） | [visual-color/SKILL.md](https://github.com/yohei1126/agent-skills/blob/main/visual-color/SKILL.md) |
+| 図（カバー・図・記事画像） | [visual-diagram/SKILL.md](https://github.com/yohei1126/agent-skills/blob/main/visual-diagram/SKILL.md) |
 | Season 2 記事修正 | `plan-20260706-01.md`, コンパニオン repo, agent/agent2/agent3 |
 | Season 3A 執筆 | `season3-production-trust-series-plan.md` |
 | ODS / B2B 執筆 | `season3-b2b-ods-connection-plan.md`, `ods-owa-vs-cwa-worldview.md`, `raw/ods/`, `analytics/ods/` |
