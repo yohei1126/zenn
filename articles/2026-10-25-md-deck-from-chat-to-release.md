@@ -3,7 +3,7 @@ title: "Grok Bot へ頼めば Markdown からスライド資料を自動生成�
 emoji: "📑"
 type: "tech"
 topics: ["markdown", "pdf", "oss", "githubactions", "slide"]
-published: false
+published: true
 ---
 
 提案用・議論用のスライド資料を、Grok Bot にチャットで頼むだけで、Markdown の下書きから GitHub Release に添付した PDF まで作れるようにしました。Markdown から PDF を組み立てる生成器は [md-deck](https://github.com/yohei1126/md-deck) という名前で、OSS として公開しています。
