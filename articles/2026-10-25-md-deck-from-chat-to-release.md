@@ -1,12 +1,18 @@
 ---
-title: "NotebookLMへの再アップロードをやめて、チャット依頼からスライド資料のRelease付きPDFまでを一本にする"
+title: "Grok Bot へ頼めば Markdown からスライド資料を自動生成できる — md-deck を OSS 公開した"
 emoji: "📑"
 type: "tech"
 topics: ["markdown", "pdf", "oss", "githubactions", "slide"]
 published: false
 ---
 
-提案用・議論用のスライド資料を、Grok Bot へのチャットでの依頼だけで、下書きから GitHub Release の PDF まで作れるようにしました。中身とスタイルガイドは、各スライド資料のリポジトリに Markdown で置き、PDF を組み立てる生成器は [md-deck](https://github.com/yohei1126/md-deck) という OSS に切り出しています。同じ Markdown からは同じ PDF が出ることを目標にしています。公開してよい版かどうかは、人がレビューして OK を出してからタグで確定させます。
+提案用・議論用のスライド資料を、Grok Bot にチャットで頼むだけで、Markdown の下書きから GitHub Release に添付した PDF まで作れるようにしました。Markdown から PDF を組み立てる生成器は [md-deck](https://github.com/yohei1126/md-deck) という名前で、OSS として公開しています。
+
+登場するのは、論点を伝えて版を確定させる書き手（私）、依頼を受けて Markdown を書き直す Grok Bot、スライド本文とスタイルガイドを置くスライド資料のリポジトリ、Markdown を検証して PDF にする md-deck、そしてタグの push で PDF をビルドして Release に添付する GitHub Actions です。
+
+![登場人物と流れ。人→Grok Bot→スライド資料リポジトリ→md-deck、OK後にタグ→GitHub Actions→Release](/images/md-deck-flow.png)
+
+上段がチャットでの下書きと修正の往復で、下段が人の OK のあとに版を確定させて Release に PDF を載せる流れです。
 
 ## NotebookLM で作っていたときの二つの不満
 
@@ -24,18 +30,44 @@ published: false
 
 | 置き場所 | 持つもの |
 | --- | --- |
-| スライド資料のリポジトリ | スライド本文の Markdown（`slides.md` など）、スタイルガイドの Markdown（`deck_style.md` など）、Release に添付した PDF |
-| md-deck | 入力の検証、Markdown から HTML への変換、headless Chromium による PDF 化、再利用できる GitHub Action |
+| スライド資料のリポジトリ | スライド本文の Markdown（`slides.md` など）、スタイルガイドの Markdown（`deck_style.md` など）、タグで PDF をビルドするワークフロー、Release に添付した PDF |
+| md-deck | 入力の検証、Markdown から PDF までの組み立て、再利用できる GitHub Action |
 
-スタイルガイドの Markdown は、配色やフォントなどのトークンを YAML で書き、その下に人が読む文章の規範を書く形式です。トークンは md-deck が読み取ってレイアウトに反映し、文章の規範は書き手（私でも Grok Bot でも）が読んでスライドの文面に反映します。一つのファイルを md-deck と書き手の両方が参照するので、スライド資料の「見た目」と「書き方」の決まりが一か所にまとまります。
+**md-deck 自体はブランドの配色やフォントを持つテーマを同梱していません。** スタイルファイルの指定は必須で、指定がなければビルドは失敗します。テーマを生成器側に持たせると、生成器を更新したときに既存のスライド資料の見た目まで変わる可能性があり、スライド資料ごとに見た目を固定したいという目的と衝突するためです。
 
-**md-deck 自体はデフォルトのテーマを持ちません。** スタイルファイルの指定は必須で、指定がなければビルドは失敗します。テーマを生成器側に持たせると、生成器を更新したときに既存のスライド資料の見た目まで変わる可能性があり、スライド資料ごとに見た目を固定したいという目的と衝突するためです。
+## どのツールを何に使っているか
 
-同じ理由で、md-deck の `examples/` にあるスライドとスタイルは、生成器を試すための見本という位置づけにしています。実際のスライド資料と PDF は、md-deck を呼び出す側のリポジトリで管理します。
+図に出てくる要素と、その裏で使っている道具を、目的ごとに並べると次のようになります。
 
-生成器の処理は、Markdown を HTML に変換し、それを headless Chromium で 16:9 の PDF に印刷する流れです。ビルドの前には必ず入力の検証が走り、スライドからのはみ出しなどがあれば PDF を書かずに止まります。
+| ツール | 使う目的 |
+| --- | --- |
+| Grok Bot | チャットでの依頼の受付、`slides.md` の下書きと修正、スタイルガイドに沿っているかのレビュー、人の OK を受けたあとのリリースタグ付け |
+| md-deck（CLI / GitHub Action） | 入力の検証、Markdown から HTML への変換、headless Chromium による 16:9 の PDF 化、PDF のメタデータの固定 |
+| uv（`uvx`） | md-deck を PyPI に登録していないので、Git のタグを指定して md-deck を実行する |
+| Playwright + Chromium | md-deck の内部で、HTML を PDF に描画する |
+| GitHub Actions / GitHub Release | タグの push をきっかけに PDF をビルドし、Release に成果物として添付する |
 
-PDF を書き出したあとは、作成日時などのメタデータを固定値に書き換えます。メタデータに日時が入ったままだと、ビルドした時刻が違うだけで PDF のバイト列が変わってしまうためです。
+md-deck のビルドでは、PDF を書く前に必ず入力の検証が走り、スライドからのはみ出しなどがあれば PDF を書かずに止まります。PDF を書き出したあとは、作成日時と更新日時を固定値に書き換えます。メタデータに日時が入ったままだと、ビルドした時刻が違うだけで PDF のバイト列が変わってしまうためです。
+
+以前使っていた NotebookLM は、この表には入りません。資料の再アップロードと見た目の揺れという二つの不満から、上の組み合わせに置き換えました。
+
+## md-deck に渡す入力ファイル
+
+md-deck が受け取る入力は、スライド本文の Markdown とスタイルの Markdown の二つです。どちらも見本を [examples フォルダ](https://github.com/yohei1126/md-deck/tree/main/examples) に置いています。
+
+スライド本文の Markdown は、front matter に `title`、`version`、`date`、`lang`、`style` の五つを必ず書きます。`style` にはスタイルの Markdown への相対パスを書き、本文は `---` でスライドを区切ります。本文から相対パスで画像を参照する場合は、その画像もスライドのファイルの隣（またはその下）に置きます。
+
+スタイルの Markdown は、front matter に配色やフォントなどのトークンを YAML で書き、その下に人が読む文章の規範を書く形式です。必須のトークンは `color_background`、`color_text`、`color_title`、`font_family`、`font_size_body` の五つで、ほかのトークンは省略すると白黒の素の既定値になります。追加の CSS を書きたいときは、任意で `css` のコードブロックを置けます。トークンは md-deck が読み取ってレイアウトに反映し、文章の規範は書き手（私でも Grok Bot でも）が読んでスライドの文面に反映します。一つのファイルを md-deck と書き手の両方が参照するので、スライド資料の「見た目」と「書き方」の決まりが一か所にまとまります。
+
+examples フォルダの三つのファイルは、それぞれ次の見本です。
+
+| ファイル | 何の見本か |
+| --- | --- |
+| [deck_style.md](https://github.com/yohei1126/md-deck/blob/main/examples/deck_style.md) | スタイルの Markdown。YAML のトークン、人が読む規範、任意の CSS の三つを含む。白黒の見本であり、本番のテーマではない |
+| [sample.md](https://github.com/yohei1126/md-deck/blob/main/examples/sample.md) | スライド本文の Markdown。入力の決まりと記法を一通り使った見本で、front matter の `style: deck_style.md` で上のスタイルを指す |
+| [routing_demo.md](https://github.com/yohei1126/md-deck/blob/main/examples/routing_demo.md) | 図（`::: flow`）の見本。レーンをまたぐ矢印をノードを避けて直角に折り曲げる配置などを確認できる |
+
+実際のスライド資料では、`deck_style.md` を自分の配色とフォントで書き換えたものをスライド資料のリポジトリに置きます。examples の見本は、生成器を試すためのものという位置づけです。
 
 ## チャットからタグまでの手順
 
@@ -61,16 +93,20 @@ Release に PDF を添付する形にしたのは、版と成果物の対応を 
 
 ## md-deck を手元と GitHub Actions で試すには
 
-md-deck は現在 v0.1.0 のタグを公開しています。PyPI にはまだ登録していないので、uv の `uvx` で Git のタグを直接指定して実行します。
+md-deck は現在 v0.1.0 のタグを公開しています。手元で試すなら、リポジトリを取得して examples の見本をそのまま入力にするのが手早い方法です。
 
 ```bash
+git clone https://github.com/yohei1126/md-deck.git
+cd md-deck
 uvx --from git+https://github.com/yohei1126/md-deck@v0.1.0 md-deck \
-  check slides.md
+  check examples/sample.md
 uvx --from git+https://github.com/yohei1126/md-deck@v0.1.0 md-deck \
-  build slides.md -o out.pdf
+  build examples/sample.md -o sample.pdf
 ```
 
-`check` は Chromium を使わずに入力だけを検証し、問題を `ファイル:行: メッセージ` の形で列挙します。`build` は同じ検証を通ったときだけ PDF を書き出します。どちらも、スライドの front matter の `style:` でスタイルファイルを指定するか、`--style` で渡す必要があります。最初は `examples/` の見本をコピーして書き換えると手早く始められます。
+`check` は Chromium を使わずに入力だけを検証し、問題を `ファイル:行: メッセージ` の形で列挙します。`build` は同じ検証を通ったときだけ PDF を書き出します。`examples/routing_demo.md` に差し替えれば、図の見本も同じ手順でビルドできます。手元に Playwright の Chromium がない場合は、`build` の前に `uvx --from git+https://github.com/yohei1126/md-deck@v0.1.0 playwright install chromium` で取得しておきます。
+
+自分のスライド資料で使うときは、`examples/deck_style.md` と `examples/sample.md` をスライド資料のリポジトリにコピーし、配色と本文を書き換えるところから始められます。スタイルファイルは、スライドの front matter の `style:` で指定するか、`--style` で渡します。
 
 GitHub Actions からは、タグを固定して Action を呼び出します。
 
@@ -92,6 +128,14 @@ GitHub Actions からは、タグを固定して Action を呼び出します。
 
 また、md-deck が決定的にするのはレイアウトだけです。スライドの論理が通っているか、相手にとって必要な情報が揃っているかは、書き手と、書き手が依頼した Grok Bot のレビューで確かめることになります。md-deck で得られるのは、直した箇所以外の見た目が変わらないことと、確定させた版を Release から辿れることです。
 
-## 最初のスライド資料をどこから作るか
+## いまできることと、この先やりたいこと
 
-これから同じ形でスライド資料を作るなら、まず手元の資料をもとに `deck_style.md` を一つ書き、`examples/` の見本と並べて `check` が通るところまで進めるのがよいと思います。スタイルが決まれば、そのあとの下書きと修正はチャットでの往復に任せられます。
+いまの時点でできるのは、Grok Bot へのチャットでの依頼から、人の OK を経て、タグに対応する PDF が Release に載るところまでです。生成器の md-deck は v0.1.0 として OSS で公開しており、examples の見本を使えば手元でも同じ検証とビルドを試せます。一方で、バイト単位で同じ PDF が出るのは Chromium とフォントが揃った環境に限られ、日本語の資料では CJK フォントを自分で用意する必要があります。
+
+この先は、いまの制約に対応する次の三つを候補として考えています。
+
+- PyPI への公開。現在は Git のタグを `uvx` に渡して実行しているので、パッケージ名だけで入れられるようにしたいと考えています。
+- CJK フォントと Chromium の固定。手元と CI で描画を揃える手順を、利用者が個別に組まなくて済む形にできないか検討しています。
+- スライド資料のリポジトリ側のテンプレート。`deck_style.md`、`slides.md`、タグで Release に PDF を添付するワークフローを一式にしておけば、新しいスライド資料を始める手間を減らせると考えています。
+
+どれも公開時期を決めたものではありません。まずは自分のスライド資料で使いながら、困った箇所から順に手を入れていくつもりです。同じ形でスライド資料を作ってみたい場合は、examples の `deck_style.md` を自分の配色とフォントに書き換え、`check` が通るところまで進めるところから始めてみてください。
