@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="500" viewBox="0 0 920 500" role="img" aria-labelledby="title desc">
+  <title id="title">md-deck の登場人物と流れ</title>
+  <desc id="desc">書き手と Grok Bot がやり取りし、スライド資料リポジトリの Markdown を md-deck が PDF 化し、レビュー用 PDF は上経由の直角破線で Grok Bot へ戻り、書き手の OK 後にタグで GitHub Release へ添付する流れ</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-start" markerWidth="10" markerHeight="10" refX="2" refY="3" orient="auto">
+      <path d="M8,0 L0,3 L8,6 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-return" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#0369a1"/>
+    </marker>
+    <style>
+      .box { fill:#f8fafc; stroke:#334155; stroke-width:1.5; rx:10; }
+      .box-accent { fill:#e0f2fe; stroke:#0369a1; stroke-width:1.5; rx:10; }
+      .box-ok { fill:#ecfdf5; stroke:#047857; stroke-width:1.5; rx:10; }
+      .label { font-family: "Hiragino Sans", "Noto Sans CJK JP", "Segoe UI", sans-serif; font-size:15px; fill:#0f172a; }
+      .sub { font-family: "Hiragino Sans", "Noto Sans CJK JP", "Segoe UI", sans-serif; font-size:12px; fill:#475569; }
+      .title { font-family: "Hiragino Sans", "Noto Sans CJK JP", "Segoe UI", sans-serif; font-size:16px; font-weight:700; fill:#0f172a; }
+      .edge { stroke:#334155; stroke-width:1.75; fill:none; marker-end:url(#arrow); }
+      .edge-both { stroke:#334155; stroke-width:1.75; fill:none; marker-start:url(#arrow-start); marker-end:url(#arrow); }
+      .edge-return { stroke:#0369a1; stroke-width:1.75; fill:none; stroke-dasharray:6 4; marker-end:url(#arrow-return); }
+      .edge-label { font-family: "Hiragino Sans", "Noto Sans CJK JP", "Segoe UI", sans-serif; font-size:12px; fill:#0369a1; }
+      .edge-label-dark { font-family: "Hiragino Sans", "Noto Sans CJK JP", "Segoe UI", sans-serif; font-size:11px; fill:#334155; }
+      .label-bg { fill:#ffffff; stroke:#bae6fd; stroke-width:1; rx:4; }
+    </style>
+  </defs>
+  <rect width="920" height="500" fill="#ffffff"/>
+  <text x="24" y="28" class="title">登場人物と流れ（チャット依頼 → Release 付き PDF）</text>
+
+  <!-- return lane above top row so it does not cross forward edges -->
+  <path class="edge-return" d="M795,96 V52 H340 V96"/>
+  <rect class="label-bg" x="505" y="36" width="110" height="22"/>
+  <text x="560" y="51" text-anchor="middle" class="edge-label">レビュー用 PDF</text>
+
+  <rect class="box" x="40" y="96" width="150" height="70"/>
+  <text x="115" y="126" text-anchor="middle" class="label">書き手</text>
+  <text x="115" y="148" text-anchor="middle" class="sub">論点・OK 判断</text>
+
+  <rect class="box-accent" x="255" y="96" width="170" height="70"/>
+  <text x="340" y="126" text-anchor="middle" class="label">Grok Bot</text>
+  <text x="340" y="148" text-anchor="middle" class="sub">下書き・修正・タグ</text>
+
+  <rect class="box" x="460" y="96" width="200" height="70"/>
+  <text x="560" y="121" text-anchor="middle" class="label">スライド資料リポジトリ</text>
+  <text x="560" y="144" text-anchor="middle" class="sub">slides.md / deck_style.md</text>
+
+  <rect class="box-accent" x="710" y="96" width="170" height="70"/>
+  <text x="795" y="126" text-anchor="middle" class="label">md-deck</text>
+  <text x="795" y="148" text-anchor="middle" class="sub">検証・PDF 化</text>
+
+  <path class="edge-both" d="M190,131 H247"/>
+  <text x="218" y="120" text-anchor="middle" class="edge-label-dark">やり取り</text>
+  <path class="edge" d="M425,131 H452"/>
+  <path class="edge" d="M660,131 H702"/>
+
+  <rect class="box-ok" x="255" y="280" width="170" height="70"/>
+  <text x="340" y="310" text-anchor="middle" class="label">書き手の OK</text>
+  <text x="340" y="332" text-anchor="middle" class="sub">ここまでは下書き PDF</text>
+
+  <rect class="box" x="460" y="280" width="200" height="70"/>
+  <text x="560" y="310" text-anchor="middle" class="label">リリースタグ</text>
+  <text x="560" y="332" text-anchor="middle" class="sub">push が確定の合図</text>
+
+  <rect class="box-accent" x="710" y="280" width="170" height="70"/>
+  <text x="795" y="310" text-anchor="middle" class="label">GitHub Actions</text>
+  <text x="795" y="332" text-anchor="middle" class="sub">md-deck Action</text>
+
+  <path class="edge" d="M340,166 V272"/>
+  <path class="edge" d="M425,315 H452"/>
+  <path class="edge" d="M660,315 H702"/>
+
+  <rect class="box-ok" x="710" y="400" width="170" height="70"/>
+  <text x="795" y="430" text-anchor="middle" class="label">GitHub Release</text>
+  <text x="795" y="452" text-anchor="middle" class="sub">PDF を添付</text>
+  <path class="edge" d="M795,350 V392"/>
+
+  <text x="40" y="430" class="sub">下書き〜修正: 書き手と Grok Bot がやり取りし、md-deck の PDF を Grok Bot 経由で確認</text>
+  <text x="40" y="452" class="sub">確定後: タグ起点の CI だけが Release の PDF を作る（Markdown と成果物を対応づける）</text>
+</svg>
