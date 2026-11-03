@@ -3,7 +3,7 @@ title: "卓上ロボットアームで学ぶ模倣学習とシミュレーショ
 emoji: "🤖"
 type: "tech"
 topics: ["SO-ARM101", "LeRobot", "MuJoCo", "模倣学習", "robotics"]
-published: false
+published: true
 ---
 
 ## はじめに
