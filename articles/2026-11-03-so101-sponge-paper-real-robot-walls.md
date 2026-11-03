@@ -19,19 +19,19 @@ published: false
 本プロジェクトで扱ったタスクは「机上に置かれたスポンジをグリッパで持ち上げ、目標の紙の上へ搬送して静かに置く」というピック＆プレースです。物理デバイス上で安定した自律動作を再現するには、ハードウェア・機械学習・物理シミュレータが連動するエコシステムを把握しておく必要があります。
 
 ### 前提となる要素技術
-- **SO-ARM101**: 3Dプリント製パーツとシリアルバスサーボで構成される、低コストなオープンソースの6自由度卓上ロボットアーム。
-- **リーダー / フォロワー構成**: 人間が手動で動かして動作の手本を示す「リーダーアーム」と、その動きにリアルタイム追従する「フォロワーアーム」の2台ペア構成。
-- **模倣学習（Imitation Learning）**: リーダーアームの遠隔操作（テレオペレーション）で取得したカメラ映像と関節角度の時系列データから、ロボットの自律行動方策（ポリシー）を教師あり学習する手法。
-- **LeRobot**: Hugging Face が開発・主導する、ロボティクス向けのモデル学習・推論・データセット管理を行うオープンソースフレームワーク。
-- **ACT（Action Chunking with Transformers）**: 過去の観測画像・関節角から未来の複数タイムステップ（行動チャンク）を一括で同時予測し、滑らかな軌跡を生成する Transformer ベースの方策モデル。
-- **MuJoCo**: 高速かつ厳密な物理接触計算が可能な、ロボティクスや強化学習で標準的に用いられる物理シミュレータ。
+- **[SO-ARM101](https://huggingface.co/docs/lerobot/so101)**: 3Dプリント製パーツとシリアルバスサーボで構成される、低コストなオープンソースの6自由度卓上ロボットアーム。
+- **リーダー / フォロワー構成**: 人間が手動で動かして動作の手本を示す「リーダーアーム」と、その動きにリアルタイム追従する「フォロワーアーム」の2台ペア構成（参考: [LeRobot Teleoperation ドキュメント](https://huggingface.co/docs/lerobot/teleoperate)）。
+- **[模倣学習（Imitation Learning）](https://en.wikipedia.org/wiki/Imitation_learning)**: リーダーアームの遠隔操作（テレオペレーション）で取得したカメラ映像と関節角度の時系列データから、ロボットの自律行動方策（ポリシー）を教師あり学習する手法。
+- **[LeRobot](https://github.com/huggingface/lerobot)**: Hugging Face が開発・主導する、ロボティクス向けのモデル学習・推論・データセット管理を行うオープンソースフレームワーク。
+- **[ACT（Action Chunking with Transformers）](https://arxiv.org/abs/2304.13705)**: 過去の観測画像・関節角から未来の複数タイムステップ（行動チャンク）を一括で同時予測し、滑らかな軌跡を生成する Transformer ベースの方策モデル。
+- **[MuJoCo](https://mujoco.org/)**: 高速かつ厳密な物理接触計算が可能な、ロボティクスや強化学習で標準的に用いられる物理シミュレータ。
 
 ### 実機デモと公開リソース
 開発した再現スクリプトおよびドキュメントはすべて公開しています。
 
 - ソースコード: [yohei1126/lerobot-so101-pick-and-place](https://github.com/yohei1126/lerobot-so101-pick-and-place)
 - ドキュメント: [プロジェクト日本語ドキュメント](https://yohei1126.github.io/lerobot-so101-pick-and-place/ja/)
-- 実機デモ動画: @[youtube](hYQggz5CilA)
+- 実機デモ動画: [YouTube (hYQggz5CilA)](https://youtu.be/hYQggz5CilA?si=JY67FCH5Y8HKqz9M)
 
 ## 実機確認成功までの全工程
 
@@ -152,4 +152,4 @@ MuJoCo シミュレータ上で方策モデルを評価する際、オブジェ�
 
 - ソースコード: [yohei1126/lerobot-so101-pick-and-place](https://github.com/yohei1126/lerobot-so101-pick-and-place)
 - プロジェクトドキュメント: [https://yohei1126.github.io/lerobot-so101-pick-and-place/ja/](https://yohei1126.github.io/lerobot-so101-pick-and-place/ja/)
-- 実機デモ動画: [https://youtu.be/hYQggz5CilA](https://youtu.be/hYQggz5CilA)
+- 実機デモ動画: [https://youtu.be/hYQggz5CilA?si=JY67FCH5Y8HKqz9M](https://youtu.be/hYQggz5CilA?si=JY67FCH5Y8HKqz9M)
