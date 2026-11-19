@@ -14,6 +14,12 @@ published: false
 
 自分のシミュレーションには `mujoco_menagerie` の `robotstudio_so101`（commit `370c43965323c0944b433b202aac5058b5f907a9`）と MuJoCo 4.0.1 を使いました。答え合わせの相手には Google Antigravity（`agy`）を使い、プラグインなしの状態と Robotics プラグインを導入した状態の 2 回に分けて同じ計算を依頼しました。
 
+## Antigravity の Robotics プラグインとは何か
+
+[Robotics プラグイン](https://github.com/google-deepmind/robotics-antigravity-plugin)は Google DeepMind が公開している Google Antigravity 用のプラグイン（Apache 2.0）で、[Gemini 4 Hydrogen](https://developers.googleblog.com/gemini-hydrogen-for-robotics/) と組み合わせて使います。ロボットアームの立ち上げ、MuJoCo のシーン作成とシミュレーション、カメラ画像の認識、制御コードの作成とシミュレーションでの確認、同じコードの実機実行を、会話で進めるためのスキルをまとめたもので、シミュレーションだけでも使えます。マーケットプレイス版には MuJoCo のスキル 7 つが同梱され、GitHub から入れる場合は別に入れる必要があります。なお、Antigravity で使うには Google AI Pro または Ultra の有料プランが必要です。
+
+Google が Gemini 4 Hydrogen をロボティクス向けに発表し、このプラグインで MuJoCo を扱えると知って試したくなりました。最初の使い道に答え合わせを選んだのは、自分の古典制御のコードや実験条件には手を入れずに、「別の作り方でも同じ値が出るか」という裏付けが得られるためです。実機もプラグインからは動かしていません。
+
 ## 比較した対象と誤差の定義
 
 照合では同じ関節角のテスト姿勢 5 パターン（`q0`〜`q4`）を入力し、以下の 3 項目を比べました。
@@ -77,7 +83,7 @@ FK は 5 パターンすべてで位置差 1.8e-13 mm 以下、回転差 3.6e-14
 
 ## 次のステップ: 実機での手先位置の計測
 
-`mujoco_menagerie` 版と本家 `SO-ARM100` 版のどちらの `gripperframe` 定義が実機の手先に近いかは、今回のシミュレーション照合だけでは未計測のままです。近日中に実機で手先の位置を測り、シミュレーションの基準点と突き合わせる予定です。
+`mujoco_menagerie` 版と本家 `SO-ARM100` 版のどちらの `gripperframe` 定義が実機の手先に近いかは、シミュレーションの照合だけでは判断できないため、近日中に実機で測ります。
 
 ## 参考
 
